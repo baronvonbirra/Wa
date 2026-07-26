@@ -1,10 +1,51 @@
+@import url('https://fonts.googleapis.com/css2?family=Fredoka:wght@300..700&display=swap');
+
 @tailwind base;
 @tailwind components;
 @tailwind utilities;
 
 body {
-  @apply bg-[#FFFDF9] text-slate-800;
+  background-color: #FFFDF9;
+  color: #1E293B;
   font-family: 'Fredoka', 'Poppins', system-ui, -apple-system, sans-serif;
+  overflow-x: hidden;
+}
+
+/* Playful kid-friendly custom styles */
+.bubbly-shadow {
+  box-shadow: 0 8px 0px 0px rgba(0, 0, 0, 0.08);
+}
+
+.bubbly-button-rose {
+  box-shadow: 0 6px 0px 0px #BE123C;
+}
+.bubbly-button-rose:active {
+  transform: translateY(4px);
+  box-shadow: 0 2px 0px 0px #BE123C;
+}
+
+.bubbly-button-amber {
+  box-shadow: 0 6px 0px 0px #B45309;
+}
+.bubbly-button-amber:active {
+  transform: translateY(4px);
+  box-shadow: 0 2px 0px 0px #B45309;
+}
+
+.bubbly-button-indigo {
+  box-shadow: 0 6px 0px 0px #4338CA;
+}
+.bubbly-button-indigo:active {
+  transform: translateY(4px);
+  box-shadow: 0 2px 0px 0px #4338CA;
+}
+
+.bubbly-button-slate {
+  box-shadow: 0 6px 0px 0px #334155;
+}
+.bubbly-button-slate:active {
+  transform: translateY(4px);
+  box-shadow: 0 2px 0px 0px #334155;
 }
 
 /* Card flip animation helpers */
@@ -19,4 +60,28 @@ body {
 }
 .rotate-y-180 {
   transform: rotateY(180deg);
+}
+
+/* Sparkle background pattern */
+.sparkle-pattern {
+  background-image: radial-gradient(#FBCFE8 1.5px, transparent 1.5px), radial-gradient(#FDE68A 1.5px, #FFFDF9 1.5px);
+  background-size: 24px 24px;
+  background-position: 0 0, 12px 12px;
+}
+
+/* Soft bounce animations */
+@keyframes soft-bounce {
+  0%, 100% { transform: translateY(0); }
+  50% { transform: translateY(-8px); }
+}
+.animate-soft {
+  animation: soft-bounce 3s ease-in-out infinite;
+}
+
+@keyframes wiggle {
+  0%, 100% { transform: rotate(-3deg); }
+  50% { transform: rotate(3deg); }
+}
+.animate-wiggle {
+  animation: wiggle 2s ease-in-out infinite;
 }

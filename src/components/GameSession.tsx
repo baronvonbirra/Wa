@@ -258,85 +258,88 @@ export const GameSession: React.FC<GameSessionProps> = ({ destination, onClose }
       {/* Back button */}
       <button
         onClick={onClose}
-        className="mb-4 inline-flex items-center gap-2 text-rose-600 font-bold hover:text-rose-800 transition-all text-sm"
+        className="mb-4 inline-flex items-center gap-2 text-rose-600 font-extrabold hover:text-rose-800 transition-all text-sm bg-white border-2 border-rose-200 px-4 py-2 rounded-full shadow-sm hover:scale-105"
       >
         <span>⬅️</span> Back to Map Destinations
       </button>
 
       {/* Main Container */}
-      <div className="bg-white border-4 border-rose-100 rounded-3xl shadow-xl overflow-hidden">
+      <div className="bg-white border-8 border-[#FEF08A] rounded-[36px] shadow-2xl overflow-hidden">
         {/* Destination Header Banner */}
-        <div className="bg-gradient-to-r from-rose-500 to-rose-600 p-6 text-white flex justify-between items-center">
+        <div className="bg-gradient-to-r from-rose-500 via-pink-500 to-rose-600 p-6 text-white flex justify-between items-center border-b-4 border-rose-700">
           <div>
-            <h3 className="text-2xl font-black">{destination.name} Quest</h3>
-            <p className="text-rose-100 text-sm font-semibold">{destination.theme}</p>
+            <h3 className="text-3xl font-black flex items-center gap-2">
+              <span className="animate-wiggle inline-block">{destination.emoji}</span>
+              {destination.name} Quest
+            </h3>
+            <p className="text-rose-100 text-sm font-black">{destination.theme}</p>
           </div>
-          <span className="text-5xl">{destination.emoji}</span>
+          <span className="text-6xl animate-soft inline-block">{destination.emoji}</span>
         </div>
 
         {/* Start Game Mode Switcher */}
         {!gameType && (
           <div className="p-8">
-            <h4 className="text-xl font-black text-center text-rose-950 mb-6">Select a Game Mode to Play & Learn!</h4>
+            <h4 className="text-2xl font-black text-center text-rose-950 mb-8">Select a Fun Game to Play & Learn!</h4>
 
-            <div className="grid grid-cols-1 md:grid-cols-2 gap-4 max-w-2xl mx-auto">
+            <div className="grid grid-cols-1 md:grid-cols-2 gap-6 max-w-2xl mx-auto">
               <button
                 onClick={() => startGame('match')}
-                className="p-5 bg-pink-50 border-2 border-pink-200 hover:border-pink-400 rounded-2xl text-left transition-all hover:shadow-md active:scale-95 group flex items-start gap-4"
+                className="p-5 bg-pink-50 border-4 border-pink-200 hover:border-pink-400 rounded-3xl text-left transition-all hover:shadow-lg active:scale-95 group flex items-start gap-4"
               >
-                <span className="text-4xl bg-white p-2.5 rounded-xl border border-pink-100 group-hover:scale-110 transition-transform">🎴</span>
+                <span className="text-5xl bg-white p-3 rounded-2xl border-2 border-pink-100 group-hover:scale-110 transition-transform shadow-sm">🎴</span>
                 <div>
-                  <h5 className="font-extrabold text-pink-900 text-base">Hiragana Match</h5>
-                  <p className="text-xs text-pink-700 font-medium mt-1">Flip cards, match Japanese text with emojis. Best for James (5yo).</p>
+                  <h5 className="font-black text-pink-900 text-lg">Hiragana Match</h5>
+                  <p className="text-xs text-pink-700 font-bold mt-1">Flip cards, match Japanese text with emojis. Best for James (5yo)!</p>
                 </div>
               </button>
 
               <button
                 onClick={() => startGame('listen')}
-                className="p-5 bg-emerald-50 border-2 border-emerald-200 hover:border-emerald-400 rounded-2xl text-left transition-all hover:shadow-md active:scale-95 group flex items-start gap-4"
+                className="p-5 bg-emerald-50 border-4 border-emerald-200 hover:border-emerald-400 rounded-3xl text-left transition-all hover:shadow-lg active:scale-95 group flex items-start gap-4"
               >
-                <span className="text-4xl bg-white p-2.5 rounded-xl border border-emerald-100 group-hover:scale-110 transition-transform">🎧</span>
+                <span className="text-5xl bg-white p-3 rounded-2xl border-2 border-emerald-100 group-hover:scale-110 transition-transform shadow-sm">🎧</span>
                 <div>
-                  <h5 className="font-extrabold text-emerald-900 text-base">Listen & Click</h5>
-                  <p className="text-xs text-emerald-700 font-medium mt-1">Hear the Japanese word spoken aloud and pick its translation.</p>
+                  <h5 className="font-black text-emerald-900 text-lg">Listen & Click</h5>
+                  <p className="text-xs text-emerald-700 font-bold mt-1">Hear the Japanese word spoken aloud and pick its translation.</p>
                 </div>
               </button>
 
               <button
                 onClick={() => startGame('read')}
-                className="p-5 bg-amber-50 border-2 border-amber-200 hover:border-amber-400 rounded-2xl text-left transition-all hover:shadow-md active:scale-95 group flex items-start gap-4"
+                className="p-5 bg-amber-50 border-4 border-amber-200 hover:border-amber-400 rounded-3xl text-left transition-all hover:shadow-lg active:scale-95 group flex items-start gap-4"
               >
-                <span className="text-4xl bg-white p-2.5 rounded-xl border border-amber-100 group-hover:scale-110 transition-transform">📚</span>
+                <span className="text-5xl bg-white p-3 rounded-2xl border-2 border-amber-100 group-hover:scale-110 transition-transform shadow-sm">📚</span>
                 <div>
-                  <h5 className="font-extrabold text-amber-900 text-base">Read & Understand</h5>
-                  <p className="text-xs text-amber-700 font-medium mt-1">Choose the English meaning for Japanese hiragana text.</p>
+                  <h5 className="font-black text-amber-900 text-lg">Read & Understand</h5>
+                  <p className="text-xs text-amber-700 font-bold mt-1">Choose the English meaning for Japanese hiragana text.</p>
                 </div>
               </button>
 
               <button
                 onClick={() => startGame('dialogue')}
                 disabled={destination.dialogues.length === 0}
-                className={`p-5 rounded-2xl text-left transition-all group flex items-start gap-4 ${
+                className={`p-5 rounded-3xl text-left transition-all group flex items-start gap-4 ${
                   destination.dialogues.length > 0
-                    ? 'bg-blue-50 border-2 border-blue-200 hover:border-blue-400 hover:shadow-md active:scale-95'
-                    : 'bg-slate-50 border-2 border-slate-100 opacity-50 cursor-not-allowed'
+                    ? 'bg-blue-50 border-4 border-blue-200 hover:border-blue-400 hover:shadow-lg active:scale-95'
+                    : 'bg-slate-50 border-4 border-slate-100 opacity-50 cursor-not-allowed'
                 }`}
               >
-                <span className="text-4xl bg-white p-2.5 rounded-xl border border-blue-100 group-hover:scale-110 transition-transform">💬</span>
+                <span className="text-5xl bg-white p-3 rounded-2xl border-2 border-blue-100 group-hover:scale-110 transition-transform shadow-sm">💬</span>
                 <div>
-                  <h5 className="font-extrabold text-blue-900 text-base">Dialogue Fill-in</h5>
-                  <p className="text-xs text-blue-700 font-medium mt-1">Complete blank conversations with vocabulary context.</p>
+                  <h5 className="font-black text-blue-900 text-lg">Dialogue Fill-in</h5>
+                  <p className="text-xs text-blue-700 font-bold mt-1">Complete blank conversations with vocabulary context.</p>
                 </div>
               </button>
 
               <button
                 onClick={() => startGame('pronounce')}
-                className="p-5 bg-purple-50 border-2 border-purple-200 hover:border-purple-400 rounded-2xl text-left transition-all hover:shadow-md active:scale-95 group flex items-start gap-4"
+                className="p-5 bg-purple-50 border-4 border-purple-200 hover:border-purple-400 rounded-3xl text-left transition-all hover:shadow-lg active:scale-95 group flex items-start gap-4"
               >
-                <span className="text-4xl bg-white p-2.5 rounded-xl border border-purple-100 group-hover:scale-110 transition-transform">🎤</span>
+                <span className="text-5xl bg-white p-3 rounded-2xl border-2 border-purple-100 group-hover:scale-110 transition-transform shadow-sm">🎤</span>
                 <div>
-                  <h5 className="font-extrabold text-purple-900 text-base">Pronounce Challenge</h5>
-                  <p className="text-xs text-purple-700 font-medium mt-1">Read out loud and test speech clarity with native accents.</p>
+                  <h5 className="font-black text-purple-900 text-lg">Pronounce Challenge</h5>
+                  <p className="text-xs text-purple-700 font-bold mt-1">Read out loud and test speech clarity with native accents.</p>
                 </div>
               </button>
             </div>
@@ -346,31 +349,33 @@ export const GameSession: React.FC<GameSessionProps> = ({ destination, onClose }
         {/* --- MATCHING CARDS PLAYING VIEW --- */}
         {gameType === 'match' && !isGameOver && (
           <div className="p-6">
-            <div className="flex justify-between items-center border-b border-rose-100 pb-4 mb-6">
-              <h4 className="font-black text-rose-950 text-lg">Hiragana Match 🃏</h4>
-              <div className="flex items-center gap-4 text-sm font-extrabold text-rose-900">
-                <span>Score: <strong className="text-rose-600 text-lg">{score}</strong></span>
-                {streakCount >= 2 && <span className="bg-amber-100 text-amber-700 px-2 py-0.5 rounded-md">🔥 {streakCount} Streak!</span>}
+            <div className="flex justify-between items-center border-b-4 border-rose-100 pb-4 mb-6">
+              <h4 className="font-black text-rose-950 text-xl flex items-center gap-2">
+                <span>🎴</span> Hiragana Match Time!
+              </h4>
+              <div className="flex items-center gap-4 text-sm font-black text-rose-900">
+                <span className="bg-white border-2 border-rose-200 px-3 py-1 rounded-full">Score: <strong className="text-rose-600 text-lg">{score}</strong></span>
+                {streakCount >= 2 && <span className="bg-amber-100 text-[#C2410C] border-2 border-[#F97316] px-3 py-1 rounded-full animate-bounce">🔥 {streakCount} Combo!</span>}
               </div>
             </div>
 
-            <div className="grid grid-cols-2 sm:grid-cols-3 gap-4 max-w-lg mx-auto">
+            <div className="grid grid-cols-2 sm:grid-cols-3 gap-6 max-w-lg mx-auto">
               {matchCards.map((card, idx) => (
                 <button
                   key={idx}
                   onClick={() => handleCardClick(idx)}
-                  className={`aspect-square rounded-2xl text-center flex flex-col items-center justify-center font-bold p-4 shadow-sm border transition-all duration-300 transform ${
+                  className={`aspect-square rounded-[28px] text-center flex flex-col items-center justify-center font-black p-5 border-4 transition-all duration-300 transform ${
                     card.isMatched
-                      ? 'bg-emerald-50 border-emerald-200 text-emerald-800 scale-95 opacity-60 pointer-events-none'
+                      ? 'bg-emerald-100 border-emerald-400 text-emerald-900 scale-95 opacity-60 pointer-events-none shadow-inner'
                       : card.isFlipped
-                        ? 'bg-rose-50 border-rose-400 text-rose-950 rotate-y-180 font-black'
-                        : 'bg-indigo-600 border-indigo-700 text-white hover:bg-indigo-700 hover:scale-105 active:scale-95'
+                        ? 'bg-rose-50 border-rose-400 text-rose-950 rotate-y-180 shadow-md scale-105'
+                        : 'bg-indigo-500 border-indigo-700 text-white hover:bg-indigo-600 hover:scale-105 shadow-lg border-b-8 active:border-b-2 active:translate-y-1'
                   }`}
                 >
                   {card.isMatched || card.isFlipped ? (
-                    <span className="text-sm sm:text-base leading-snug">{card.val}</span>
+                    <span className="text-base sm:text-lg leading-snug drop-shadow-sm">{card.val}</span>
                   ) : (
-                    <span className="text-3xl font-extrabold">❓</span>
+                    <span className="text-4xl font-black">❓</span>
                   )}
                 </button>
               ))}
@@ -382,33 +387,33 @@ export const GameSession: React.FC<GameSessionProps> = ({ destination, onClose }
         {(gameType === 'listen' || gameType === 'read') && !isGameOver && quizWord && (
           <div className="p-6 max-w-xl mx-auto">
             {/* Game Status */}
-            <div className="flex justify-between items-center border-b border-rose-100 pb-4 mb-6">
-              <h4 className="font-black text-rose-950 text-lg">
+            <div className="flex justify-between items-center border-b-4 border-rose-100 pb-4 mb-6">
+              <h4 className="font-black text-rose-950 text-xl">
                 {gameType === 'listen' ? '🎧 Listen & Click' : '📚 Read & Understand'}
               </h4>
-              <div className="flex items-center gap-4 text-xs sm:text-sm font-extrabold text-rose-900">
-                <span>Question: <strong>{currentStep + 1}/5</strong></span>
-                <span>Score: <strong className="text-rose-600 text-lg">{score}</strong></span>
+              <div className="flex items-center gap-4 text-xs sm:text-sm font-black text-rose-900">
+                <span className="bg-rose-50 px-2.5 py-1 rounded-full border border-rose-200">Question: <strong>{currentStep + 1}/5</strong></span>
+                <span className="bg-rose-50 px-2.5 py-1 rounded-full border border-rose-200">Score: <strong className="text-rose-600 text-lg">{score}</strong></span>
               </div>
             </div>
 
             {/* Cue Box */}
-            <div className="bg-slate-50 border border-slate-200 rounded-3xl p-6 text-center shadow-inner mb-6">
+            <div className="bg-[#FEF08A] border-4 border-[#FACC15] rounded-[32px] p-8 text-center shadow-md mb-6 relative">
               {gameType === 'listen' ? (
                 <div>
                   <button
                     onClick={() => playAudio(quizWord.japanese)}
-                    className="w-16 h-16 bg-rose-500 hover:bg-rose-600 hover:scale-105 text-white rounded-full shadow-md flex items-center justify-center text-2xl mx-auto mb-3 transition-transform"
+                    className="w-20 h-20 bg-rose-500 hover:bg-rose-600 hover:scale-110 active:scale-95 text-white rounded-full shadow-lg flex items-center justify-center text-4xl mx-auto mb-4 transition-transform border-4 border-white animate-soft"
                   >
                     🔊
                   </button>
-                  <p className="text-sm font-black text-slate-500">Tap to hear Japanese word</p>
+                  <p className="text-base font-black text-slate-800">Tap to hear the Japanese word!</p>
                 </div>
               ) : (
                 <div>
-                  <p className="text-xs font-bold text-rose-600 uppercase tracking-widest mb-1">Translate Hiragana</p>
-                  <h3 className="text-4xl font-black text-rose-950 mb-1">{quizWord.japanese}</h3>
-                  <p className="text-sm font-bold text-slate-500">({quizWord.romaji})</p>
+                  <p className="text-xs font-black text-rose-600 uppercase tracking-widest mb-1 bg-white/60 px-3 py-1 rounded-full inline-block">Translate Hiragana</p>
+                  <h3 className="text-5xl font-black text-rose-950 mb-1 drop-shadow-sm mt-2">{quizWord.japanese}</h3>
+                  <p className="text-base font-black text-slate-600">({quizWord.romaji})</p>
                 </div>
               )}
             </div>
@@ -417,19 +422,18 @@ export const GameSession: React.FC<GameSessionProps> = ({ destination, onClose }
             <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
               {quizOptions.map((opt, idx) => {
                 const isAnswered = feedback !== null;
-                const isThisSelected = feedback && opt === quizWord.english;
 
                 return (
                   <button
                     key={idx}
                     disabled={isAnswered}
                     onClick={() => handleQuizAnswer(opt)}
-                    className={`w-full py-4 px-6 rounded-2xl font-bold text-center border-2 transition-all shadow-sm ${
+                    className={`w-full py-4 px-6 rounded-[24px] font-black text-center border-4 text-base transition-all ${
                       isAnswered
                         ? opt === quizWord.english
-                          ? 'bg-emerald-100 border-emerald-400 text-emerald-950'
+                          ? 'bg-emerald-100 border-emerald-400 text-emerald-950 shadow-inner'
                           : 'bg-slate-100 border-slate-200 text-slate-400'
-                        : 'bg-white border-slate-200 hover:border-rose-400 hover:bg-rose-50/30 text-slate-700 active:scale-95'
+                        : 'bg-white border-slate-200 hover:border-rose-400 hover:bg-rose-50 text-slate-700 active:scale-95 hover:shadow-md border-b-8 active:border-b-4'
                     }`}
                   >
                     {opt}
@@ -440,17 +444,17 @@ export const GameSession: React.FC<GameSessionProps> = ({ destination, onClose }
 
             {/* Hints System */}
             {!feedback && (
-              <div className="mt-6 flex justify-center">
+              <div className="mt-8 flex justify-center">
                 <button
                   onClick={() => {
                     setHasUsedHint(true);
                     playAudio(quizWord.japanese);
                   }}
                   disabled={hasUsedHint}
-                  className={`text-xs font-extrabold px-4 py-2 rounded-full border transition-all ${
+                  className={`text-xs font-black px-5 py-3 rounded-full border-2 transition-all ${
                     hasUsedHint
                       ? 'bg-slate-100 text-slate-400 border-slate-200'
-                      : 'bg-yellow-50 text-yellow-700 border-yellow-200 hover:bg-yellow-100'
+                      : 'bg-amber-50 text-amber-800 border-amber-300 hover:bg-amber-100 shadow-sm hover:scale-105'
                   }`}
                 >
                   {hasUsedHint
@@ -462,15 +466,15 @@ export const GameSession: React.FC<GameSessionProps> = ({ destination, onClose }
 
             {/* Feedback & Next Button */}
             {feedback && (
-              <div className="mt-6 border-t border-slate-100 pt-6">
-                <div className={`p-4 rounded-2xl font-bold text-sm text-center mb-4 ${
-                  feedback.isCorrect ? 'bg-emerald-50 text-emerald-800' : 'bg-red-50 text-red-800'
+              <div className="mt-6 border-t-2 border-slate-100 pt-6">
+                <div className={`p-4 rounded-[20px] font-black text-base text-center mb-4 border-2 ${
+                  feedback.isCorrect ? 'bg-emerald-50 text-emerald-900 border-emerald-200' : 'bg-red-50 text-red-900 border-red-200'
                 }`}>
                   {feedback.text}
                 </div>
                 <button
                   onClick={handleNextQuizStep}
-                  className="w-full bg-slate-800 hover:bg-slate-900 text-white font-extrabold py-3.5 rounded-2xl shadow-md flex items-center justify-center gap-2"
+                  className="w-full bg-slate-800 hover:bg-slate-900 text-white font-black py-4 rounded-[20px] shadow-lg flex items-center justify-center gap-2 border-b-4 border-slate-950 hover:border-b-0 active:translate-y-1"
                 >
                   Next Word ➡️
                 </button>
@@ -482,17 +486,17 @@ export const GameSession: React.FC<GameSessionProps> = ({ destination, onClose }
         {/* --- DIALOGUE PLAYING VIEW --- */}
         {gameType === 'dialogue' && !isGameOver && activeDialogue && (
           <div className="p-6 max-w-xl mx-auto">
-            <div className="flex justify-between items-center border-b border-rose-100 pb-4 mb-6">
-              <h4 className="font-black text-rose-950 text-lg">Dialogue Completion 💬</h4>
-              <div className="flex items-center gap-4 text-xs sm:text-sm font-extrabold text-rose-900">
+            <div className="flex justify-between items-center border-b-4 border-rose-100 pb-4 mb-6">
+              <h4 className="font-black text-rose-950 text-xl">Dialogue Completion 💬</h4>
+              <div className="flex items-center gap-4 text-xs sm:text-sm font-black text-rose-900">
                 <span>Dialogue: <strong>{dialogueIndex + 1}/{destination.dialogues.length}</strong></span>
                 <span>Score: <strong className="text-rose-600 text-lg">{score}</strong></span>
               </div>
             </div>
 
             {/* Main conversation box */}
-            <div className="bg-slate-50 border border-slate-200 rounded-3xl p-6 shadow-inner space-y-4 mb-6">
-              <h5 className="text-xs font-black text-rose-500 uppercase tracking-widest">{activeDialogue.title}</h5>
+            <div className="bg-slate-50 border-4 border-slate-200 rounded-[32px] p-6 shadow-inner space-y-4 mb-6">
+              <h5 className="text-xs font-black text-rose-500 uppercase tracking-widest bg-white/80 px-3 py-1 border border-rose-100 rounded-full inline-block">{activeDialogue.title}</h5>
 
               {activeDialogue.japanese.map((line, idx) => {
                 const isMissing = idx === activeDialogue.missingIndex;
@@ -502,10 +506,10 @@ export const GameSession: React.FC<GameSessionProps> = ({ destination, onClose }
 
                 return (
                   <div key={idx} className="flex gap-2">
-                    <div className="bg-white px-3 py-1.5 rounded-2xl shadow-sm border border-slate-100 text-xs sm:text-sm max-w-[90%]">
-                      <p className="font-black text-slate-800">{textWithBlank}</p>
-                      <p className="text-[11px] text-slate-400 italic">({activeDialogue.romaji[idx]})</p>
-                      <p className="text-[11px] text-slate-500 mt-1">{activeDialogue.english[idx]}</p>
+                    <div className="bg-white px-4 py-3 rounded-[24px] shadow-sm border-2 border-slate-100 text-sm max-w-[90%]">
+                      <p className="font-black text-slate-800 text-base">{textWithBlank}</p>
+                      <p className="text-xs text-slate-400 font-bold italic">({activeDialogue.romaji[idx]})</p>
+                      <p className="text-xs text-slate-500 font-bold mt-1.5">{activeDialogue.english[idx]}</p>
                     </div>
                   </div>
                 );
@@ -521,12 +525,12 @@ export const GameSession: React.FC<GameSessionProps> = ({ destination, onClose }
                     key={idx}
                     disabled={isAnswered}
                     onClick={() => handleDialogueAnswer(opt)}
-                    className={`p-3 rounded-xl font-bold text-sm text-center border transition-all ${
+                    className={`p-4 rounded-[20px] font-black text-sm text-center border-4 transition-all ${
                       isAnswered
                         ? opt === activeDialogue.missingWordJapanese
                           ? 'bg-emerald-100 border-emerald-400 text-emerald-950 font-black'
                           : 'bg-slate-100 border-slate-200 text-slate-400'
-                        : 'bg-white border-slate-200 hover:border-blue-400 hover:bg-blue-50/40 text-slate-700 font-extrabold'
+                        : 'bg-white border-slate-200 hover:border-blue-400 hover:bg-blue-50/40 text-slate-700 font-extrabold border-b-8 active:border-b-2 active:translate-y-1'
                     }`}
                   >
                     {opt}
@@ -540,7 +544,7 @@ export const GameSession: React.FC<GameSessionProps> = ({ destination, onClose }
               <div className="flex justify-center mb-6">
                 <button
                   onClick={() => playAudio(activeDialogue.missingWordJapanese)}
-                  className="text-xs font-bold text-blue-700 bg-blue-50 hover:bg-blue-100 border border-blue-200 px-3 py-1.5 rounded-full"
+                  className="text-xs font-black text-blue-800 bg-blue-50 hover:bg-blue-100 border-2 border-blue-200 px-4 py-2 rounded-full"
                 >
                   🔊 Hear the missing word hint
                 </button>
@@ -549,15 +553,15 @@ export const GameSession: React.FC<GameSessionProps> = ({ destination, onClose }
 
             {/* Dialogue Feedback */}
             {feedback && (
-              <div className="border-t border-slate-100 pt-6">
-                <div className={`p-4 rounded-2xl font-bold text-sm text-center mb-4 ${
-                  feedback.isCorrect ? 'bg-emerald-50 text-emerald-800' : 'bg-red-50 text-red-800'
+              <div className="border-t-2 border-slate-100 pt-6">
+                <div className={`p-4 rounded-[20px] font-black text-base text-center mb-4 border-2 ${
+                  feedback.isCorrect ? 'bg-emerald-50 text-emerald-900 border-emerald-200' : 'bg-red-50 text-red-900 border-red-200'
                 }`}>
                   {feedback.text}
                 </div>
                 <button
                   onClick={handleNextDialogue}
-                  className="w-full bg-slate-800 hover:bg-slate-900 text-white font-extrabold py-3.5 rounded-2xl shadow-md"
+                  className="w-full bg-slate-800 hover:bg-slate-900 text-white font-black py-4 rounded-[20px] shadow-lg border-b-4 border-slate-950 active:translate-y-1"
                 >
                   Next Dialogue ➡️
                 </button>
@@ -569,9 +573,9 @@ export const GameSession: React.FC<GameSessionProps> = ({ destination, onClose }
         {/* --- PRONUNCIATION CHALLENGE VIEW --- */}
         {gameType === 'pronounce' && !isGameOver && (
           <div className="p-6 max-w-xl mx-auto">
-            <div className="flex justify-between items-center border-b border-rose-100 pb-4 mb-6">
-              <h4 className="font-black text-rose-950 text-lg">Pronunciation Challenge 🎤</h4>
-              <div className="flex items-center gap-4 text-xs sm:text-sm font-extrabold text-rose-900">
+            <div className="flex justify-between items-center border-b-4 border-rose-100 pb-4 mb-6">
+              <h4 className="font-black text-rose-950 text-xl">Pronunciation Challenge 🎤</h4>
+              <div className="flex items-center gap-4 text-xs sm:text-sm font-black text-rose-900">
                 <span>Word: <strong>{pronounceWordIndex + 1}/5</strong></span>
                 <span>Score: <strong className="text-rose-600 text-lg">{score}</strong></span>
               </div>
@@ -582,14 +586,14 @@ export const GameSession: React.FC<GameSessionProps> = ({ destination, onClose }
               const word = destination.vocabList[pronounceWordIndex % destination.vocabList.length];
               return (
                 <div className="text-center">
-                  <div className="bg-slate-50 border border-slate-200 rounded-3xl p-8 mb-6 shadow-inner">
-                    <span className="text-5xl block mb-2">{word.emoji}</span>
-                    <h3 className="text-3xl font-black text-rose-950 mb-1">{word.japanese}</h3>
-                    <p className="text-slate-500 font-bold mb-4">({word.romaji}) = {word.english}</p>
+                  <div className="bg-[#F3E8FF] border-4 border-[#C084FC] rounded-[32px] p-8 mb-6 shadow-md">
+                    <span className="text-6xl block mb-3 animate-soft">{word.emoji}</span>
+                    <h3 className="text-4xl font-black text-purple-950 mb-1">{word.japanese}</h3>
+                    <p className="text-slate-600 font-bold mb-4">({word.romaji}) = {word.english}</p>
 
                     <button
                       onClick={() => playAudio(word.japanese)}
-                      className="inline-flex items-center gap-2 bg-rose-50 text-rose-600 border border-rose-200 px-4 py-2 rounded-full font-bold text-sm hover:bg-rose-100"
+                      className="inline-flex items-center gap-2 bg-white text-purple-700 border-2 border-purple-300 px-5 py-2.5 rounded-full font-black text-sm hover:bg-purple-50 shadow-sm"
                     >
                       🔊 Listen to correct sound
                     </button>
@@ -599,18 +603,18 @@ export const GameSession: React.FC<GameSessionProps> = ({ destination, onClose }
                     <button
                       onClick={handlePronounceAttempt}
                       disabled={isPronouncing || pronounceAttempted}
-                      className={`w-full py-5 rounded-3xl font-black text-lg shadow-md transition-all flex items-center justify-center gap-3 ${
+                      className={`w-full py-5 rounded-[28px] font-black text-xl shadow-lg transition-all flex items-center justify-center gap-3 border-4 ${
                         isPronouncing
-                          ? 'bg-purple-100 text-purple-700 animate-pulse border border-purple-200'
+                          ? 'bg-purple-100 text-purple-700 animate-pulse border-purple-300'
                           : pronounceAttempted
-                            ? 'bg-emerald-500 text-white cursor-default'
-                            : 'bg-purple-600 hover:bg-purple-700 active:scale-95 text-white'
+                            ? 'bg-emerald-500 text-white border-emerald-600'
+                            : 'bg-purple-600 hover:bg-purple-700 text-white border-purple-700 border-b-8 active:border-b-2 active:translate-y-1'
                       }`}
                     >
                       {isPronouncing ? (
                         <>🎤 Recording... Say "{word.japanese}"</>
                       ) : pronounceAttempted ? (
-                        <>✅ Great Attempt! Pronunciation Score: 92%</>
+                        <>✅ Great Attempt! Score: 92%</>
                       ) : (
                         <>🎤 Hold to Speak (Tap to Try)</>
                       )}
@@ -619,7 +623,7 @@ export const GameSession: React.FC<GameSessionProps> = ({ destination, onClose }
                     {pronounceAttempted && (
                       <button
                         onClick={handleNextPronounceWord}
-                        className="w-full bg-slate-800 hover:bg-slate-900 text-white font-extrabold py-3.5 rounded-2xl shadow-md"
+                        className="w-full bg-slate-800 hover:bg-slate-900 text-white font-black py-4 rounded-[20px] shadow-lg border-b-4 border-slate-950"
                       >
                         Next Word ➡️
                       </button>
@@ -634,37 +638,37 @@ export const GameSession: React.FC<GameSessionProps> = ({ destination, onClose }
         {/* --- GAME OVER CELEBRATION SUMMARY --- */}
         {isGameOver && (
           <div className="p-8 text-center max-w-md mx-auto">
-            <div className="text-6xl mb-4 animate-bounce">🏆</div>
-            <h4 className="text-3xl font-black text-rose-950">Quest Complete!</h4>
-            <p className="text-slate-600 font-medium mt-1 mb-6">
+            <div className="text-8xl mb-4 animate-bounce">🏆</div>
+            <h4 className="text-4xl font-black text-rose-950">Quest Complete!</h4>
+            <p className="text-slate-600 font-bold mt-2 mb-6 text-sm">
               Fantastic work, {state.profiles[activeKid].name}! You did an amazing job.
             </p>
 
-            <div className="bg-rose-50 border border-rose-100 p-5 rounded-3xl shadow-inner mb-6 space-y-3">
-              <div className="flex justify-between items-center font-extrabold text-sm text-rose-900">
+            <div className="bg-rose-50 border-4 border-rose-200 p-6 rounded-[28px] shadow-inner mb-8 space-y-3">
+              <div className="flex justify-between items-center font-black text-base text-rose-900">
                 <span>Points Scored:</span>
-                <span className="text-lg text-rose-600">{score} pts</span>
+                <span className="text-xl text-rose-600">{score} pts</span>
               </div>
-              <div className="flex justify-between items-center font-extrabold text-sm text-rose-900">
+              <div className="flex justify-between items-center font-black text-base text-rose-900">
                 <span>XP Earned:</span>
-                <span className="text-lg text-emerald-600">+40 XP</span>
+                <span className="text-xl text-emerald-600">+40 XP</span>
               </div>
-              <div className="flex justify-between items-center font-extrabold text-sm text-rose-900">
+              <div className="flex justify-between items-center font-black text-base text-rose-900">
                 <span>Current Level:</span>
-                <span className="text-lg text-indigo-600">Level {state.profiles[activeKid].level}</span>
+                <span className="text-xl text-indigo-600">Level {state.profiles[activeKid].level}</span>
               </div>
             </div>
 
-            <div className="flex flex-col gap-3">
+            <div className="flex flex-col gap-4">
               <button
                 onClick={() => startGame(gameType!)}
-                className="w-full bg-rose-500 hover:bg-rose-600 text-white font-extrabold py-3.5 rounded-2xl shadow-lg transition-all"
+                className="w-full bg-rose-500 hover:bg-rose-600 text-white font-black py-4 rounded-[24px] shadow-lg border-b-8 border-rose-700 active:border-b-2 active:translate-y-1"
               >
                 🔄 Replay Game (Improve score!)
               </button>
               <button
                 onClick={onClose}
-                className="w-full bg-slate-800 hover:bg-slate-900 text-white font-extrabold py-3.5 rounded-2xl shadow-md transition-all"
+                className="w-full bg-slate-800 hover:bg-slate-900 text-white font-black py-4 rounded-[24px] shadow-md border-b-8 border-slate-950 active:border-b-2 active:translate-y-1"
               >
                 🗺️ Return to Map
               </button>
