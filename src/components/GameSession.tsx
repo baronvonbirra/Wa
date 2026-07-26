@@ -10,7 +10,7 @@ interface GameSessionProps {
 
 export const GameSession: React.FC<GameSessionProps> = ({ destination, onClose }) => {
   const { state, updateXP, recordVocabAttempt, updateHighScore } = useAppState();
-  const activeKid = state.activePlayer === 'parent' ? 'sofia' : state.activePlayer;
+  const activeKid = state.activePlayer === 'parent' ? 'james' : state.activePlayer;
 
   const [gameType, setGameType] = useState<'match' | 'listen' | 'read' | 'dialogue' | 'pronounce' | null>(null);
   const [currentStep, setCurrentStep] = useState(0);
@@ -287,7 +287,7 @@ export const GameSession: React.FC<GameSessionProps> = ({ destination, onClose }
                 <span className="text-4xl bg-white p-2.5 rounded-xl border border-pink-100 group-hover:scale-110 transition-transform">🎴</span>
                 <div>
                   <h5 className="font-extrabold text-pink-900 text-base">Hiragana Match</h5>
-                  <p className="text-xs text-pink-700 font-medium mt-1">Flip cards, match Japanese text with emojis. Best for Sofia (5yo).</p>
+                  <p className="text-xs text-pink-700 font-medium mt-1">Flip cards, match Japanese text with emojis. Best for James (5yo).</p>
                 </div>
               </button>
 

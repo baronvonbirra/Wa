@@ -18,20 +18,20 @@ export const DestinationMap: React.FC<DestinationMapProps> = ({ onSelectDestinat
         <h2 className="text-2xl font-black text-indigo-900 mb-2">Hello, Parent Guide!</h2>
         <p className="text-slate-600 mb-6 max-w-lg mx-auto">
           Welcome to the family travel command center. To start learning or playing games, please select either
-          <strong> Sofia</strong> or <strong>Marco</strong> in the switcher above.
+          <strong> James</strong> or <strong>Lily</strong> in the switcher above.
         </p>
         <div className="flex gap-4 justify-center">
           <button
-            onClick={() => switchPlayer('sofia')}
+            onClick={() => switchPlayer('james')}
             className="bg-rose-500 hover:bg-rose-600 text-white font-black px-6 py-3 rounded-2xl shadow-lg transform active:scale-95 transition-all"
           >
-            Play as Sofia 👧
+            Play as James 👧
           </button>
           <button
-            onClick={() => switchPlayer('marco')}
+            onClick={() => switchPlayer('lily')}
             className="bg-amber-500 hover:bg-amber-600 text-white font-black px-6 py-3 rounded-2xl shadow-lg transform active:scale-95 transition-all"
           >
-            Play as Marco 👦
+            Play as Lily 👦
           </button>
         </div>
       </div>
@@ -88,9 +88,6 @@ export const DestinationMap: React.FC<DestinationMapProps> = ({ onSelectDestinat
             const masteredCount = profile.masteredVocab[dest.id]?.length || 0;
             const totalCount = dest.vocabList.length;
             const percentage = Math.round((masteredCount / totalCount) * 100);
-
-            // To unlock next: needs 50% completed
-            const is50Percent = percentage >= 50;
 
             return (
               <div

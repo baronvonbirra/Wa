@@ -7,7 +7,7 @@ export const ParentDashboard: React.FC = () => {
   const { state, updateTripDate, resetAllProgress, completeChallenge } = useAppState();
   const [tripDateInput, setTripDateInput] = useState(state.tripDate);
 
-  const calculateMastery = (playerKey: 'sofia' | 'marco') => {
+  const calculateMastery = (playerKey: 'james' | 'lily') => {
     const profile = state.profiles[playerKey];
     let totalMastered = 0;
     let totalWords = 0;
@@ -24,7 +24,7 @@ export const ParentDashboard: React.FC = () => {
     };
   };
 
-  const calculateWeakWords = (playerKey: 'sofia' | 'marco') => {
+  const calculateWeakWords = (playerKey: 'james' | 'lily') => {
     const profile = state.profiles[playerKey];
     const weakList: { word: string; category: string; accuracy: number; destination: string }[] = [];
 
@@ -48,7 +48,7 @@ export const ParentDashboard: React.FC = () => {
     return weakList;
   };
 
-  const estimateStudyTime = (playerKey: 'sofia' | 'marco') => {
+  const estimateStudyTime = (playerKey: 'james' | 'lily') => {
     const profile = state.profiles[playerKey];
     let totalAttempts = 0;
     Object.values(profile.vocabStats).forEach((stat) => {
@@ -60,50 +60,50 @@ export const ParentDashboard: React.FC = () => {
     return totalMinutes > 0 ? `${totalMinutes} mins` : "Less than 5 mins";
   };
 
-  const sofiaStats = calculateMastery('sofia');
-  const marcoStats = calculateMastery('marco');
+  const jamesStats = calculateMastery('james');
+  const lilyStats = calculateMastery('lily');
 
-  const sofiaWeak = calculateWeakWords('sofia');
-  const marcoWeak = calculateWeakWords('marco');
+  const jamesWeak = calculateWeakWords('james');
+  const lilyWeak = calculateWeakWords('lily');
 
   // Trigger manual validation check for family challenges (demonstrating dynamic rewards checking)
   const handleCheckChallenge = (id: string, rewardXP: number) => {
     if (id === 'weekend-sync') {
-      const sofiaKyoto = state.profiles.sofia.masteredVocab['kyoto']?.length || 0;
-      const marcoKyoto = state.profiles.marco.masteredVocab['kyoto']?.length || 0;
-      if (sofiaKyoto >= 5 && marcoKyoto >= 5) {
-        completeChallenge('sofia', id, rewardXP);
-        completeChallenge('marco', id, rewardXP);
+      const jamesKyoto = state.profiles.james.masteredVocab['kyoto']?.length || 0;
+      const lilyKyoto = state.profiles.lily.masteredVocab['kyoto']?.length || 0;
+      if (jamesKyoto >= 5 && lilyKyoto >= 5) {
+        completeChallenge('james', id, rewardXP);
+        completeChallenge('lily', id, rewardXP);
         alert("🎉 Awesome! Weekend Sync Complete! Both kids got 50 XP rewards.");
       } else {
-        alert("ℹ️ Not quite ready yet! Both Sofia and Marco need to master 5+ Kyoto words.");
+        alert("ℹ️ Not quite ready yet! Both James and Lily need to master 5+ Kyoto words.");
       }
     } else if (id === 'high-scorer') {
       // Find high scores >= 80 in tokyo
-      const hasTokyoScore = Object.entries(state.profiles.sofia.highScores).some(([k, v]) => k.includes('tokyo') && v >= 80) ||
-                           Object.entries(state.profiles.marco.highScores).some(([k, v]) => k.includes('tokyo') && v >= 80);
+      const hasTokyoScore = Object.entries(state.profiles.james.highScores).some(([k, v]) => k.includes('tokyo') && v >= 80) ||
+                           Object.entries(state.profiles.lily.highScores).some(([k, v]) => k.includes('tokyo') && v >= 80);
       if (hasTokyoScore) {
-        completeChallenge('marco', id, rewardXP);
+        completeChallenge('lily', id, rewardXP);
         alert("🎉 Congratulations! High Scorer Challenge complete!");
       } else {
         alert("ℹ️ Keep practicing! Get a score of 80+ in any Tokyo game to win.");
       }
     } else if (id === 'perfect-week') {
-      if (state.profiles.sofia.streak >= 5 || state.profiles.marco.streak >= 5) {
-        completeChallenge('sofia', id, rewardXP);
-        completeChallenge('marco', id, rewardXP);
+      if (state.profiles.james.streak >= 5 || state.profiles.lily.streak >= 5) {
+        completeChallenge('james', id, rewardXP);
+        completeChallenge('lily', id, rewardXP);
         alert("🎉 Amazing consecutive dedication! Perfect Streak complete!");
       } else {
         alert("ℹ️ Streaks are currently below 5 days. Keep up the daily learning!");
       }
     } else {
       // osaka numbers
-      const sofiaOsaka = state.profiles.sofia.masteredVocab['osaka']?.length || 0;
-      if (sofiaOsaka >= 10) {
-        completeChallenge('sofia', id, rewardXP);
-        alert("🎉 Excellent Sofia! Number Cruncher Challenge complete!");
+      const jamesOsaka = state.profiles.james.masteredVocab['osaka']?.length || 0;
+      if (jamesOsaka >= 10) {
+        completeChallenge('james', id, rewardXP);
+        alert("🎉 Excellent James! Number Cruncher Challenge complete!");
       } else {
-        alert("ℹ️ Sofia still needs to master a few more numbers in Osaka.");
+        alert("ℹ️ James still needs to master a few more numbers in Osaka.");
       }
     }
   };
@@ -121,36 +121,36 @@ export const ParentDashboard: React.FC = () => {
       {/* Side-by-side Progress Cards */}
       <div className="grid grid-cols-1 md:grid-cols-2 gap-8">
 
-        {/* SOFIA STATS */}
+        {/* JAMES STATS */}
         <div className="bg-white border-2 border-rose-100 rounded-3xl p-6 shadow-sm">
           <div className="flex justify-between items-center border-b border-rose-50 pb-3 mb-4">
             <h3 className="text-xl font-black text-rose-950 flex items-center gap-2">
-              <span>👧</span> Sofia Progress (Age 5)
+              <span>👧</span> James Progress (Age 5)
             </h3>
-            <span className="text-xs font-bold bg-rose-100 text-rose-700 px-2.5 py-0.5 rounded-full">Level {state.profiles.sofia.level}</span>
+            <span className="text-xs font-bold bg-rose-100 text-rose-700 px-2.5 py-0.5 rounded-full">Level {state.profiles.james.level}</span>
           </div>
 
           <div className="grid grid-cols-3 gap-3 mb-6 text-center">
             <div className="bg-rose-50/50 p-3 rounded-2xl border border-rose-50">
               <span className="text-xs font-bold text-slate-400 block uppercase">Vocabulary</span>
-              <strong className="text-lg text-rose-700">{sofiaStats.mastered} / {sofiaStats.total}</strong>
+              <strong className="text-lg text-rose-700">{jamesStats.mastered} / {jamesStats.total}</strong>
             </div>
             <div className="bg-rose-50/50 p-3 rounded-2xl border border-rose-50">
               <span className="text-xs font-bold text-slate-400 block uppercase">Accuracy</span>
-              <strong className="text-lg text-rose-700">{sofiaStats.percentage}%</strong>
+              <strong className="text-lg text-rose-700">{jamesStats.percentage}%</strong>
             </div>
             <div className="bg-rose-50/50 p-3 rounded-2xl border border-rose-50">
               <span className="text-xs font-bold text-slate-400 block uppercase">Study Time</span>
-              <strong className="text-sm font-black text-slate-700 block mt-1">{estimateStudyTime('sofia')}</strong>
+              <strong className="text-sm font-black text-slate-700 block mt-1">{estimateStudyTime('james')}</strong>
             </div>
           </div>
 
           {/* Weak areas list */}
           <div>
             <h4 className="text-xs font-black text-slate-400 uppercase tracking-wider mb-2">Needs Improvement (Accuracy &lt;70%)</h4>
-            {sofiaWeak.length > 0 ? (
+            {jamesWeak.length > 0 ? (
               <div className="space-y-2 max-h-40 overflow-y-auto">
-                {sofiaWeak.map((item, idx) => (
+                {jamesWeak.map((item, idx) => (
                   <div key={idx} className="flex justify-between items-center text-xs font-bold bg-rose-50 border border-rose-100 p-2 rounded-xl">
                     <span className="text-rose-950">{item.word} ({item.destination})</span>
                     <span className="text-rose-600 font-extrabold">{item.accuracy}% acc</span>
@@ -163,36 +163,36 @@ export const ParentDashboard: React.FC = () => {
           </div>
         </div>
 
-        {/* MARCO STATS */}
+        {/* LILY STATS */}
         <div className="bg-white border-2 border-amber-100 rounded-3xl p-6 shadow-sm">
           <div className="flex justify-between items-center border-b border-amber-50 pb-3 mb-4">
             <h3 className="text-xl font-black text-amber-950 flex items-center gap-2">
-              <span>👦</span> Marco Progress (Age 9)
+              <span>👦</span> Lily Progress (Age 9)
             </h3>
-            <span className="text-xs font-bold bg-amber-100 text-amber-700 px-2.5 py-0.5 rounded-full">Level {state.profiles.marco.level}</span>
+            <span className="text-xs font-bold bg-amber-100 text-amber-700 px-2.5 py-0.5 rounded-full">Level {state.profiles.lily.level}</span>
           </div>
 
           <div className="grid grid-cols-3 gap-3 mb-6 text-center">
             <div className="bg-amber-50/50 p-3 rounded-2xl border border-amber-50">
               <span className="text-xs font-bold text-slate-400 block uppercase">Vocabulary</span>
-              <strong className="text-lg text-amber-700">{marcoStats.mastered} / {marcoStats.total}</strong>
+              <strong className="text-lg text-amber-700">{lilyStats.mastered} / {lilyStats.total}</strong>
             </div>
             <div className="bg-amber-50/50 p-3 rounded-2xl border border-amber-50">
               <span className="text-xs font-bold text-slate-400 block uppercase">Accuracy</span>
-              <strong className="text-lg text-amber-700">{marcoStats.percentage}%</strong>
+              <strong className="text-lg text-amber-700">{lilyStats.percentage}%</strong>
             </div>
             <div className="bg-amber-50/50 p-3 rounded-2xl border border-amber-50">
               <span className="text-xs font-bold text-slate-400 block uppercase">Study Time</span>
-              <strong className="text-sm font-black text-slate-700 block mt-1">{estimateStudyTime('marco')}</strong>
+              <strong className="text-sm font-black text-slate-700 block mt-1">{estimateStudyTime('lily')}</strong>
             </div>
           </div>
 
           {/* Weak areas list */}
           <div>
             <h4 className="text-xs font-black text-slate-400 uppercase tracking-wider mb-2">Needs Improvement (Accuracy &lt;70%)</h4>
-            {marcoWeak.length > 0 ? (
+            {lilyWeak.length > 0 ? (
               <div className="space-y-2 max-h-40 overflow-y-auto">
-                {marcoWeak.map((item, idx) => (
+                {lilyWeak.map((item, idx) => (
                   <div key={idx} className="flex justify-between items-center text-xs font-bold bg-amber-50 border border-amber-100 p-2 rounded-xl">
                     <span className="text-amber-950">{item.word} ({item.destination})</span>
                     <span className="text-amber-600 font-extrabold">{item.accuracy}% acc</span>
@@ -256,13 +256,13 @@ export const ParentDashboard: React.FC = () => {
           <h3 className="text-lg font-black text-indigo-950 mb-1 flex items-center gap-2">
             <span>🏆</span> Live Family Challenges
           </h3>
-          <p className="text-xs text-slate-500 mb-4">Collaborate and compete to trigger bonus XP rewards for Sofia & Marco!</p>
+          <p className="text-xs text-slate-500 mb-4">Collaborate and compete to trigger bonus XP rewards for James & Lily!</p>
 
           <div className="space-y-4">
             {FAMILY_CHALLENGES.map((challenge) => {
               // Check if completed already
-              const isDone = state.profiles.sofia.completedChallenges.includes(challenge.id) ||
-                             state.profiles.marco.completedChallenges.includes(challenge.id);
+              const isDone = state.profiles.james.completedChallenges.includes(challenge.id) ||
+                             state.profiles.lily.completedChallenges.includes(challenge.id);
 
               return (
                 <div key={challenge.id} className="p-4 bg-slate-50 border border-slate-150 rounded-2xl flex justify-between items-center">

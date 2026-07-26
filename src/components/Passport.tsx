@@ -4,7 +4,7 @@ import { DESTINATIONS_DATA } from '../data/destinations';
 
 export const Passport: React.FC = () => {
   const { state, switchPlayer } = useAppState();
-  const active = state.activePlayer === 'parent' ? 'sofia' : state.activePlayer;
+  const active = state.activePlayer === 'parent' ? 'james' : state.activePlayer;
   const profile = state.profiles[active];
 
   // Calculate overall stamps
@@ -141,16 +141,16 @@ export const Passport: React.FC = () => {
       {state.activePlayer === 'parent' && (
         <div className="mt-6 flex justify-center gap-4">
           <button
-            onClick={() => switchPlayer('sofia')}
+            onClick={() => switchPlayer('james')}
             className="text-xs font-extrabold text-slate-600 hover:text-slate-900 bg-white shadow-sm border border-slate-200 px-3 py-1.5 rounded-full"
           >
-            Check Sofia's Stamps 👧
+            Check James's Stamps 👧
           </button>
           <button
-            onClick={() => switchPlayer('marco')}
+            onClick={() => switchPlayer('lily')}
             className="text-xs font-extrabold text-slate-600 hover:text-slate-900 bg-white shadow-sm border border-slate-200 px-3 py-1.5 rounded-full"
           >
-            Check Marco's Stamps 👦
+            Check Lily's Stamps 👦
           </button>
         </div>
       )}

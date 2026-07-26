@@ -4,14 +4,14 @@ import { DESTINATIONS_DATA } from '../data/destinations';
 
 interface AppContextType {
   state: AppState;
-  switchPlayer: (player: "sofia" | "marco" | "parent") => void;
-  updateXP: (player: "sofia" | "marco", amount: number) => void;
-  recordVocabAttempt: (player: "sofia" | "marco", destId: string, vocabId: string, correct: boolean) => void;
-  updateHighScore: (player: "sofia" | "marco", gameKey: string, score: number) => void;
-  completeChallenge: (player: "sofia" | "marco", challengeId: string, rewardXP: number) => void;
+  switchPlayer: (player: "james" | "lily" | "parent") => void;
+  updateXP: (player: "james" | "lily", amount: number) => void;
+  recordVocabAttempt: (player: "james" | "lily", destId: string, vocabId: string, correct: boolean) => void;
+  updateHighScore: (player: "james" | "lily", gameKey: string, score: number) => void;
+  completeChallenge: (player: "james" | "lily", challengeId: string, rewardXP: number) => void;
   updateTripDate: (date: string) => void;
   toggleSound: () => void;
-  unlockNextDestination: (player: "sofia" | "marco", currentDestId: string) => void;
+  unlockNextDestination: (player: "james" | "lily", currentDestId: string) => void;
   resetAllProgress: () => void;
 }
 
@@ -26,8 +26,8 @@ export const AppProvider: React.FC<{ children: React.ReactNode }> = ({ children 
       try {
         const parsed = JSON.parse(saved);
         // Ensure standard destinations are initialized
-        ['sofia', 'marco'].forEach((pKey) => {
-          const profile = parsed.profiles?.[pKey as "sofia" | "marco"];
+        ['james', 'lily'].forEach((pKey) => {
+          const profile = parsed.profiles?.[pKey as "james" | "lily"];
           if (profile && !profile.masteredVocab) {
             profile.masteredVocab = {
               kyoto: [], tokyo: [], osaka: [], train: [], okinawa: [], takayama: []
@@ -48,10 +48,10 @@ export const AppProvider: React.FC<{ children: React.ReactNode }> = ({ children 
   }, [state]);
 
   // Handle active player switch and update consecutive day streaks
-  const switchPlayer = (player: "sofia" | "marco" | "parent") => {
+  const switchPlayer = (player: "james" | "lily" | "parent") => {
     setState((prev) => {
       const updated = { ...prev, activePlayer: player };
-      if (player === "sofia" || player === "marco") {
+      if (player === "james" || player === "lily") {
         const profile = { ...updated.profiles[player] };
         const todayStr = new Date().toISOString().split('T')[0];
 
@@ -78,22 +78,13 @@ export const AppProvider: React.FC<{ children: React.ReactNode }> = ({ children 
     });
   };
 
-  const updateXP = (player: "sofia" | "marco", amount: number) => {
+  const updateXP = (player: "james" | "lily", amount: number) => {
     setState((prev) => {
       const profile = { ...prev.profiles[player] };
       profile.totalXP += amount;
-      // Formula: 1 XP = 1 Level (from PRD spec "1 XP = 1 Level (easy to understand for kids)"
-      // Let's implement levels. If totalXP reaches certain thresholds, level up.
-      // Actually, spec: "1 XP = 1 Level". But wait, if 1 XP = 1 Level, then XP = level. Let's make: level = Math.floor(profile.totalXP / 10) + 1.
-      // To keep it clean and matches "1 XP = 1 Level" strictly: we can just make: level = profile.totalXP.
-      // Let's do: level = Math.floor(profile.totalXP / 15) + 1 to make it a fun ladder, or exactly level = profile.totalXP.
-      // Let's do level = Math.floor(profile.totalXP / 20) + 1, so every 20 XP is a level. That is classic and satisfying.
-      // Or to stay faithful to "1 XP = 1 Level" if meant literally: level = Math.max(1, profile.totalXP).
-      // Let's make it Level = Math.floor(profile.totalXP / 20) + 1. It makes progression feel natural and fun.
       profile.level = Math.floor(profile.totalXP / 20) + 1;
 
       // Unlock "Japan Facts"
-      // "Every 30 XP = 1 'Japan Fact' (unlocks fun trivia)"
       const expectedFactCount = Math.floor(profile.totalXP / 30);
       const currentUnlocked = [...profile.unlockedFacts];
 
@@ -125,7 +116,7 @@ export const AppProvider: React.FC<{ children: React.ReactNode }> = ({ children 
     });
   };
 
-  const recordVocabAttempt = (player: "sofia" | "marco", destId: string, vocabId: string, correct: boolean) => {
+  const recordVocabAttempt = (player: "james" | "lily", destId: string, vocabId: string, correct: boolean) => {
     setState((prev) => {
       const profile = { ...prev.profiles[player] };
       const stats = { ...profile.vocabStats };
@@ -150,7 +141,6 @@ export const AppProvider: React.FC<{ children: React.ReactNode }> = ({ children 
       };
 
       // Check progression lock: "Complete 50% of lessons in a destination -> unlock next"
-      // Destinations layout: Kyoto -> Tokyo -> Osaka -> Train -> Okinawa -> Takayama
       const destOrder = ["kyoto", "tokyo", "osaka", "train", "okinawa", "takayama"];
       const currentDestIdx = destOrder.indexOf(destId);
       const currentDest = DESTINATIONS_DATA.find(d => d.id === destId);
@@ -179,7 +169,7 @@ export const AppProvider: React.FC<{ children: React.ReactNode }> = ({ children 
     });
   };
 
-  const updateHighScore = (player: "sofia" | "marco", gameKey: string, score: number) => {
+  const updateHighScore = (player: "james" | "lily", gameKey: string, score: number) => {
     setState((prev) => {
       const profile = { ...prev.profiles[player] };
       const highScores = { ...profile.highScores };
@@ -199,7 +189,7 @@ export const AppProvider: React.FC<{ children: React.ReactNode }> = ({ children 
     });
   };
 
-  const completeChallenge = (player: "sofia" | "marco", challengeId: string, rewardXP: number) => {
+  const completeChallenge = (player: "james" | "lily", challengeId: string, rewardXP: number) => {
     setState((prev) => {
       const profile = { ...prev.profiles[player] };
       const completed = [...profile.completedChallenges];
@@ -233,7 +223,7 @@ export const AppProvider: React.FC<{ children: React.ReactNode }> = ({ children 
     }));
   };
 
-  const unlockNextDestination = (player: "sofia" | "marco", currentDestId: string) => {
+  const unlockNextDestination = (player: "james" | "lily", currentDestId: string) => {
     setState((prev) => {
       const profile = { ...prev.profiles[player] };
       const destOrder = ["kyoto", "tokyo", "osaka", "train", "okinawa", "takayama"];

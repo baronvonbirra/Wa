@@ -27,24 +27,24 @@ export const Header: React.FC<HeaderProps> = ({ currentTab, setCurrentTab }) => 
         {/* Player Switcher */}
         <div className="flex items-center gap-2 bg-slate-100 p-1.5 rounded-2xl border border-slate-200">
           <button
-            onClick={() => switchPlayer('sofia')}
+            onClick={() => switchPlayer('james')}
             className={`flex items-center gap-1.5 px-3 py-1.5 rounded-xl text-sm font-bold transition-all duration-200 ${
-              active === 'sofia'
+              active === 'james'
                 ? 'bg-rose-500 text-white shadow-md scale-105'
                 : 'text-slate-600 hover:bg-slate-200'
             }`}
           >
-            <span>👧</span> Sofia (5)
+            <span>👧</span> James (5)
           </button>
           <button
-            onClick={() => switchPlayer('marco')}
+            onClick={() => switchPlayer('lily')}
             className={`flex items-center gap-1.5 px-3 py-1.5 rounded-xl text-sm font-bold transition-all duration-200 ${
-              active === 'marco'
+              active === 'lily'
                 ? 'bg-amber-500 text-white shadow-md scale-105'
                 : 'text-slate-600 hover:bg-slate-200'
             }`}
           >
-            <span>👦</span> Marco (9)
+            <span>👦</span> Lily (9)
           </button>
           <button
             onClick={() => switchPlayer('parent')}

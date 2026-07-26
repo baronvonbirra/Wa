@@ -32,14 +32,14 @@ export const FAMILY_CHALLENGES: FamilyChallenge[] = [
   {
     id: "weekend-sync",
     name: "🏯 Weekend Kyoto Sync",
-    description: "Both Sofia and Marco must master at least 5 words in Kyoto by Sunday!",
+    description: "Both James and Lily must master at least 5 words in Kyoto by Sunday!",
     rewardXP: 50,
     criteria: "Kyoto progress for both profiles is greater than or equal to 5 words"
   },
   {
     id: "high-scorer",
     name: "📈 Tokyo High Scorer",
-    description: "Beat a game high score of 80 points in Tokyo with either Sofia or Marco!",
+    description: "Beat a game high score of 80 points in Tokyo with either James or Lily!",
     rewardXP: 20,
     criteria: "Any high score in Tokyo is >= 80"
   },
@@ -53,18 +53,18 @@ export const FAMILY_CHALLENGES: FamilyChallenge[] = [
   {
     id: "osaka-numbers",
     name: "🔢 Osaka Number Cruncher",
-    description: "Sofia masters at least 10 numbers in Osaka Castle!",
+    description: "James masters at least 10 numbers in Osaka Castle!",
     rewardXP: 30,
-    criteria: "Sofia has 10+ mastered words in Osaka"
+    criteria: "James has 10+ mastered words in Osaka"
   }
 ];
 
 export interface AppState {
   profiles: {
-    sofia: PlayerProgress;
-    marco: PlayerProgress;
+    james: PlayerProgress;
+    lily: PlayerProgress;
   };
-  activePlayer: "sofia" | "marco" | "parent";
+  activePlayer: "james" | "lily" | "parent";
   tripDate: string; // YYYY-MM-DD
   soundEnabled: boolean;
   activeChallengeId: string | null;
@@ -72,8 +72,8 @@ export interface AppState {
 
 export const INITIAL_STATE: AppState = {
   profiles: {
-    sofia: {
-      name: "Sofia",
+    james: {
+      name: "James",
       age: 5,
       avatar: "👧",
       level: 1,
@@ -101,8 +101,8 @@ export const INITIAL_STATE: AppState = {
       completedChallenges: [],
       unlockedFacts: []
     },
-    marco: {
-      name: "Marco",
+    lily: {
+      name: "Lily",
       age: 9,
       avatar: "👦",
       level: 1,
@@ -131,7 +131,7 @@ export const INITIAL_STATE: AppState = {
       unlockedFacts: []
     }
   },
-  activePlayer: "sofia",
+  activePlayer: "james",
   tripDate: (() => {
     // Default: 3 months (90 days) from now
     const d = new Date();
