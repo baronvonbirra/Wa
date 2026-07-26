@@ -25,13 +25,13 @@ export const DestinationMap: React.FC<DestinationMapProps> = ({ onSelectDestinat
             onClick={() => switchPlayer('james')}
             className="bg-rose-500 hover:bg-rose-600 text-white font-black px-8 py-4 rounded-3xl border-4 border-rose-700 shadow-lg transform active:translate-y-1 transition-all"
           >
-            Play as James 👧
+            Play as James 👱‍♂️
           </button>
           <button
             onClick={() => switchPlayer('lily')}
             className="bg-amber-500 hover:bg-amber-600 text-white font-black px-8 py-4 rounded-3xl border-4 border-amber-700 shadow-lg transform active:translate-y-1 transition-all"
           >
-            Play as Lily 👦
+            Play as Lily 👱‍♀️
           </button>
         </div>
       </div>

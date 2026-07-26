@@ -144,13 +144,13 @@ export const Passport: React.FC = () => {
             onClick={() => switchPlayer('james')}
             className="text-xs font-black text-slate-600 hover:text-slate-900 bg-white shadow-sm border-2 border-slate-200 px-4 py-2 rounded-full"
           >
-            Check James's Stamps 👧
+            Check James's Stamps 👱‍♂️
           </button>
           <button
             onClick={() => switchPlayer('lily')}
             className="text-xs font-black text-slate-600 hover:text-slate-900 bg-white shadow-sm border-2 border-slate-200 px-4 py-2 rounded-full"
           >
-            Check Lily's Stamps 👦
+            Check Lily's Stamps 👱‍♀️
           </button>
         </div>
       )}
