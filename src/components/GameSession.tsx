@@ -12,7 +12,7 @@ export const GameSession: React.FC<GameSessionProps> = ({ destination, onClose }
   const { state, updateXP, recordVocabAttempt, updateHighScore } = useAppState();
   const activeKid = state.activePlayer === 'parent' ? 'james' : state.activePlayer;
 
-  const [gameType, setGameType] = useState<'match' | 'listen' | 'read' | 'dialogue' | 'pronounce' | null>(null);
+  const [gameType, setGameType] = useState<'match' | 'listen' | 'read' | 'dialogue' | 'pronounce' | 'emojiMatch' | 'dragDrop' | null>(null);
   const [currentStep, setCurrentStep] = useState(0);
   const [score, setScore] = useState(0);
   const [streakCount, setStreakCount] = useState(0);
@@ -31,6 +31,18 @@ export const GameSession: React.FC<GameSessionProps> = ({ destination, onClose }
   // States specific to Dialogue
   const [dialogueIndex, setDialogueIndex] = useState(0);
 
+  // States specific to Audio + Emoji Match
+  const [emojiMatchWord, setEmojiMatchWord] = useState<VocabularyWord | null>(null);
+  const [emojiMatchOptions, setEmojiMatchOptions] = useState<VocabularyWord[]>([]);
+  const [emojiMatchStreak, setEmojiMatchStreak] = useState(0);
+  const [emojiMatchHintText, setEmojiMatchHintText] = useState<string | null>(null);
+  const [startTime, setStartTime] = useState<number>(0);
+
+  // States specific to Audio + Drag & Drop
+  const [dragDropWord, setDragDropWord] = useState<VocabularyWord | null>(null);
+  const [dragDropCategories, setDragDropCategories] = useState<string[]>([]);
+  const [selectedEmojiId, setSelectedEmojiId] = useState<string | null>(null); // For click-to-match tablet backup
+
   // States specific to Pronunciation Sandbox
   const [pronounceWordIndex, setPronounceWordIndex] = useState(0);
   const [isPronouncing, setIsPronouncing] = useState(false);
@@ -43,7 +55,7 @@ export const GameSession: React.FC<GameSessionProps> = ({ destination, onClose }
   };
 
   // Start selected game mode
-  const startGame = (type: 'match' | 'listen' | 'read' | 'dialogue' | 'pronounce') => {
+  const startGame = (type: 'match' | 'listen' | 'read' | 'dialogue' | 'pronounce' | 'emojiMatch' | 'dragDrop') => {
     setGameType(type);
     setCurrentStep(0);
     setScore(0);
@@ -61,6 +73,10 @@ export const GameSession: React.FC<GameSessionProps> = ({ destination, onClose }
     } else if (type === 'pronounce') {
       setPronounceWordIndex(0);
       setPronounceAttempted(false);
+    } else if (type === 'emojiMatch') {
+      initEmojiMatchStep(0);
+    } else if (type === 'dragDrop') {
+      initDragDropStep(0);
     }
   };
 
@@ -197,6 +213,143 @@ export const GameSession: React.FC<GameSessionProps> = ({ destination, onClose }
     initQuizStep(nextStep, gameType as 'listen' | 'read');
   };
 
+  // --- AUDIO + EMOJI MATCH LOGIC ---
+  const initEmojiMatchStep = (stepIdx: number) => {
+    if (stepIdx >= 5) {
+      setIsGameOver(true);
+      return;
+    }
+
+    const correctWord = destination.vocabList[stepIdx % destination.vocabList.length];
+    setEmojiMatchWord(correctWord);
+    setEmojiMatchHintText(null);
+    setFeedback(null);
+    setStartTime(Date.now());
+
+    // Gather 3 wrong options: try to find same category, fall back to global words
+    let wrongOptions = destination.vocabList
+      .filter(w => w.id !== correctWord.id && w.category === correctWord.category);
+
+    if (wrongOptions.length < 3) {
+      // fill with other words from this destination
+      const remainingFromDest = destination.vocabList.filter(w => w.id !== correctWord.id && !wrongOptions.some(x => x.id === w.id));
+      wrongOptions = [...wrongOptions, ...remainingFromDest];
+    }
+
+    if (wrongOptions.length < 3) {
+      // global fallback
+      // Since we are in ESM/TypeScript environment, we should import ALL_VOCABULARY or refer to it dynamically.
+      // We can actually just use destination.vocabList as a fallback since Kyoto has 25 words, Osaka has 25, etc.
+      // So let's fallback to any word from DESTINATIONS_DATA or destination.vocabList to avoid require() issues.
+      const extra = destination.vocabList
+        .filter(w => w.id !== correctWord.id && !wrongOptions.some(x => x.id === w.id))
+        .sort(() => 0.5 - Math.random());
+      wrongOptions = [...wrongOptions, ...extra];
+    }
+
+    // shuffle and take 3
+    const finalWrong = wrongOptions.sort(() => 0.5 - Math.random()).slice(0, 3);
+    const allOptions = [...finalWrong, correctWord].sort(() => 0.5 - Math.random());
+    setEmojiMatchOptions(allOptions);
+
+    // Auto-play pronunciation
+    playAudio(correctWord.japanese);
+  };
+
+  const handleEmojiMatchAnswer = (selectedWord: VocabularyWord) => {
+    if (feedback || !emojiMatchWord) return;
+
+    const isCorrect = selectedWord.id === emojiMatchWord.id;
+    const elapsedSeconds = (Date.now() - startTime) / 1000;
+    const isSpeedy = elapsedSeconds < 5;
+
+    if (isCorrect) {
+      let earnedXP = 10;
+      let points = 10;
+      let extraMsg = '';
+
+      if (isSpeedy) {
+        earnedXP += 5;
+        points += 5;
+        extraMsg += ' ⚡ Speed Bonus (+5 XP)!';
+      }
+
+      if (emojiMatchStreak >= 2) {
+        earnedXP += 3;
+        points += 5;
+        extraMsg += ' 🔥 Streak Combo!';
+      }
+
+      setScore(prev => prev + points);
+      setEmojiMatchStreak(prev => prev + 1);
+      setFeedback({ isCorrect: true, text: `🎉 Perfect! "${emojiMatchWord.emoji}" is correct!${extraMsg}` });
+      updateXP(activeKid, earnedXP);
+      recordVocabAttempt(activeKid, destination.id, emojiMatchWord.id, true);
+    } else {
+      setEmojiMatchStreak(0);
+      setFeedback({ isCorrect: false, text: `❌ Aww! Try again! Replay the audio below for a hint.` });
+      recordVocabAttempt(activeKid, destination.id, emojiMatchWord.id, false);
+    }
+  };
+
+  const handleNextEmojiMatchStep = () => {
+    const nextStep = currentStep + 1;
+    setCurrentStep(nextStep);
+    initEmojiMatchStep(nextStep);
+  };
+
+  // --- AUDIO + DRAG & DROP LOGIC ---
+  const initDragDropStep = (stepIdx: number) => {
+    if (stepIdx >= 5) {
+      setIsGameOver(true);
+      return;
+    }
+
+    const correctWord = destination.vocabList[stepIdx % destination.vocabList.length];
+    setDragDropWord(correctWord);
+    setSelectedEmojiId(null);
+    setFeedback(null);
+
+    // Get 3 categories: 1 correct + 2 random ones from this destination or other locations
+    const correctCat = correctWord.category;
+    const allUniqueCats = Array.from(new Set(destination.vocabList.map(w => w.category)));
+    let otherCats = allUniqueCats.filter(c => c !== correctCat);
+
+    if (otherCats.length < 2) {
+      // Add standard fallbacks if destination doesn't have enough categories
+      const standardCats = ["Greetings", "Basics", "Food", "Places", "Colors", "Nature", "Animals"];
+      const missing = standardCats.filter(c => c !== correctCat && !otherCats.includes(c));
+      otherCats = [...otherCats, ...missing];
+    }
+
+    const finalCats = [correctCat, ...otherCats.sort(() => 0.5 - Math.random()).slice(0, 2)].sort(() => 0.5 - Math.random());
+    setDragDropCategories(finalCats);
+
+    // Auto play audio
+    playAudio(correctWord.japanese);
+  };
+
+  const handleDragDropMatch = (selectedCategory: string) => {
+    if (feedback || !dragDropWord) return;
+
+    const isCorrect = selectedCategory === dragDropWord.category;
+    if (isCorrect) {
+      setScore(prev => prev + 20);
+      setFeedback({ isCorrect: true, text: `🎉 Perfect! "${dragDropWord.emoji}" belongs in ${selectedCategory}!` });
+      updateXP(activeKid, 10);
+      recordVocabAttempt(activeKid, destination.id, dragDropWord.id, true);
+    } else {
+      setFeedback({ isCorrect: false, text: `❌ Try again! That item doesn't go there.` });
+      recordVocabAttempt(activeKid, destination.id, dragDropWord.id, false);
+    }
+  };
+
+  const handleNextDragDropStep = () => {
+    const nextStep = currentStep + 1;
+    setCurrentStep(nextStep);
+    initDragDropStep(nextStep);
+  };
+
   // --- DIALOGUE GAME LOGIC ---
   const activeDialogue = destination.dialogues[dialogueIndex];
 
@@ -294,7 +447,7 @@ export const GameSession: React.FC<GameSessionProps> = ({ destination, onClose }
                 <span className="text-5xl bg-white p-3 rounded-2xl border-2 border-pink-100 group-hover:scale-110 transition-transform shadow-sm">🎴</span>
                 <div>
                   <h5 className="font-black text-pink-900 text-lg">Hiragana Match</h5>
-                  <p className="text-xs text-pink-700 font-bold mt-1">Flip cards, match Japanese text with emojis. Best for James (5yo)!</p>
+                  <p className="text-xs text-pink-700 font-bold mt-1">Flip cards, match Japanese text with emojis. Great warm-up!</p>
                 </div>
               </button>
 
@@ -309,36 +462,69 @@ export const GameSession: React.FC<GameSessionProps> = ({ destination, onClose }
                 </div>
               </button>
 
-              <button
-                onClick={() => startGame('read')}
-                className="p-5 bg-amber-50 border-4 border-amber-200 hover:border-amber-400 rounded-3xl text-left transition-all hover:shadow-lg active:scale-95 group flex items-start gap-4"
-              >
-                <span className="text-5xl bg-white p-3 rounded-2xl border-2 border-amber-100 group-hover:scale-110 transition-transform shadow-sm">📚</span>
-                <div>
-                  <h5 className="font-black text-amber-900 text-lg">Read & Understand</h5>
-                  <p className="text-xs text-amber-700 font-bold mt-1">Choose the English meaning for Japanese hiragana text.</p>
-                </div>
-              </button>
+              {/* Conditional rendering depending on player age: Lily is 5yo, James is 9yo */}
+              {state.profiles[activeKid].age === 5 ? (
+                <>
+                  <button
+                    onClick={() => startGame('emojiMatch')}
+                    className="p-5 bg-amber-50 border-4 border-amber-200 hover:border-amber-400 rounded-3xl text-left transition-all hover:shadow-lg active:scale-95 group flex items-start gap-4 text-left"
+                  >
+                    <span className="text-5xl bg-white p-3 rounded-2xl border-2 border-amber-100 group-hover:scale-110 transition-transform shadow-sm">⭐️</span>
+                    <div>
+                      <h5 className="font-black text-amber-950 text-lg flex items-center gap-1.5">
+                        Audio + Emoji Match <span className="text-xs font-black bg-rose-500 text-white px-1.5 py-0.5 rounded-full uppercase">NEW</span>
+                      </h5>
+                      <p className="text-xs text-amber-700 font-bold mt-1">Hear the word, then choose the correct picture card. No reading needed!</p>
+                    </div>
+                  </button>
 
-              <button
-                onClick={() => startGame('dialogue')}
-                disabled={destination.dialogues.length === 0}
-                className={`p-5 rounded-3xl text-left transition-all group flex items-start gap-4 ${
-                  destination.dialogues.length > 0
-                    ? 'bg-blue-50 border-4 border-blue-200 hover:border-blue-400 hover:shadow-lg active:scale-95'
-                    : 'bg-slate-50 border-4 border-slate-100 opacity-50 cursor-not-allowed'
-                }`}
-              >
-                <span className="text-5xl bg-white p-3 rounded-2xl border-2 border-blue-100 group-hover:scale-110 transition-transform shadow-sm">💬</span>
-                <div>
-                  <h5 className="font-black text-blue-900 text-lg">Dialogue Fill-in</h5>
-                  <p className="text-xs text-blue-700 font-bold mt-1">Complete blank conversations with vocabulary context.</p>
-                </div>
-              </button>
+                  <button
+                    onClick={() => startGame('dragDrop')}
+                    className="p-5 bg-blue-50 border-4 border-blue-200 hover:border-blue-400 rounded-3xl text-left transition-all hover:shadow-lg active:scale-95 group flex items-start gap-4 text-left"
+                  >
+                    <span className="text-5xl bg-white p-3 rounded-2xl border-2 border-blue-100 group-hover:scale-110 transition-transform shadow-sm">👉</span>
+                    <div>
+                      <h5 className="font-black text-blue-950 text-lg flex items-center gap-1.5">
+                        Audio + Drag & Drop <span className="text-xs font-black bg-rose-500 text-white px-1.5 py-0.5 rounded-full uppercase">NEW</span>
+                      </h5>
+                      <p className="text-xs text-blue-700 font-bold mt-1">Drag (or tap) the emoji into its correct category box. Fun & tactile!</p>
+                    </div>
+                  </button>
+                </>
+              ) : (
+                <>
+                  <button
+                    onClick={() => startGame('read')}
+                    className="p-5 bg-amber-50 border-4 border-amber-200 hover:border-amber-400 rounded-3xl text-left transition-all hover:shadow-lg active:scale-95 group flex items-start gap-4"
+                  >
+                    <span className="text-5xl bg-white p-3 rounded-2xl border-2 border-amber-100 group-hover:scale-110 transition-transform shadow-sm">📚</span>
+                    <div>
+                      <h5 className="font-black text-amber-900 text-lg">Read & Understand</h5>
+                      <p className="text-xs text-amber-700 font-bold mt-1">Choose the English meaning for Japanese hiragana text.</p>
+                    </div>
+                  </button>
+
+                  <button
+                    onClick={() => startGame('dialogue')}
+                    disabled={destination.dialogues.length === 0}
+                    className={`p-5 rounded-3xl text-left transition-all group flex items-start gap-4 ${
+                      destination.dialogues.length > 0
+                        ? 'bg-blue-50 border-4 border-blue-200 hover:border-blue-400 hover:shadow-lg active:scale-95'
+                        : 'bg-slate-50 border-4 border-slate-100 opacity-50 cursor-not-allowed'
+                    }`}
+                  >
+                    <span className="text-5xl bg-white p-3 rounded-2xl border-2 border-blue-100 group-hover:scale-110 transition-transform shadow-sm">💬</span>
+                    <div>
+                      <h5 className="font-black text-blue-900 text-lg">Dialogue Fill-in</h5>
+                      <p className="text-xs text-blue-700 font-bold mt-1">Complete blank conversations with vocabulary context.</p>
+                    </div>
+                  </button>
+                </>
+              )}
 
               <button
                 onClick={() => startGame('pronounce')}
-                className="p-5 bg-purple-50 border-4 border-purple-200 hover:border-purple-400 rounded-3xl text-left transition-all hover:shadow-lg active:scale-95 group flex items-start gap-4"
+                className="p-5 bg-purple-50 border-4 border-purple-200 hover:border-purple-400 rounded-3xl text-left transition-all hover:shadow-lg active:scale-95 group flex items-start gap-4 animate-soft"
               >
                 <span className="text-5xl bg-white p-3 rounded-2xl border-2 border-purple-100 group-hover:scale-110 transition-transform shadow-sm">🎤</span>
                 <div>
@@ -570,6 +756,258 @@ export const GameSession: React.FC<GameSessionProps> = ({ destination, onClose }
                   className="w-full bg-slate-800 hover:bg-slate-900 text-white font-black py-4 rounded-[20px] shadow-lg border-b-4 border-slate-950 active:translate-y-1"
                 >
                   Next Dialogue ➡️
+                </button>
+              </div>
+            )}
+          </div>
+        )}
+
+        {/* --- AUDIO + DRAG & DROP PLAYING VIEW --- */}
+        {gameType === 'dragDrop' && !isGameOver && dragDropWord && (
+          <div className="p-6 max-w-xl mx-auto">
+            {/* Status Info */}
+            <div className="flex justify-between items-center border-b-4 border-rose-100 pb-4 mb-6">
+              <h4 className="font-black text-rose-950 text-xl flex items-center gap-1.5">
+                <span>👉</span> Hear & Sort Categories!
+              </h4>
+              <div className="flex items-center gap-4 text-xs sm:text-sm font-black text-rose-900">
+                <span className="bg-rose-50 px-2.5 py-1 rounded-full border border-rose-200">Word: <strong>{currentStep + 1}/5</strong></span>
+                <span className="bg-rose-50 px-2.5 py-1 rounded-full border border-rose-200">Score: <strong className="text-rose-600 text-lg">{score}</strong></span>
+              </div>
+            </div>
+
+            {/* Instruction Banner & Audio Speaker */}
+            <div className="bg-[#FEF08A] border-4 border-[#FACC15] rounded-[32px] p-6 text-center shadow-md mb-6 flex flex-col items-center">
+              <button
+                onClick={() => playAudio(dragDropWord.japanese)}
+                className="w-20 h-20 bg-rose-500 hover:bg-rose-600 hover:scale-110 active:scale-95 text-white rounded-full shadow-lg flex items-center justify-center text-4xl transition-transform border-4 border-white animate-soft"
+              >
+                🔊
+              </button>
+              <p className="text-base font-black text-slate-800 mt-3">Hear the word, then sort the emoji below!</p>
+            </div>
+
+            {/* Draggable and click/tap Emoji Source Area */}
+            <div className="flex justify-center mb-8">
+              <div
+                draggable={!feedback}
+                onDragStart={(e) => {
+                  e.dataTransfer.setData('text/plain', dragDropWord.id);
+                }}
+                onClick={() => {
+                  if (!feedback) {
+                    setSelectedEmojiId(selectedEmojiId === dragDropWord.id ? null : dragDropWord.id);
+                    playAudio(dragDropWord.japanese);
+                  }
+                }}
+                className={`w-36 h-36 rounded-full border-4 flex flex-col items-center justify-center shadow-lg transition-all cursor-grab active:cursor-grabbing hover:scale-105 select-none relative ${
+                  selectedEmojiId === dragDropWord.id
+                    ? 'bg-amber-100 border-rose-500 scale-110 ring-4 ring-rose-200 animate-wiggle'
+                    : 'bg-white border-slate-200 hover:border-amber-400'
+                }`}
+              >
+                <span className="text-7xl mb-1 block select-none">{dragDropWord.emoji}</span>
+                <span className="text-[10px] font-black uppercase text-slate-400">
+                  {selectedEmojiId === dragDropWord.id ? 'Selected! 👇' : 'Drag or Tap Me'}
+                </span>
+
+                {/* Mobile tap tooltip indicator */}
+                {selectedEmojiId === dragDropWord.id && (
+                  <div className="absolute -top-8 bg-slate-800 text-white text-[10px] font-black px-2.5 py-1 rounded-full animate-bounce border-2 border-white shadow-md">
+                    Tap a box below!
+                  </div>
+                )}
+              </div>
+            </div>
+
+            {/* Category Drop/Click Target Boxes */}
+            <div className="grid grid-cols-1 sm:grid-cols-3 gap-4">
+              {dragDropCategories.map((cat) => {
+                const isAnswered = feedback !== null;
+                const isThisCategoryCorrect = cat === dragDropWord.category;
+
+                // Category Emojis for kid visual cues
+                let catIcon = "📂";
+                if (cat.toLowerCase() === 'food') catIcon = "🍜";
+                else if (cat.toLowerCase() === 'animals') catIcon = "🐱";
+                else if (cat.toLowerCase() === 'places') catIcon = "⛩️";
+                else if (cat.toLowerCase() === 'greetings') catIcon = "👋";
+                else if (cat.toLowerCase() === 'colors') catIcon = "🎨";
+                else if (cat.toLowerCase() === 'nature') catIcon = "🌲";
+
+                return (
+                  <div
+                    key={cat}
+                    onDragOver={(e) => {
+                      e.preventDefault();
+                    }}
+                    onDrop={(e) => {
+                      e.preventDefault();
+                      if (!isAnswered) {
+                        handleDragDropMatch(cat);
+                      }
+                    }}
+                    onClick={() => {
+                      if (!isAnswered && selectedEmojiId === dragDropWord.id) {
+                        handleDragDropMatch(cat);
+                      }
+                    }}
+                    className={`p-5 rounded-[24px] border-4 border-dashed text-center transition-all cursor-pointer flex flex-col items-center justify-center ${
+                      isAnswered
+                        ? isThisCategoryCorrect
+                          ? 'bg-emerald-100 border-emerald-400 text-emerald-950 border-solid scale-105'
+                          : 'bg-slate-50 border-slate-200 text-slate-300 opacity-60'
+                        : selectedEmojiId === dragDropWord.id
+                          ? 'bg-amber-50 border-rose-400 hover:bg-amber-100 hover:scale-105 shadow-md animate-soft'
+                          : 'bg-indigo-50/50 border-indigo-200 hover:bg-indigo-50'
+                    }`}
+                  >
+                    <span className="text-4xl mb-2 block">{catIcon}</span>
+                    <h5 className="font-black text-sm text-slate-700 uppercase tracking-wide">
+                      {cat}
+                    </h5>
+                    <span className="text-[10px] text-slate-400 font-extrabold mt-1">
+                      {isAnswered ? '' : (selectedEmojiId === dragDropWord.id ? 'Tap to Drop' : 'Drop Here')}
+                    </span>
+                  </div>
+                );
+              })}
+            </div>
+
+            {/* Feedback and Next */}
+            {feedback && (
+              <div className="mt-8 border-t-2 border-slate-100 pt-6">
+                <div className={`p-4 rounded-[20px] font-black text-base text-center mb-4 border-2 ${
+                  feedback.isCorrect ? 'bg-emerald-50 text-emerald-900 border-emerald-200' : 'bg-red-50 text-red-900 border-red-200'
+                }`}>
+                  {feedback.text}
+                </div>
+                <button
+                  onClick={handleNextDragDropStep}
+                  className="w-full bg-slate-800 hover:bg-slate-900 text-white font-black py-4 rounded-[20px] shadow-lg flex items-center justify-center gap-2 border-b-4 border-slate-950 hover:border-b-0 active:translate-y-1"
+                >
+                  Next Word ➡️
+                </button>
+              </div>
+            )}
+          </div>
+        )}
+
+        {/* --- AUDIO + EMOJI MATCH PLAYING VIEW --- */}
+        {gameType === 'emojiMatch' && !isGameOver && emojiMatchWord && (
+          <div className="p-6 max-w-xl mx-auto">
+            {/* Status Info */}
+            <div className="flex justify-between items-center border-b-4 border-rose-100 pb-4 mb-6">
+              <h4 className="font-black text-rose-950 text-xl flex items-center gap-1.5">
+                <span>🎵</span> Listen & Match Emojis!
+              </h4>
+              <div className="flex items-center gap-4 text-xs sm:text-sm font-black text-rose-900">
+                <span className="bg-rose-50 px-2.5 py-1 rounded-full border border-rose-200">Word: <strong>{currentStep + 1}/5</strong></span>
+                <span className="bg-rose-50 px-2.5 py-1 rounded-full border border-rose-200">Score: <strong className="text-rose-600 text-lg">{score}</strong></span>
+              </div>
+            </div>
+
+            {/* Play Sound Button Area */}
+            <div className="bg-[#FEF08A] border-4 border-[#FACC15] rounded-[32px] p-6 text-center shadow-md mb-6 flex flex-col items-center">
+              <button
+                onClick={() => playAudio(emojiMatchWord.japanese)}
+                className="w-24 h-24 bg-rose-500 hover:bg-rose-600 hover:scale-110 active:scale-95 text-white rounded-full shadow-lg flex items-center justify-center text-5xl transition-transform border-4 border-white animate-soft"
+              >
+                🔊
+              </button>
+              <p className="text-base font-black text-slate-800 mt-3">Click to hear the Japanese word!</p>
+            </div>
+
+            {/* Hint System Section */}
+            {!feedback && (
+              <div className="bg-amber-50 border-2 border-amber-200 rounded-2xl p-4 mb-6 text-center shadow-sm">
+                <h5 className="font-black text-amber-900 text-xs uppercase tracking-wider mb-2">💡 Need a Help? Select a Hint!</h5>
+                <div className="flex flex-wrap gap-2 justify-center">
+                  <button
+                    onClick={() => setEmojiMatchHintText(`It belongs to the "${emojiMatchWord.category}" category!`)}
+                    className="bg-white hover:bg-amber-100 text-amber-950 border-2 border-amber-300 rounded-full px-3.5 py-1.5 text-xs font-black shadow-sm transition-all active:scale-95"
+                  >
+                    📂 Category Hint
+                  </button>
+                  <button
+                    onClick={() => {
+                      // Slower speech
+                      if ('speechSynthesis' in window) {
+                        window.speechSynthesis.cancel();
+                        const utterance = new SpeechSynthesisUtterance(emojiMatchWord.japanese);
+                        utterance.lang = 'ja-JP';
+                        utterance.rate = 0.5; // Very slow
+                        window.speechSynthesis.speak(utterance);
+                      }
+                    }}
+                    className="bg-white hover:bg-amber-100 text-amber-950 border-2 border-amber-300 rounded-full px-3.5 py-1.5 text-xs font-black shadow-sm transition-all active:scale-95"
+                  >
+                    🐢 Slow Sound Hint
+                  </button>
+                  <button
+                    onClick={() => {
+                      if (emojiMatchWord.category.toLowerCase() === 'animals') {
+                        setEmojiMatchHintText(`"This friendly animal makes a funny noise! Can you find it?"`);
+                      } else if (emojiMatchWord.category.toLowerCase() === 'food') {
+                        setEmojiMatchHintText(`"Yum! This is something very delicious to eat in Japan!"`);
+                      } else {
+                        setEmojiMatchHintText(`"In English, this means '${emojiMatchWord.english}'. Match its picture!"`);
+                      }
+                    }}
+                    className="bg-white hover:bg-amber-100 text-amber-950 border-2 border-amber-300 rounded-full px-3.5 py-1.5 text-xs font-black shadow-sm transition-all active:scale-95"
+                  >
+                    📖 Story Clue
+                  </button>
+                </div>
+                {emojiMatchHintText && (
+                  <p className="text-xs font-black text-rose-700 bg-white border border-rose-100 rounded-xl px-4 py-2 mt-3 italic animate-fade-in leading-relaxed">
+                    {emojiMatchHintText}
+                  </p>
+                )}
+              </div>
+            )}
+
+            {/* Grid of 4 Emoji Options */}
+            <div className="grid grid-cols-2 gap-4">
+              {emojiMatchOptions.map((opt) => {
+                const isAnswered = feedback !== null;
+                const isThisWordCorrect = opt.id === emojiMatchWord.id;
+
+                return (
+                  <button
+                    key={opt.id}
+                    disabled={isAnswered}
+                    onClick={() => handleEmojiMatchAnswer(opt)}
+                    className={`aspect-square p-5 rounded-[28px] border-4 transition-all flex flex-col items-center justify-center font-black relative overflow-hidden ${
+                      isAnswered
+                        ? isThisWordCorrect
+                          ? 'bg-emerald-100 border-emerald-400 text-emerald-950 shadow-inner'
+                          : 'bg-slate-50 border-slate-200 text-slate-300'
+                        : 'bg-white border-slate-200 hover:border-rose-400 hover:bg-rose-50 text-slate-700 hover:scale-105 active:scale-95 hover:shadow-lg border-b-8 active:border-b-4'
+                    }`}
+                  >
+                    <span className="text-6xl mb-1 block select-none animate-soft">{opt.emoji}</span>
+                    <span className={`text-[11px] font-black uppercase text-slate-500 tracking-wider ${isAnswered && !isThisWordCorrect ? 'text-slate-300' : ''}`}>
+                      {opt.english}
+                    </span>
+                  </button>
+                );
+              })}
+            </div>
+
+            {/* Feedback and Next */}
+            {feedback && (
+              <div className="mt-6 border-t-2 border-slate-100 pt-6">
+                <div className={`p-4 rounded-[20px] font-black text-base text-center mb-4 border-2 ${
+                  feedback.isCorrect ? 'bg-emerald-50 text-emerald-900 border-emerald-200' : 'bg-red-50 text-red-900 border-red-200'
+                }`}>
+                  {feedback.text}
+                </div>
+                <button
+                  onClick={handleNextEmojiMatchStep}
+                  className="w-full bg-slate-800 hover:bg-slate-900 text-white font-black py-4 rounded-[20px] shadow-lg flex items-center justify-center gap-2 border-b-4 border-slate-950 hover:border-b-0 active:translate-y-1"
+                >
+                  Next Emoji Card ➡️
                 </button>
               </div>
             )}
