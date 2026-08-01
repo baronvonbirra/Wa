@@ -6,9 +6,12 @@ interface DestinationMapProps {
   onSelectDestination: (destId: string) => void;
 }
 
+import { useState } from 'react';
+
 export const DestinationMap: React.FC<DestinationMapProps> = ({ onSelectDestination }) => {
   const { state, switchPlayer } = useAppState();
   const active = state.activePlayer;
+  const [isFactBookOpen, setIsFactBookOpen] = useState(false);
 
   // Render a friendly message if the active player is "parent" so they know they need to play as a kid
   if (active === 'parent') {
@@ -25,13 +28,13 @@ export const DestinationMap: React.FC<DestinationMapProps> = ({ onSelectDestinat
             onClick={() => switchPlayer('james')}
             className="bg-rose-500 hover:bg-rose-600 text-white font-black px-8 py-4 rounded-3xl border-4 border-rose-700 shadow-lg transform active:translate-y-1 transition-all"
           >
-            Play as James 👱‍♂️
+            Play as James 👦🏻
           </button>
           <button
             onClick={() => switchPlayer('lily')}
             className="bg-amber-500 hover:bg-amber-600 text-white font-black px-8 py-4 rounded-3xl border-4 border-amber-700 shadow-lg transform active:translate-y-1 transition-all"
           >
-            Play as Lily 👱‍♀️
+            Play as Lily 👧🏻
           </button>
         </div>
       </div>
@@ -63,22 +66,82 @@ export const DestinationMap: React.FC<DestinationMapProps> = ({ onSelectDestinat
           </p>
         </div>
 
-        {/* Fact Highlight inside a bubble */}
-        {profile.unlockedFacts.length > 0 && (
-          <div className="bg-white border-4 border-amber-300 p-5 rounded-[28px] shadow-md max-w-sm w-full relative z-10">
+        {/* Fact Highlight inside a bubble or generic button if no facts unlocked */}
+        <div className="bg-white border-4 border-amber-300 p-5 rounded-[28px] shadow-md max-w-sm w-full relative z-10 flex flex-col justify-between">
+          <div>
             <div className="flex items-center gap-2 mb-2">
               <span className="text-2xl animate-wiggle inline-block">💡</span>
               <h4 className="text-xs font-black text-amber-800 uppercase tracking-wider">Super Japan Fact!</h4>
             </div>
-            <p className="text-xs font-bold text-slate-700 leading-relaxed italic">
-              "{profile.unlockedFacts[profile.unlockedFacts.length - 1]}"
-            </p>
-            <p className="text-[10px] text-rose-600 font-black mt-3 text-right bg-rose-50 px-2 py-1 rounded-full inline-block float-right">
-              🔮 {profile.unlockedFacts.length} total facts unlocked!
-            </p>
+            {profile.unlockedFacts.length > 0 ? (
+              <p className="text-xs font-bold text-slate-700 leading-relaxed italic">
+                "{profile.unlockedFacts[profile.unlockedFacts.length - 1]}"
+              </p>
+            ) : (
+              <p className="text-xs font-bold text-slate-500 leading-relaxed italic">
+                Play games to unlock amazing travel trivia facts about Japan!
+              </p>
+            )}
           </div>
-        )}
+          <button
+            onClick={() => setIsFactBookOpen(true)}
+            className="mt-4 w-full bg-amber-400 hover:bg-amber-500 text-amber-950 font-black text-xs py-2 px-4 rounded-xl border-b-2 border-amber-600 active:border-b-0 active:translate-y-0.5 transition-all flex items-center justify-center gap-2"
+          >
+            📚 My Fact Book ({profile.unlockedFacts.length})
+          </button>
+        </div>
       </div>
+
+      {/* Unlocked Facts Modal */}
+      {isFactBookOpen && (
+        <div className="fixed inset-0 bg-slate-900/40 backdrop-blur-sm flex items-center justify-center z-[100] p-4 animate-fade-in">
+          <div className="bg-white border-8 border-amber-400 rounded-[36px] max-w-lg w-full p-6 shadow-2xl relative max-h-[85vh] flex flex-col">
+            {/* Close button */}
+            <button
+              onClick={() => setIsFactBookOpen(false)}
+              className="absolute -top-4 -right-4 w-10 h-10 bg-rose-500 text-white border-4 border-white rounded-full font-black text-lg shadow-md hover:bg-rose-600 transition-all flex items-center justify-center"
+            >
+              ✕
+            </button>
+
+            <div className="text-center pb-4 border-b-4 border-amber-100 flex-shrink-0">
+              <span className="text-5xl animate-bounce inline-block mb-2">📚</span>
+              <h3 className="text-2xl font-black text-amber-950">{profile.name}'s Adventure Fact Book</h3>
+              <p className="text-xs text-amber-700 font-bold mt-1">Check out all the cool things you've learned about Japan!</p>
+            </div>
+
+            <div className="flex-grow overflow-y-auto py-6 pr-1 space-y-4">
+              {profile.unlockedFacts.length > 0 ? (
+                profile.unlockedFacts.map((fact, index) => (
+                  <div key={index} className="bg-amber-50/60 border-2 border-amber-200 p-4 rounded-2xl relative shadow-sm flex gap-3 items-start">
+                    <span className="text-2xl p-1 bg-white rounded-xl border border-amber-200 flex-shrink-0 shadow-sm">💡</span>
+                    <div>
+                      <span className="text-[10px] font-black uppercase text-amber-700 tracking-wider">Fact #{index + 1}</span>
+                      <p className="text-sm font-bold text-slate-700 mt-1 leading-relaxed italic">"{fact}"</p>
+                    </div>
+                  </div>
+                ))
+              ) : (
+                <div className="text-center py-8 space-y-3">
+                  <span className="text-6xl block opacity-40">🔒</span>
+                  <p className="text-sm font-bold text-slate-500 max-w-xs mx-auto">
+                    You haven't unlocked any facts yet! Play quests and earn XP points to unlock secret trivia!
+                  </p>
+                </div>
+              )}
+            </div>
+
+            <div className="pt-4 border-t-2 border-slate-100 flex-shrink-0">
+              <button
+                onClick={() => setIsFactBookOpen(false)}
+                className="w-full bg-slate-800 hover:bg-slate-900 text-white font-black py-3 rounded-2xl shadow-md transition-all border-b-4 border-slate-950 active:border-b-0 active:translate-y-0.5"
+              >
+                Keep Exploring! 🗺️
+              </button>
+            </div>
+          </div>
+        </div>
+      )}
 
       {/* Progress Path */}
       <div className="mb-6">

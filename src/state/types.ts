@@ -75,7 +75,7 @@ export const INITIAL_STATE: AppState = {
     james: {
       name: "James",
       age: 5,
-      avatar: "👱‍♂️",
+      avatar: "👦🏻",
       level: 1,
       totalXP: 0,
       streak: 0,
@@ -104,7 +104,7 @@ export const INITIAL_STATE: AppState = {
     lily: {
       name: "Lily",
       age: 9,
-      avatar: "👱‍♀️",
+      avatar: "👧🏻",
       level: 1,
       totalXP: 0,
       streak: 0,
