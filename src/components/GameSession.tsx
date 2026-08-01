@@ -642,15 +642,55 @@ export const GameSession: React.FC<GameSessionProps> = ({ destination, onClose }
         )}
 
         {/* --- GAME OVER CELEBRATION SUMMARY --- */}
-        {isGameOver && (
-          <div className="p-8 text-center max-w-md mx-auto">
-            <div className="text-8xl mb-4 animate-bounce">🏆</div>
-            <h4 className="text-4xl font-black text-rose-950">Quest Complete!</h4>
-            <p className="text-slate-600 font-bold mt-2 mb-6 text-sm">
-              Fantastic work, {state.profiles[activeKid].name}! You did an amazing job.
-            </p>
+        {isGameOver && (() => {
+          const masteredCount = state.profiles[activeKid].masteredVocab[destination.id]?.length || 0;
+          const totalCount = destination.vocabList.length;
+          const isCityFullyMastered = masteredCount === totalCount;
 
-            <div className="bg-rose-50 border-4 border-rose-200 p-6 rounded-[28px] shadow-inner mb-8 space-y-3">
+          return (
+            <div className="p-8 text-center max-w-md mx-auto">
+              {/* Giant celebration overlay for 100% City Mastery */}
+              {isCityFullyMastered ? (
+                <div className="bg-gradient-to-r from-yellow-400 via-pink-400 to-red-400 border-8 border-yellow-200 rounded-[36px] p-6 mb-8 text-white shadow-xl relative overflow-hidden animate-pulse">
+                  <div className="absolute top-2 left-2 text-2xl animate-spin">✨</div>
+                  <div className="absolute top-2 right-2 text-2xl animate-bounce">🎆</div>
+                  <div className="absolute bottom-2 left-4 text-3xl animate-wiggle">🌸</div>
+                  <div className="absolute bottom-2 right-4 text-3xl animate-soft">🗻</div>
+
+                  <div className="relative z-10 text-center">
+                    <span className="text-7xl block mb-2 animate-bounce">👑</span>
+                    <h5 className="text-2xl font-black tracking-wide drop-shadow-md">
+                      GRAND CHAMPION OF {destination.name.toUpperCase()}!
+                    </h5>
+                    <p className="text-xs font-black bg-white/35 px-3 py-1 rounded-full inline-block mt-2 tracking-wider border border-white/20">
+                      🏆 100% MASTERED ALL {totalCount} WORDS! 🏆
+                    </p>
+                    <p className="text-xs font-extrabold leading-relaxed mt-3 max-w-xs mx-auto">
+                      You've successfully mastered every single word in this destination! You are officially a Japan Travel expert! ✈️🇯🇵
+                    </p>
+                  </div>
+                </div>
+              ) : (
+                <div className="text-8xl mb-4 animate-bounce">🏆</div>
+              )}
+
+              <h4 className="text-4xl font-black text-rose-950">Quest Complete!</h4>
+              <p className="text-slate-600 font-bold mt-2 mb-6 text-sm">
+                Fantastic work, {state.profiles[activeKid].name}! You did an amazing job.
+              </p>
+
+              {/* Maneki Neko Congratulating Card */}
+              <div className="bg-amber-50 border-4 border-amber-300 rounded-[28px] p-4 mb-6 shadow-sm flex items-center gap-4 relative overflow-hidden animate-wiggle">
+                <span className="text-6xl animate-bounce inline-block">🐱👋</span>
+                <div className="text-left">
+                  <h5 className="font-black text-amber-950 text-sm">Lucky Cat Congratulates You:</h5>
+                  <p className="text-xs text-amber-800 font-bold leading-relaxed mt-0.5">
+                    "Nyan-tastic job, {state.profiles[activeKid].name}! Wishing you great fortune and endless fun in Japan! Meow! 🐾"
+                  </p>
+                </div>
+              </div>
+
+              <div className="bg-rose-50 border-4 border-rose-200 p-6 rounded-[28px] shadow-inner mb-8 space-y-3">
               <div className="flex justify-between items-center font-black text-base text-rose-900">
                 <span>Points Scored:</span>
                 <span className="text-xl text-rose-600">{score} pts</span>
@@ -665,22 +705,23 @@ export const GameSession: React.FC<GameSessionProps> = ({ destination, onClose }
               </div>
             </div>
 
-            <div className="flex flex-col gap-4">
-              <button
-                onClick={() => startGame(gameType!)}
-                className="w-full bg-rose-500 hover:bg-rose-600 text-white font-black py-4 rounded-[24px] shadow-lg border-b-8 border-rose-700 active:border-b-2 active:translate-y-1"
-              >
-                🔄 Replay Game (Improve score!)
-              </button>
-              <button
-                onClick={onClose}
-                className="w-full bg-slate-800 hover:bg-slate-900 text-white font-black py-4 rounded-[24px] shadow-md border-b-8 border-slate-950 active:border-b-2 active:translate-y-1"
-              >
-                🗺️ Return to Map
-              </button>
+              <div className="flex flex-col gap-4">
+                <button
+                  onClick={() => startGame(gameType!)}
+                  className="w-full bg-rose-500 hover:bg-rose-600 text-white font-black py-4 rounded-[24px] shadow-lg border-b-8 border-rose-700 active:border-b-2 active:translate-y-1"
+                >
+                  🔄 Replay Game (Improve score!)
+                </button>
+                <button
+                  onClick={onClose}
+                  className="w-full bg-slate-800 hover:bg-slate-900 text-white font-black py-4 rounded-[24px] shadow-md border-b-8 border-slate-950 active:border-b-2 active:translate-y-1"
+                >
+                  🗺️ Return to Map
+                </button>
+              </div>
             </div>
-          </div>
-        )}
+          );
+        })()}
       </div>
     </div>
   );
