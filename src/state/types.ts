@@ -74,7 +74,7 @@ export const INITIAL_STATE: AppState = {
   profiles: {
     james: {
       name: "James",
-      age: 5,
+      age: 9,
       avatar: "👦🏻",
       level: 1,
       totalXP: 0,
@@ -103,7 +103,7 @@ export const INITIAL_STATE: AppState = {
     },
     lily: {
       name: "Lily",
-      age: 9,
+      age: 5,
       avatar: "👧🏻",
       level: 1,
       totalXP: 0,

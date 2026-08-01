@@ -42,7 +42,7 @@ export const Header: React.FC<HeaderProps> = ({ currentTab, setCurrentTab }) => 
                 : 'text-slate-700 bg-white hover:bg-slate-100 border-slate-200'
             }`}
           >
-            <span>👦🏻</span> James (5)
+            <span>👦🏻</span> James ({state.profiles.james.age})
           </button>
           <button
             onClick={() => {
@@ -57,7 +57,7 @@ export const Header: React.FC<HeaderProps> = ({ currentTab, setCurrentTab }) => 
                 : 'text-slate-700 bg-white hover:bg-slate-100 border-slate-200'
             }`}
           >
-            <span>👧🏻</span> Lily (9)
+            <span>👧🏻</span> Lily ({state.profiles.lily.age})
           </button>
           <button
             onClick={() => {
