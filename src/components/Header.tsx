@@ -30,27 +30,40 @@ export const Header: React.FC<HeaderProps> = ({ currentTab, setCurrentTab }) => 
         {/* Playful Player Switcher */}
         <div className="flex items-center gap-3 bg-[#FEF08A] p-2 rounded-3xl border-4 border-[#FACC15] shadow-inner">
           <button
-            onClick={() => switchPlayer('james')}
+            onClick={() => {
+              switchPlayer('james');
+              if (currentTab === 'dashboard') {
+                setCurrentTab('home');
+              }
+            }}
             className={`flex items-center gap-2 px-4 py-2 rounded-2xl text-sm font-black transition-all duration-200 border-2 ${
               active === 'james'
                 ? 'bg-rose-500 text-white shadow-md border-rose-300 scale-105'
                 : 'text-slate-700 bg-white hover:bg-slate-100 border-slate-200'
             }`}
           >
-            <span>👱‍♂️</span> James (5)
+            <span>👦🏻</span> James (5)
           </button>
           <button
-            onClick={() => switchPlayer('lily')}
+            onClick={() => {
+              switchPlayer('lily');
+              if (currentTab === 'dashboard') {
+                setCurrentTab('home');
+              }
+            }}
             className={`flex items-center gap-2 px-4 py-2 rounded-2xl text-sm font-black transition-all duration-200 border-2 ${
               active === 'lily'
                 ? 'bg-amber-500 text-white shadow-md border-amber-300 scale-105'
                 : 'text-slate-700 bg-white hover:bg-slate-100 border-slate-200'
             }`}
           >
-            <span>👱‍♀️</span> Lily (9)
+            <span>👧🏻</span> Lily (9)
           </button>
           <button
-            onClick={() => switchPlayer('parent')}
+            onClick={() => {
+              switchPlayer('parent');
+              setCurrentTab('dashboard');
+            }}
             className={`flex items-center gap-2 px-4 py-2 rounded-2xl text-sm font-black transition-all duration-200 border-2 ${
               active === 'parent'
                 ? 'bg-indigo-600 text-white shadow-md border-indigo-400 scale-105'
@@ -107,16 +120,6 @@ export const Header: React.FC<HeaderProps> = ({ currentTab, setCurrentTab }) => 
             }`}
           >
             🎫 Passport Stamps
-          </button>
-          <button
-            onClick={() => setCurrentTab('dashboard')}
-            className={`py-2 px-5 text-sm font-black rounded-full border-2 transition-all ${
-              currentTab === 'dashboard'
-                ? 'bg-indigo-600 text-white border-indigo-700 shadow-md'
-                : 'bg-white text-indigo-700 border-indigo-200 hover:bg-slate-50'
-            }`}
-          >
-            📊 Parent Dashboard
           </button>
         </div>
       </nav>

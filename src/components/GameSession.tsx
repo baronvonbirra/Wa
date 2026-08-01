@@ -35,6 +35,7 @@ export const GameSession: React.FC<GameSessionProps> = ({ destination, onClose }
   const [pronounceWordIndex, setPronounceWordIndex] = useState(0);
   const [isPronouncing, setIsPronouncing] = useState(false);
   const [pronounceAttempted, setPronounceAttempted] = useState(false);
+  const [pronounceScore, setPronounceScore] = useState(92);
 
   // Play audio helper
   const playAudio = (text: string) => {
@@ -230,6 +231,9 @@ export const GameSession: React.FC<GameSessionProps> = ({ destination, onClose }
     setTimeout(() => {
       setIsPronouncing(false);
       setPronounceAttempted(true);
+      // Randomize simulated score between 88 and 99
+      const randomScore = Math.floor(Math.random() * (99 - 88 + 1)) + 88;
+      setPronounceScore(randomScore);
       setScore(prev => prev + 20);
       updateXP(activeKid, 10);
       playAudio(destination.vocabList[pronounceWordIndex].japanese);
@@ -616,7 +620,7 @@ export const GameSession: React.FC<GameSessionProps> = ({ destination, onClose }
                       {isPronouncing ? (
                         <>🎤 Recording... Say "{word.japanese}"</>
                       ) : pronounceAttempted ? (
-                        <>✅ Great Attempt! Score: 92%</>
+                        <>✅ Great Attempt! Score: {pronounceScore}%</>
                       ) : (
                         <>🎤 Hold to Speak (Tap to Try)</>
                       )}
