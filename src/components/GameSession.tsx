@@ -373,7 +373,9 @@ export const GameSession: React.FC<GameSessionProps> = ({ destination, onClose }
                   }`}
                 >
                   {card.isMatched || card.isFlipped ? (
-                    <span className="text-base sm:text-lg leading-snug drop-shadow-sm">{card.val}</span>
+                    <span className={`text-base sm:text-lg leading-snug drop-shadow-sm ${card.isFlipped ? 'rotate-y-180 inline-block' : ''}`}>
+                      {card.val}
+                    </span>
                   ) : (
                     <span className="text-4xl font-black">❓</span>
                   )}
