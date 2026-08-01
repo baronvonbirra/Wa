@@ -4,5 +4,5 @@ import react from '@vitejs/plugin-react'
 // https://vitejs.dev/config/
 export default defineConfig({
   plugins: [react()],
-  base: './', // ideal for GitHub Pages or simple static server deploys
+  base: '/wa/', // Must match your sub-folder/repository name exactly for GitHub Pages
 })
