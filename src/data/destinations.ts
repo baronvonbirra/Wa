@@ -20,6 +20,68 @@ export interface Dialogue {
   explanation: string;
 }
 
+export interface ConversationTurn {
+  speaker: string;
+  japanese: string;
+  romaji: string;
+  english: string;
+  options?: {
+    text: string;
+    english: string;
+    isCorrect: boolean;
+    feedback: string;
+    score: number;
+  }[];
+}
+
+export interface ConversationScenario {
+  id: string;
+  title: string;
+  difficulty: string;
+  description: string;
+  turns: ConversationTurn[];
+}
+
+export interface GrammarQuestion {
+  id: string;
+  topic: string;
+  sentence: string;
+  question: string;
+  options: string[];
+  correctAnswer: string;
+  explanation: string;
+}
+
+export interface ListeningExercise {
+  id: string;
+  title: string;
+  dialogueText: string;
+  questions: {
+    question: string;
+    options: string[];
+    correctAnswer: string;
+  }[];
+}
+
+export interface ReadingPassage {
+  id: string;
+  title: string;
+  content: string;
+  questions: {
+    question: string;
+    options: string[];
+    correctAnswer: string;
+  }[];
+}
+
+export interface WritingPrompt {
+  id: string;
+  title: string;
+  task: string;
+  requiredElements: string[];
+  suggestedAnswers: string[];
+}
+
 export interface Destination {
   id: string;
   name: string;
@@ -32,6 +94,13 @@ export interface Destination {
   vocabList: VocabularyWord[];
   dialogues: Dialogue[];
   japanFacts: string[];
+
+  // Phase 3 Extended Content
+  conversations?: ConversationScenario[];
+  grammarQuestions?: GrammarQuestion[];
+  listeningExercises?: ListeningExercise[];
+  readingPassages?: ReadingPassage[];
+  writingPrompts?: WritingPrompt[];
 }
 
 export const DESTINATIONS_DATA: Destination[] = [
@@ -48,6 +117,147 @@ export const DESTINATIONS_DATA: Destination[] = [
       "Kyoto was the capital of Japan for over 1,000 years!",
       "There are over 2,000 temples and shrines in Kyoto.",
       "Kinkaku-ji is a famous temple in Kyoto covered completely in gold leaf!"
+    ],
+    conversations: [
+      {
+        id: "kyoto_temple_etiquette",
+        title: "Temple Etiquette with a Monk",
+        difficulty: "⭐⭐⭐",
+        description: "Merche meets a local monk at a beautiful ancient Kyoto temple and asks about proper manners.",
+        turns: [
+          {
+            speaker: "Monk",
+            japanese: "ようこそ。お寺に入る前に、一礼してくださいね。",
+            romaji: "Youkoso. Otera ni hairu mae ni, ichirei shite kudasai ne.",
+            english: "Welcome. Before entering the temple, please bow once."
+          },
+          {
+            speaker: "Player",
+            japanese: "___",
+            romaji: "___",
+            english: "___",
+            options: [
+              {
+                text: "はい、わかりました。一礼します。",
+                english: "Yes, I understand. I will bow.",
+                isCorrect: true,
+                feedback: "Excellent! Showing respect by bowing is highly polite and culturally perfect! 🙇",
+                score: 10
+              },
+              {
+                text: "どうして bow するのですか？",
+                english: "Why do we bow?",
+                isCorrect: false,
+                feedback: "A bit too informal and uses English word 'bow'. Better to agree politely first.",
+                score: 5
+              }
+            ]
+          },
+          {
+            speaker: "Monk",
+            japanese: "素晴らしい。次に、静かにお祈りをしてください。",
+            romaji: "Subarashii. Tsugi ni, shizuka ni onori o shite kudasai.",
+            english: "Wonderful. Next, please pray quietly."
+          },
+          {
+            speaker: "Player",
+            japanese: "___",
+            romaji: "___",
+            english: "___",
+            options: [
+              {
+                text: "ありがとうございます。静かにします。",
+                english: "Thank you very much. I will keep quiet.",
+                isCorrect: true,
+                feedback: "Wonderful! Politeness at sacred spots is deeply valued. You successfully finished the dialogue!",
+                score: 10
+              },
+              {
+                text: "大きな声で歌います！",
+                english: "I will sing loudly!",
+                isCorrect: false,
+                feedback: "No! Singing loudly inside a quiet temple ruins the atmosphere! ❌",
+                score: 1
+              }
+            ]
+          }
+        ]
+      }
+    ],
+    grammarQuestions: [
+      {
+        id: "kyoto_grammar_1",
+        topic: "Topic Marker Particle は vs Object Marker Particle を",
+        sentence: "私はお茶を飲みます (Watashi wa ocha o nomimasu)",
+        question: "What is the function of the particle 'を' (o) in this sentence?",
+        options: [
+          "Marks the topic of the sentence",
+          "Marks the direct object of the verb '飲みます' (to drink)",
+          "Shows the location of the action",
+          "Indicates possessive association"
+        ],
+        correctAnswer: "Marks the direct object of the verb '飲みます' (to drink)",
+        explanation: "In Japanese, the particle を (wo/o) is placed immediately after the noun representing the direct object of a transitive verb. Here, 'お茶' (green tea) is the object being drunk."
+      }
+    ],
+    listeningExercises: [
+      {
+        id: "kyoto_listen_1",
+        title: "Kyoto Green Tea Ceremony Intro",
+        dialogueText: "こんにちは、お茶室へようこそ。まず、美味しいお茶をどうぞ。どうぞ召し上がってください。",
+        questions: [
+          {
+            question: "What did the host offer you first?",
+            options: ["A cup of hot water", "Green Tea (Ocha)", "Sweet candies", "Ramen"],
+            correctAnswer: "Green Tea (Ocha)"
+          },
+          {
+            question: "How did the host describe the drink?",
+            options: ["Oishii (Delicious)", "Atsui (Hot)", "Kirei (Beautiful)", "Amai (Sweet)"],
+            correctAnswer: "Oishii (Delicious)"
+          }
+        ]
+      }
+    ],
+    readingPassages: [
+      {
+        id: "kyoto_read_1",
+        title: "Traditional Kyoto Life & Temples",
+        content: "京都は日本の古い文化が残る美しい街です。たくさんのお寺や鳥居があります。有名な金閣寺はすべて金で作られています。お茶室で抹茶を飲む体験も人気です。着物を着て古い街を歩くのは素晴らしい思い出になりますよ。",
+        questions: [
+          {
+            question: "What is Kyoto described as?",
+            options: [
+              "A high-tech city with vending machines",
+              "A beautiful city preserving ancient culture",
+              "A tropical beach island resort",
+              "A snowy mountain village"
+            ],
+            correctAnswer: "A beautiful city preserving ancient culture"
+          },
+          {
+            question: "According to the text, what is covered in gold leaf?",
+            options: ["The Torii gates", "The traditional Kimonos", "Kinkaku-ji temple", "The teahouses"],
+            correctAnswer: "Kinkaku-ji temple"
+          }
+        ]
+      }
+    ],
+    writingPrompts: [
+      {
+        id: "kyoto_write_1",
+        title: "Thank You Message to Kyoto Tea Host",
+        task: "Draft a short polite message to your tea master thanking them for the green tea.",
+        requiredElements: [
+          "A polite greeting ('こんにちは' or similar)",
+          "A polite expression of gratitude ('ありがとう' or 'ありがとうございます')",
+          "The word 'お茶' (Ocha - tea)"
+        ],
+        suggestedAnswers: [
+          "こんにちは。美味しいお茶をありがとうございました。",
+          "お茶をありがとうございます！とても美味しかったです。"
+        ]
+      }
     ],
     vocabList: [
       { id: "k1", japanese: "こんにちは", romaji: "Konnichiwa", english: "Hello / Good afternoon", emoji: "👋", category: "Greetings" },
@@ -116,6 +326,141 @@ export const DESTINATIONS_DATA: Destination[] = [
       "Tokyo is the most populated metropolitan area in the whole world!",
       "You can buy almost anything from Tokyo's millions of vending machines, including hot canned soup!",
       "Tokyo has the world's busiest pedestrian crossing, called Shibuya Crossing."
+    ],
+    conversations: [
+      {
+        id: "tokyo_ramen_ordering",
+        title: "Ordering Ramen in Shinjuku",
+        difficulty: "⭐⭐",
+        description: "Marco or Merche enters a cozy Shinjuku ramen shop to order dinner.",
+        turns: [
+          {
+            speaker: "Server",
+            japanese: "いらっしゃいませ！ご注文は何ですか？",
+            romaji: "Irasshaimase! Go-chuumon wa nan desu ka?",
+            english: "Welcome! What would you like to order?"
+          },
+          {
+            speaker: "Player",
+            japanese: "___",
+            romaji: "___",
+            english: "___",
+            options: [
+              {
+                text: "ラーメンをください。",
+                english: "Ramen, please.",
+                isCorrect: true,
+                feedback: "Excellent! 'Ramen o kudasai' is perfect and polite. 🍜",
+                score: 10
+              },
+              {
+                text: "飛行機をください。",
+                english: "An airplane, please.",
+                isCorrect: false,
+                feedback: "Wait! Ordering an airplane in a restaurant is very silly! ✈️",
+                score: 1
+              }
+            ]
+          },
+          {
+            speaker: "Server",
+            japanese: "かしこまりました。お水はどうですか？",
+            romaji: "Kashikomarimashita. Omizu wa dou desu ka?",
+            english: "Certainly. Would you like some water?"
+          },
+          {
+            speaker: "Player",
+            japanese: "___",
+            romaji: "___",
+            english: "___",
+            options: [
+              {
+                text: "はい、お願いします。",
+                english: "Yes, please.",
+                isCorrect: true,
+                feedback: "Spot on! Perfect confirmation of getting water. You are fully ready to eat!",
+                score: 10
+              },
+              {
+                text: "いいえ、美味しくないです。",
+                english: "No, it's not delicious.",
+                isCorrect: false,
+                feedback: "Ouch! Saying it's not delicious before even tasting is rude!",
+                score: 3
+              }
+            ]
+          }
+        ]
+      }
+    ],
+    grammarQuestions: [
+      {
+        id: "tokyo_grammar_1",
+        topic: "Polite Request using ください (Kudasai)",
+        sentence: "ラーメンをください (Raamen o kudasai)",
+        question: "How do you request something politely in a shop?",
+        options: [
+          "Item name + をください (o kudasai)",
+          "Item name + はどこですか (wa doko desu ka)",
+          "Item name + です (desu)",
+          "Item name + が好きです (ga suki desu)"
+        ],
+        correctAnswer: "Item name + をください (o kudasai)",
+        explanation: "To politely ask for an item, say the item name followed by the object marker particle を (o) and 'ください' (kudasai)."
+      }
+    ],
+    listeningExercises: [
+      {
+        id: "tokyo_listen_1",
+        title: "Ordering Coffee in Shibuya",
+        dialogueText: "いらっしゃいませ。ホットコーヒーを一つください。はい、お会計は五百円です。",
+        questions: [
+          {
+            question: "What beverage was requested?",
+            options: ["Iced green tea", "Hot coffee", "Apple juice", "Cold water"],
+            correctAnswer: "Hot coffee"
+          },
+          {
+            question: "How much did the coffee cost?",
+            options: ["100 yen", "300 yen", "500 yen", "1000 yen"],
+            correctAnswer: "500 yen"
+          }
+        ]
+      }
+    ],
+    readingPassages: [
+      {
+        id: "tokyo_read_1",
+        title: "The Vending Machines of Akihabara",
+        content: "東京の秋葉原にはたくさんの自動販売機があります。お茶や冷たい水だけでなく、温かいラーメン缶や果物ジュース、そしておにぎりも買えます。ボタンを押すだけで美味しい食べ物がすぐに出てきて、とても便利です。",
+        questions: [
+          {
+            question: "What can you buy from the vending machines mentioned?",
+            options: ["Clothes and shoes", "Warm canned ramen, juices, and rice balls", "Golden souvenirs", "Train tickets"],
+            correctAnswer: "Warm canned ramen, juices, and rice balls"
+          },
+          {
+            question: "Where are these unique machines located?",
+            options: ["Kyoto Temples", "Akihabara, Tokyo", "Okinawa beach", "Takayama mountains"],
+            correctAnswer: "Akihabara, Tokyo"
+          }
+        ]
+      }
+    ],
+    writingPrompts: [
+      {
+        id: "tokyo_write_1",
+        title: "Hotel Booking Inquiry",
+        task: "Draft a polite sentence checking if a room is available.",
+        requiredElements: [
+          "The word '部屋' (Heya - room) or 'ホテル' (Hoteru - hotel)",
+          "The question word 'どこ' (doko) or a polite question particle 'か' (ka)"
+        ],
+        suggestedAnswers: [
+          "すみません、部屋はありますか？",
+          "こんにちは、ホテルを予約したいです。"
+        ]
+      }
     ],
     vocabList: [
       { id: "t1", japanese: "ラーメン", romaji: "Raamen", english: "Ramen", emoji: "🍜", category: "Food" },

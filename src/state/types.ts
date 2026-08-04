@@ -96,12 +96,52 @@ export const FAMILY_CHALLENGES: FamilyChallenge[] = [
   }
 ];
 
+export interface PlayerProgress {
+  name: string;
+  age: number;
+  avatar: string; // fallback simple emoji
+  avatarCustomization: AvatarCustomization;
+  level: number;
+  totalXP: number;
+  spendableXP: number; // For sticker store and custom items
+  streak: number;
+  lastPlayedDate: string | null; // YYYY-MM-DD
+  // Map of destinationId -> list of vocabulary ids that are mastered (correct answer on first try or multiple correct)
+  masteredVocab: { [destinationId: string]: string[] };
+  // Vocabulary attempt counters for accuracy calculations, e.g., { [wordId]: { attempts: number, correct: number } }
+  vocabStats: { [wordId: string]: { attempts: number; correct: number } };
+  // High scores for games: { [gameType_destinationId]: score }
+  highScores: { [gameKey: string]: number };
+  // Which destinations are unlocked: { [destinationId]: boolean }
+  unlockedDestinations: { [destinationId: string]: boolean };
+  // List of completed family challenge IDs
+  completedChallenges: string[];
+  // Completed trivia facts: { [factKey]: boolean }
+  unlockedFacts: string[];
+  // Sticker Store inventory
+  unlockedStickers: string[]; // List of sticker IDs owned
+  // Active daily quests for today
+  dailyQuests: DailyQuest[];
+  // Received parent messages / rewards
+  parentMessages: ParentMessage[];
+  // Custom goal set by parent
+  customGoal: { text: string; targetWords: number; completed: boolean } | null;
+
+  // Phase 3 Extensions
+  role: "child" | "parent";
+  learningPath?: "kids_basic" | "kids_advanced" | "adult_advanced";
+  motivation?: string;
+  createdAt?: string;
+  lastActive?: string;
+}
+
 export interface AppState {
   profiles: {
     james: PlayerProgress;
     lily: PlayerProgress;
+    merche: PlayerProgress;
   };
-  activePlayer: "james" | "lily" | "parent";
+  activePlayer: "james" | "lily" | "merche" | "parent";
   tripDate: string; // YYYY-MM-DD
   soundEnabled: boolean;
   activeChallengeId: string | null;
@@ -145,6 +185,8 @@ export const INITIAL_STATE: AppState = {
     james: {
       name: "James",
       age: 9,
+      role: "child",
+      learningPath: "kids_advanced",
       avatar: "👦🏻",
       avatarCustomization: {
         face: "😊",
@@ -189,11 +231,15 @@ export const INITIAL_STATE: AppState = {
           claimed: false
         }
       ],
-      customGoal: null
+      customGoal: null,
+      createdAt: "2024-08-04",
+      lastActive: "2024-08-04"
     },
     lily: {
       name: "Lily",
       age: 5,
+      role: "child",
+      learningPath: "kids_basic",
       avatar: "👧🏻",
       avatarCustomization: {
         face: "🥰",
@@ -238,7 +284,63 @@ export const INITIAL_STATE: AppState = {
           claimed: false
         }
       ],
-      customGoal: null
+      customGoal: null,
+      createdAt: "2024-08-04",
+      lastActive: "2024-08-04"
+    },
+    merche: {
+      name: "Merche",
+      age: 35,
+      role: "parent",
+      learningPath: "adult_advanced",
+      motivation: "learn_together_with_kids",
+      avatar: "🤩",
+      avatarCustomization: {
+        face: "🤩",
+        hair: "🎀 Blonde",
+        outfit: "🧥 Casual",
+        customName: "Merche"
+      },
+      level: 1,
+      totalXP: 0,
+      spendableXP: 150,
+      streak: 0,
+      lastPlayedDate: null,
+      masteredVocab: {
+        kyoto: [],
+        tokyo: [],
+        osaka: [],
+        train: [],
+        okinawa: [],
+        takayama: []
+      },
+      vocabStats: {},
+      highScores: {},
+      unlockedDestinations: {
+        kyoto: true,
+        tokyo: false,
+        osaka: false,
+        train: false,
+        okinawa: false,
+        takayama: false
+      },
+      completedChallenges: [],
+      unlockedFacts: [],
+      unlockedStickers: [],
+      dailyQuests: DEFAULT_QUESTS("james").map(q => ({ ...q, id: q.id + "_merche" })),
+      parentMessages: [
+        {
+          id: "welcome",
+          text: "Welcome to Japan Quest Parent Path! Practice conversations and grammar, then study with your kids! 🗻✈️",
+          date: new Date().toISOString().split('T')[0],
+          read: false,
+          rewardXP: 10,
+          claimed: false
+        }
+      ],
+      customGoal: null,
+      createdAt: "2024-08-04",
+      lastActive: "2024-08-04"
     }
   },
   activePlayer: "james",

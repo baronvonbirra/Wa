@@ -4,25 +4,25 @@ import { DESTINATIONS_DATA } from '../data/destinations';
 
 interface AppContextType {
   state: AppState;
-  switchPlayer: (player: "james" | "lily" | "parent") => void;
-  updateXP: (player: "james" | "lily", amount: number) => void;
-  recordVocabAttempt: (player: "james" | "lily", destId: string, vocabId: string, correct: boolean) => void;
-  updateHighScore: (player: "james" | "lily", gameKey: string, score: number) => void;
-  completeChallenge: (player: "james" | "lily", challengeId: string, rewardXP: number) => void;
+  switchPlayer: (player: "james" | "lily" | "merche" | "parent") => void;
+  updateXP: (player: "james" | "lily" | "merche", amount: number) => void;
+  recordVocabAttempt: (player: "james" | "lily" | "merche", destId: string, vocabId: string, correct: boolean) => void;
+  updateHighScore: (player: "james" | "lily" | "merche", gameKey: string, score: number) => void;
+  completeChallenge: (player: "james" | "lily" | "merche", challengeId: string, rewardXP: number) => void;
   updateTripDate: (date: string) => void;
   toggleSound: () => void;
-  unlockNextDestination: (player: "james" | "lily", currentDestId: string) => void;
+  unlockNextDestination: (player: "james" | "lily" | "merche", currentDestId: string) => void;
   resetAllProgress: () => void;
   // Expanded expansion actions:
-  updateAvatar: (player: "james" | "lily", customization: Partial<AvatarCustomization>) => void;
-  buySticker: (player: "james" | "lily", stickerId: string, costXP: number) => boolean;
-  completeQuestStep: (player: "james" | "lily", questId: string, amount: number) => void;
-  claimQuestReward: (player: "james" | "lily", questId: string) => void;
-  readParentMessage: (player: "james" | "lily", messageId: string) => void;
-  claimParentMessageReward: (player: "james" | "lily", messageId: string) => void;
-  sendParentMessage: (player: "james" | "lily", text: string, rewardXP?: number) => void;
-  setCustomGoal: (player: "james" | "lily", goal: { text: string; targetWords: number } | null) => void;
-  checkCustomGoalCompletion: (player: "james" | "lily") => void;
+  updateAvatar: (player: "james" | "lily" | "merche", customization: Partial<AvatarCustomization>) => void;
+  buySticker: (player: "james" | "lily" | "merche", stickerId: string, costXP: number) => boolean;
+  completeQuestStep: (player: "james" | "lily" | "merche", questId: string, amount: number) => void;
+  claimQuestReward: (player: "james" | "lily" | "merche", questId: string) => void;
+  readParentMessage: (player: "james" | "lily" | "merche", messageId: string) => void;
+  claimParentMessageReward: (player: "james" | "lily" | "merche", messageId: string) => void;
+  sendParentMessage: (player: "james" | "lily" | "merche", text: string, rewardXP?: number) => void;
+  setCustomGoal: (player: "james" | "lily" | "merche", goal: { text: string; targetWords: number } | null) => void;
+  checkCustomGoalCompletion: (player: "james" | "lily" | "merche") => void;
 }
 
 const AppContext = createContext<AppContextType | undefined>(undefined);
@@ -36,8 +36,8 @@ export const AppProvider: React.FC<{ children: React.ReactNode }> = ({ children 
       try {
         const parsed = JSON.parse(saved);
         // Ensure standard destinations and state variables are initialized cleanly
-        ['james', 'lily'].forEach((pKey) => {
-          const profile = parsed.profiles?.[pKey as "james" | "lily"];
+        ['james', 'lily', 'merche'].forEach((pKey) => {
+          const profile = parsed.profiles?.[pKey as "james" | "lily" | "merche"];
           if (profile) {
             if (!profile.masteredVocab) {
               profile.masteredVocab = {
@@ -51,13 +51,13 @@ export const AppProvider: React.FC<{ children: React.ReactNode }> = ({ children 
               profile.unlockedStickers = [];
             }
             if (!profile.dailyQuests) {
-              profile.dailyQuests = INITIAL_STATE.profiles[pKey as "james" | "lily"].dailyQuests;
+              profile.dailyQuests = INITIAL_STATE.profiles[pKey as "james" | "lily" | "merche"].dailyQuests;
             }
             if (!profile.parentMessages) {
-              profile.parentMessages = INITIAL_STATE.profiles[pKey as "james" | "lily"].parentMessages;
+              profile.parentMessages = INITIAL_STATE.profiles[pKey as "james" | "lily" | "merche"].parentMessages;
             }
             if (!profile.avatarCustomization) {
-              profile.avatarCustomization = INITIAL_STATE.profiles[pKey as "james" | "lily"].avatarCustomization;
+              profile.avatarCustomization = INITIAL_STATE.profiles[pKey as "james" | "lily" | "merche"].avatarCustomization;
             }
           }
         });
@@ -75,10 +75,10 @@ export const AppProvider: React.FC<{ children: React.ReactNode }> = ({ children 
   }, [state]);
 
   // Handle active player switch and update consecutive day streaks
-  const switchPlayer = (player: "james" | "lily" | "parent") => {
+  const switchPlayer = (player: "james" | "lily" | "merche" | "parent") => {
     setState((prev) => {
       const updated = { ...prev, activePlayer: player };
-      if (player === "james" || player === "lily") {
+      if (player === "james" || player === "lily" || player === "merche") {
         const profile = { ...updated.profiles[player] };
         const todayStr = new Date().toISOString().split('T')[0];
 
@@ -105,7 +105,7 @@ export const AppProvider: React.FC<{ children: React.ReactNode }> = ({ children 
     });
   };
 
-  const updateXP = (player: "james" | "lily", amount: number) => {
+  const updateXP = (player: "james" | "lily" | "merche", amount: number) => {
     setState((prev) => {
       const profile = { ...prev.profiles[player] };
       profile.totalXP += amount;
@@ -158,7 +158,7 @@ export const AppProvider: React.FC<{ children: React.ReactNode }> = ({ children 
     });
   };
 
-  const recordVocabAttempt = (player: "james" | "lily", destId: string, vocabId: string, correct: boolean) => {
+  const recordVocabAttempt = (player: "james" | "lily" | "merche", destId: string, vocabId: string, correct: boolean) => {
     setState((prev) => {
       const profile = { ...prev.profiles[player] };
       const stats = { ...profile.vocabStats };
@@ -248,7 +248,7 @@ export const AppProvider: React.FC<{ children: React.ReactNode }> = ({ children 
     });
   };
 
-  const updateHighScore = (player: "james" | "lily", gameKey: string, score: number) => {
+  const updateHighScore = (player: "james" | "lily" | "merche", gameKey: string, score: number) => {
     setState((prev) => {
       const profile = { ...prev.profiles[player] };
       const highScores = { ...profile.highScores };
@@ -277,7 +277,7 @@ export const AppProvider: React.FC<{ children: React.ReactNode }> = ({ children 
     });
   };
 
-  const completeChallenge = (player: "james" | "lily", challengeId: string, rewardXP: number) => {
+  const completeChallenge = (player: "james" | "lily" | "merche", challengeId: string, rewardXP: number) => {
     setState((prev) => {
       const profile = { ...prev.profiles[player] };
       const completed = [...profile.completedChallenges];
@@ -312,7 +312,7 @@ export const AppProvider: React.FC<{ children: React.ReactNode }> = ({ children 
     }));
   };
 
-  const unlockNextDestination = (player: "james" | "lily", currentDestId: string) => {
+  const unlockNextDestination = (player: "james" | "lily" | "merche", currentDestId: string) => {
     setState((prev) => {
       const profile = { ...prev.profiles[player] };
       const destOrder = ["kyoto", "tokyo", "osaka", "train", "okinawa", "takayama"];
@@ -339,7 +339,7 @@ export const AppProvider: React.FC<{ children: React.ReactNode }> = ({ children 
   };
 
   // Expanded actions:
-  const updateAvatar = (player: "james" | "lily", customization: Partial<AvatarCustomization>) => {
+  const updateAvatar = (player: "james" | "lily" | "merche", customization: Partial<AvatarCustomization>) => {
     setState((prev) => {
       const profile = { ...prev.profiles[player] };
       profile.avatarCustomization = {
@@ -360,7 +360,7 @@ export const AppProvider: React.FC<{ children: React.ReactNode }> = ({ children 
     });
   };
 
-  const buySticker = (player: "james" | "lily", stickerId: string, costXP: number): boolean => {
+  const buySticker = (player: "james" | "lily" | "merche", stickerId: string, costXP: number): boolean => {
     let success = false;
     setState((prev) => {
       const profile = { ...prev.profiles[player] };
@@ -380,7 +380,7 @@ export const AppProvider: React.FC<{ children: React.ReactNode }> = ({ children 
     return success;
   };
 
-  const completeQuestStep = (player: "james" | "lily", questId: string, amount: number) => {
+  const completeQuestStep = (player: "james" | "lily" | "merche", questId: string, amount: number) => {
     setState((prev) => {
       const profile = { ...prev.profiles[player] };
       profile.dailyQuests = profile.dailyQuests.map(q => {
@@ -404,7 +404,7 @@ export const AppProvider: React.FC<{ children: React.ReactNode }> = ({ children 
     });
   };
 
-  const claimQuestReward = (player: "james" | "lily", questId: string) => {
+  const claimQuestReward = (player: "james" | "lily" | "merche", questId: string) => {
     setState((prev) => {
       const profile = { ...prev.profiles[player] };
       profile.dailyQuests = profile.dailyQuests.map(q => {
@@ -427,7 +427,7 @@ export const AppProvider: React.FC<{ children: React.ReactNode }> = ({ children 
     });
   };
 
-  const readParentMessage = (player: "james" | "lily", messageId: string) => {
+  const readParentMessage = (player: "james" | "lily" | "merche", messageId: string) => {
     setState((prev) => {
       const profile = { ...prev.profiles[player] };
       profile.parentMessages = profile.parentMessages.map(m => {
@@ -446,7 +446,7 @@ export const AppProvider: React.FC<{ children: React.ReactNode }> = ({ children 
     });
   };
 
-  const claimParentMessageReward = (player: "james" | "lily", messageId: string) => {
+  const claimParentMessageReward = (player: "james" | "lily" | "merche", messageId: string) => {
     setState((prev) => {
       const profile = { ...prev.profiles[player] };
       profile.parentMessages = profile.parentMessages.map(m => {
@@ -468,7 +468,7 @@ export const AppProvider: React.FC<{ children: React.ReactNode }> = ({ children 
     });
   };
 
-  const sendParentMessage = (player: "james" | "lily", text: string, rewardXP: number = 0) => {
+  const sendParentMessage = (player: "james" | "lily" | "merche", text: string, rewardXP: number = 0) => {
     setState((prev) => {
       const profile = { ...prev.profiles[player] };
       const newMsg: ParentMessage = {
@@ -490,7 +490,7 @@ export const AppProvider: React.FC<{ children: React.ReactNode }> = ({ children 
     });
   };
 
-  const setCustomGoal = (player: "james" | "lily", goal: { text: string; targetWords: number } | null) => {
+  const setCustomGoal = (player: "james" | "lily" | "merche", goal: { text: string; targetWords: number } | null) => {
     setState((prev) => {
       const profile = { ...prev.profiles[player] };
       if (goal) {
@@ -512,7 +512,7 @@ export const AppProvider: React.FC<{ children: React.ReactNode }> = ({ children 
     });
   };
 
-  const checkCustomGoalCompletion = (player: "james" | "lily") => {
+  const checkCustomGoalCompletion = (player: "james" | "lily" | "merche") => {
     setState((prev) => {
       const profile = { ...prev.profiles[player] };
       if (profile.customGoal && !profile.customGoal.completed) {

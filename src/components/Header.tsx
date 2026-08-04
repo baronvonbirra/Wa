@@ -10,18 +10,18 @@ export const Header: React.FC<HeaderProps> = ({ currentTab, setCurrentTab }) => 
   const { state, switchPlayer, toggleSound, readParentMessage, claimParentMessageReward } = useAppState();
   const active = state.activePlayer;
 
-  // Active kid unread message lookups
-  const activeKidProfile = active !== 'parent' ? state.profiles[active] : null;
-  const activeMessages = activeKidProfile?.parentMessages || [];
+  // Active player unread message lookups
+  const activeProfile = active !== 'parent' ? state.profiles[active] : null;
+  const activeMessages = activeProfile?.parentMessages || [];
   const pendingMessage = activeMessages.find(m => !m.read || (m.rewardXP && !m.claimed));
 
   const handleClaimReward = (id: string) => {
-    claimParentMessageReward(active as "james" | "lily", id);
+    claimParentMessageReward(active as "james" | "lily" | "merche", id);
     alert("🪙 Awesome! Your parent message reward was added to your balance!");
   };
 
   const handleDismiss = (id: string) => {
-    readParentMessage(active as "james" | "lily", id);
+    readParentMessage(active as "james" | "lily" | "merche", id);
   };
 
   return (
@@ -30,7 +30,7 @@ export const Header: React.FC<HeaderProps> = ({ currentTab, setCurrentTab }) => 
         {/* Brand / Logo with wiggle animation */}
         <div
           className="flex items-center gap-3 cursor-pointer group"
-          onClick={() => setCurrentTab('home')}
+          onClick={() => setCurrentTab('landing')}
         >
           <span className="text-4xl animate-wiggle inline-block">🏯</span>
           <div>
@@ -42,22 +42,7 @@ export const Header: React.FC<HeaderProps> = ({ currentTab, setCurrentTab }) => 
         </div>
 
         {/* Playful Player Switcher */}
-        <div className="flex items-center gap-3 bg-[#FEF08A] p-2 rounded-3xl border-4 border-[#FACC15] shadow-inner">
-          <button
-            onClick={() => {
-              switchPlayer('james');
-              if (currentTab === 'dashboard') {
-                setCurrentTab('home');
-              }
-            }}
-            className={`flex items-center gap-2 px-4 py-2 rounded-2xl text-sm font-black transition-all duration-200 border-2 ${
-              active === 'james'
-                ? 'bg-rose-500 text-white shadow-md border-rose-300 scale-105'
-                : 'text-slate-700 bg-white hover:bg-slate-100 border-slate-200'
-            }`}
-          >
-            <span>{state.profiles.james.avatarCustomization?.face || "👦🏻"}</span> {state.profiles.james.avatarCustomization?.customName || "James"} ({state.profiles.james.age})
-          </button>
+        <div className="flex flex-wrap items-center justify-center gap-2 bg-[#FEF08A] p-2 rounded-3xl border-4 border-[#FACC15] shadow-inner">
           <button
             onClick={() => {
               switchPlayer('lily');
@@ -65,26 +50,59 @@ export const Header: React.FC<HeaderProps> = ({ currentTab, setCurrentTab }) => 
                 setCurrentTab('home');
               }
             }}
-            className={`flex items-center gap-2 px-4 py-2 rounded-2xl text-sm font-black transition-all duration-200 border-2 ${
+            className={`flex items-center gap-1.5 px-3 py-1.5 rounded-2xl text-xs font-black transition-all duration-200 border-2 ${
               active === 'lily'
                 ? 'bg-amber-500 text-white shadow-md border-amber-300 scale-105'
                 : 'text-slate-700 bg-white hover:bg-slate-100 border-slate-200'
             }`}
           >
-            <span>{state.profiles.lily.avatarCustomization?.face || "👧🏻"}</span> {state.profiles.lily.avatarCustomization?.customName || "Lily"} ({state.profiles.lily.age})
+            <span>{state.profiles.lily.avatarCustomization?.face || "👧🏻"}</span> {state.profiles.lily.avatarCustomization?.customName || "Sofia"} ({state.profiles.lily.age})
           </button>
+
+          <button
+            onClick={() => {
+              switchPlayer('james');
+              if (currentTab === 'dashboard') {
+                setCurrentTab('home');
+              }
+            }}
+            className={`flex items-center gap-1.5 px-3 py-1.5 rounded-2xl text-xs font-black transition-all duration-200 border-2 ${
+              active === 'james'
+                ? 'bg-rose-500 text-white shadow-md border-rose-300 scale-105'
+                : 'text-slate-700 bg-white hover:bg-slate-100 border-slate-200'
+            }`}
+          >
+            <span>{state.profiles.james.avatarCustomization?.face || "👦🏻"}</span> {state.profiles.james.avatarCustomization?.customName || "Marco"} ({state.profiles.james.age})
+          </button>
+
+          <button
+            onClick={() => {
+              switchPlayer('merche');
+              if (currentTab === 'dashboard') {
+                setCurrentTab('home');
+              }
+            }}
+            className={`flex items-center gap-1.5 px-3 py-1.5 rounded-2xl text-xs font-black transition-all duration-200 border-2 ${
+              active === 'merche'
+                ? 'bg-indigo-500 text-white shadow-md border-indigo-300 scale-105'
+                : 'text-indigo-700 bg-white hover:bg-slate-100 border-slate-200'
+            }`}
+          >
+            <span>{state.profiles.merche.avatarCustomization?.face || "🤩"}</span> {state.profiles.merche.avatarCustomization?.customName || "Merche"} (Mom)
+          </button>
+
           <button
             onClick={() => {
               switchPlayer('parent');
               setCurrentTab('dashboard');
             }}
-            className={`flex items-center gap-2 px-4 py-2 rounded-2xl text-sm font-black transition-all duration-200 border-2 ${
+            className={`flex items-center gap-1.5 px-3 py-1.5 rounded-2xl text-xs font-black transition-all duration-200 border-2 ${
               active === 'parent'
                 ? 'bg-indigo-600 text-white shadow-md border-indigo-400 scale-105'
                 : 'text-indigo-600 bg-white hover:bg-slate-100 border-slate-200'
             }`}
           >
-            <span>👨‍👩‍👧‍👦</span> Parent
+            <span>👨‍👩‍👧‍👦</span> Control Center
           </button>
         </div>
 
@@ -150,30 +168,38 @@ export const Header: React.FC<HeaderProps> = ({ currentTab, setCurrentTab }) => 
       )}
 
       {/* Navigation Tabs with Bubble Buttons style */}
-      <nav className="bg-[#FFFDF9] border-t-2 border-[#FEF08A] py-2">
-        <div className="max-w-6xl mx-auto px-4 flex justify-center gap-4">
-          <button
-            onClick={() => setCurrentTab('home')}
-            className={`py-2 px-5 text-sm font-black rounded-full border-2 transition-all ${
-              currentTab === 'home'
-                ? 'bg-rose-500 text-white border-rose-600 shadow-md'
-                : 'bg-white text-slate-700 border-slate-200 hover:bg-slate-50'
-            }`}
-          >
-            🗺️ Destinations Map
-          </button>
-          <button
-            onClick={() => setCurrentTab('passport')}
-            className={`py-2 px-5 text-sm font-black rounded-full border-2 transition-all ${
-              currentTab === 'passport'
-                ? 'bg-rose-500 text-white border-rose-600 shadow-md'
-                : 'bg-white text-slate-700 border-slate-200 hover:bg-slate-50'
-            }`}
-          >
-            🎫 Passport Stamps
-          </button>
-        </div>
-      </nav>
+      {active !== 'parent' && (
+        <nav className="bg-[#FFFDF9] border-t-2 border-[#FEF08A] py-2">
+          <div className="max-w-6xl mx-auto px-4 flex justify-center gap-4">
+            <button
+              onClick={() => setCurrentTab('home')}
+              className={`py-2 px-5 text-sm font-black rounded-full border-2 transition-all ${
+                currentTab === 'home'
+                  ? 'bg-rose-500 text-white border-rose-600 shadow-md'
+                  : 'bg-white text-slate-700 border-slate-200 hover:bg-slate-50'
+              }`}
+            >
+              🗺️ Destinations Map
+            </button>
+            <button
+              onClick={() => setCurrentTab('passport')}
+              className={`py-2 px-5 text-sm font-black rounded-full border-2 transition-all ${
+                currentTab === 'passport'
+                  ? 'bg-rose-500 text-white border-rose-600 shadow-md'
+                  : 'bg-white text-slate-700 border-slate-200 hover:bg-slate-50'
+              }`}
+            >
+              🎫 Passport Stamps
+            </button>
+            <button
+              onClick={() => setCurrentTab('landing')}
+              className="py-2 px-5 text-sm font-black rounded-full border-2 bg-amber-400 text-slate-800 border-amber-500 hover:bg-amber-500 transition-all"
+            >
+              🔄 Change Player
+            </button>
+          </div>
+        </nav>
+      )}
     </header>
   );
 };
