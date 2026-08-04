@@ -1,17 +1,22 @@
-import React from 'react';
+import React, { useState } from 'react';
 import { useAppState } from '../state/AppContext';
 import { DESTINATIONS_DATA } from '../data/destinations';
+import { AvatarCustomizer } from './AvatarCustomizer';
+import { StickerStore } from './StickerStore';
+import { DailyQuests } from './DailyQuests';
+import { WeakAreaRecommendation } from './WeakAreaRecommendation';
+import { TripCountdownTimeline } from './TripCountdownTimeline';
 
 interface DestinationMapProps {
   onSelectDestination: (destId: string) => void;
 }
 
-import { useState } from 'react';
-
 export const DestinationMap: React.FC<DestinationMapProps> = ({ onSelectDestination }) => {
   const { state, switchPlayer } = useAppState();
   const active = state.activePlayer;
   const [isFactBookOpen, setIsFactBookOpen] = useState(false);
+  const [isAvatarOpen, setIsAvatarOpen] = useState(false);
+  const [isStickerStoreOpen, setIsStickerStoreOpen] = useState(false);
 
   // Render a friendly message if the active player is "parent" so they know they need to play as a kid
   if (active === 'parent') {
@@ -44,21 +49,49 @@ export const DestinationMap: React.FC<DestinationMapProps> = ({ onSelectDestinat
   const profile = state.profiles[active];
 
   return (
-    <div className="max-w-6xl mx-auto px-4 py-8">
+    <div className="max-w-6xl mx-auto px-4 py-8 space-y-8">
+      {/* Avatar Customizer modal */}
+      {isAvatarOpen && (
+        <AvatarCustomizer onClose={() => setIsAvatarOpen(false)} />
+      )}
+
+      {/* Sticker Store modal */}
+      {isStickerStoreOpen && (
+        <StickerStore onClose={() => setIsStickerStoreOpen(false)} />
+      )}
+
       {/* Dynamic Kid-Friendly Hero Banner */}
-      <div className="bg-gradient-to-r from-rose-100 via-amber-50 to-emerald-100 border-8 border-rose-300 rounded-[36px] p-6 md:p-8 mb-8 shadow-md flex flex-col md:flex-row items-center justify-between gap-6 relative overflow-hidden">
+      <div className="bg-gradient-to-r from-rose-100 via-amber-50 to-emerald-100 border-8 border-rose-300 rounded-[36px] p-6 md:p-8 shadow-md flex flex-col md:flex-row items-center justify-between gap-6 relative overflow-hidden">
         {/* Floating clouds/circles background */}
         <div className="absolute top-0 right-10 w-24 h-24 bg-white/40 rounded-full filter blur-xl"></div>
         <div className="absolute -bottom-5 left-10 w-32 h-32 bg-yellow-100/40 rounded-full filter blur-xl"></div>
 
         <div className="flex-1 relative z-10">
           <div className="flex items-center gap-4 mb-3">
-            <span className="text-7xl animate-soft">{profile.avatar}</span>
+            <div className="relative group cursor-pointer" onClick={() => setIsAvatarOpen(true)}>
+              <span className="text-7xl animate-soft block select-none">{profile.avatarCustomization?.face || profile.avatar}</span>
+              <span className="absolute -bottom-1 -right-1 bg-rose-500 text-white border-2 border-white text-[10px] font-black px-1.5 py-0.5 rounded-full shadow-md animate-bounce">EDIT</span>
+            </div>
             <div>
               <h2 className="text-3xl font-black text-rose-950 flex items-center gap-2 drop-shadow-sm">
-                Hey {profile.name}! <span className="text-xs font-black bg-rose-600 text-white px-3 py-1 rounded-full border-2 border-white animate-pulse">Level {profile.level}</span>
+                Hey {profile.avatarCustomization?.customName || profile.name}! <span className="text-xs font-black bg-rose-600 text-white px-3 py-1 rounded-full border-2 border-white animate-pulse">Level {profile.level}</span>
               </h2>
-              <p className="text-sm font-black text-amber-800 bg-white/70 px-3 py-0.5 rounded-full inline-block mt-1">⭐️ {profile.totalXP} Total XP Points</p>
+              <div className="flex flex-wrap gap-2 mt-1.5">
+                <span className="text-xs font-black text-amber-800 bg-white/75 px-3 py-1 rounded-full border border-amber-200">⭐️ {profile.totalXP} Total XP</span>
+                <span className="text-xs font-black text-rose-800 bg-white/75 px-3 py-1 rounded-full border border-rose-200">🪙 {profile.spendableXP} Coins</span>
+                <button
+                  onClick={() => setIsAvatarOpen(true)}
+                  className="text-xs font-black text-rose-600 bg-white hover:bg-rose-50 border border-rose-300 px-3 py-1 rounded-full transition-all flex items-center gap-1 shadow-sm active:translate-y-0.5"
+                >
+                  🎨 Customize Avatar
+                </button>
+                <button
+                  onClick={() => setIsStickerStoreOpen(true)}
+                  className="text-xs font-black text-amber-600 bg-white hover:bg-amber-50 border border-amber-300 px-3 py-1 rounded-full transition-all flex items-center gap-1 shadow-sm active:translate-y-0.5"
+                >
+                  🎫 Sticker Store
+                </button>
+              </div>
             </div>
           </div>
           <p className="text-rose-900 font-extrabold text-sm md:text-base leading-relaxed">
@@ -143,8 +176,17 @@ export const DestinationMap: React.FC<DestinationMapProps> = ({ onSelectDestinat
         </div>
       )}
 
+      {/* Daily Quests widget */}
+      <DailyQuests />
+
+      {/* Weak Area Auto-Recommendation Engine */}
+      <WeakAreaRecommendation onSelectDestination={onSelectDestination} />
+
+      {/* Interactive Trip Timeline and Countdown */}
+      <TripCountdownTimeline />
+
       {/* Progress Path */}
-      <div className="mb-6">
+      <div>
         <h3 className="text-2xl font-black text-slate-800 flex items-center gap-2.5 mb-6">
           <span>🗺️</span> Pick Your Destination Quest!
         </h3>

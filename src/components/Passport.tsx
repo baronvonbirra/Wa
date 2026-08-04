@@ -1,6 +1,7 @@
 import React from 'react';
 import { useAppState } from '../state/AppContext';
 import { DESTINATIONS_DATA } from '../data/destinations';
+import { STICKER_LIST } from './StickerStore';
 
 export const Passport: React.FC = () => {
   const { state, switchPlayer } = useAppState();
@@ -37,6 +38,9 @@ export const Passport: React.FC = () => {
 
   const daysLeft = calculateDaysUntilTrip();
 
+  // Find purchased stickers
+  const ownedStickers = STICKER_LIST.filter(s => profile.unlockedStickers.includes(s.id));
+
   return (
     <div className="max-w-4xl mx-auto px-4 py-8">
       {/* Passport Book Wrapper with cute bubbly custom design */}
@@ -50,14 +54,14 @@ export const Passport: React.FC = () => {
         <div className="text-center pb-6 border-b-4 border-[#7D2235]">
           <div className="text-6xl mb-3 animate-wiggle inline-block">🇯🇵</div>
           <h2 className="text-3xl font-black tracking-widest text-[#FFF275] drop-shadow-sm">JAPAN TRAVEL PASSPORT</h2>
-          <p className="text-[#FFFDF9] text-sm font-black uppercase tracking-wider mt-1">James & Lily's Language Companion!</p>
+          <p className="text-[#FFFDF9] text-sm font-black uppercase tracking-wider mt-1">{profile.avatarCustomization?.customName || profile.name}'s Language Companion!</p>
         </div>
 
         {/* Passport Identity Page info */}
         <div className="bg-[#FFFDF9] text-slate-800 rounded-[32px] p-6 my-8 border-8 border-[#FFF275] shadow-lg flex flex-col md:flex-row gap-6">
           <div className="flex flex-col items-center justify-center bg-rose-50 border-4 border-rose-200 rounded-[24px] p-5 w-full md:w-1/3 text-center">
-            <span className="text-8xl mb-3 animate-soft">{profile.avatar}</span>
-            <h3 className="text-2xl font-black text-rose-950">{profile.name}</h3>
+            <span className="text-8xl mb-3 animate-soft">{profile.avatarCustomization?.face || profile.avatar}</span>
+            <h3 className="text-2xl font-black text-rose-950">{profile.avatarCustomization?.customName || profile.name}</h3>
             <span className="text-xs font-black bg-rose-600 text-white px-3 py-1 rounded-full border-2 border-white mt-1 animate-pulse">Level {profile.level} Explorer</span>
           </div>
 
@@ -80,15 +84,15 @@ export const Passport: React.FC = () => {
             </div>
 
             <div className="bg-amber-50 p-4 rounded-2xl border-2 border-amber-200 text-xs font-bold text-amber-900 leading-relaxed">
-              ⭐ Note: Master at least 50% of the vocabulary words in any location to earn its beautiful sticker stamp below!
+              ⭐ Note: Master at least 50% of the vocabulary words in any location to earn its beautiful sticker stamp below! Keep learning to earn coins for the Sticker Store!
             </div>
           </div>
         </div>
 
         {/* Visa Stamps Grid Section */}
-        <div>
+        <div className="mb-10">
           <h3 className="text-2xl font-black text-[#FFF275] mb-6 flex items-center gap-2 justify-center">
-            <span>✈️</span> STICKER ALBUM
+            <span>✈️</span> STICKER ALBUM (STAMPS)
           </h3>
 
           <div className="grid grid-cols-2 sm:grid-cols-3 gap-6">
@@ -121,9 +125,42 @@ export const Passport: React.FC = () => {
           </div>
         </div>
 
+        {/* Purchased Custom Stickers Section */}
+        <div className="border-t-4 border-[#7D2235] pt-8">
+          <h3 className="text-2xl font-black text-[#FFF275] mb-4 flex items-center gap-2 justify-center">
+            <span>🎨</span> MY COLLECTED STICKERS ({ownedStickers.length})
+          </h3>
+          <p className="text-xs text-[#FFFDF9]/80 text-center font-bold mb-6 max-w-md mx-auto">
+            These are the lovely stickers you purchased from the Adventure Sticker Store using your hard-earned coins!
+          </p>
+
+          {ownedStickers.length > 0 ? (
+            <div className="grid grid-cols-3 sm:grid-cols-5 gap-4">
+              {ownedStickers.map((sticker) => (
+                <div
+                  key={sticker.id}
+                  className={`bg-white/10 hover:bg-white/15 border-2 border-[#FFF275]/30 rounded-2xl p-3 flex flex-col items-center text-center transition-transform hover:scale-110 duration-200 relative ${sticker.effectClass || ''}`}
+                >
+                  <span className="text-4xl block mb-2 select-none">{sticker.emoji}</span>
+                  <span className="text-[10px] font-black text-[#FFF275] leading-tight break-words max-w-[80px]">
+                    {sticker.name}
+                  </span>
+                </div>
+              ))}
+            </div>
+          ) : (
+            <div className="bg-black/10 border-2 border-dashed border-[#FFF275]/20 p-8 rounded-2xl text-center">
+              <span className="text-4xl block opacity-45 mb-2">🏪</span>
+              <p className="text-xs font-bold text-[#FFFDF9]/70 max-w-xs mx-auto">
+                No stickers purchased yet! Visit the Sticker Store on the main Destinations Map and buy cool animations with your coins!
+              </p>
+            </div>
+          )}
+        </div>
+
         {/* Countdown Banner */}
         {isPassportComplete ? (
-          <div className="mt-8 bg-[#FFF275] border-8 border-amber-400 text-slate-900 p-6 rounded-[32px] text-center shadow-lg animate-wiggle">
+          <div className="mt-10 bg-[#FFF275] border-8 border-amber-400 text-slate-900 p-6 rounded-[32px] text-center shadow-lg animate-wiggle">
             <h4 className="text-2xl font-black">🎉 ALL STAMPS EARNED! TRIP COUNTDOWN UNLOCKED! 🎉</h4>
             <p className="font-bold text-slate-700 mt-1">Outstanding job! You are officially prepared for your massive family trip to Japan!</p>
             <div className="text-3xl font-black text-rose-600 mt-4 bg-white py-3.5 rounded-2xl inline-block px-8 shadow-md border-4 border-amber-200">
@@ -131,7 +168,7 @@ export const Passport: React.FC = () => {
             </div>
           </div>
         ) : (
-          <div className="mt-8 bg-[#FFFDF9]/10 border-2 border-dashed border-[#FFF275]/20 text-[#FFFDF9]/80 p-5 rounded-[24px] text-center text-xs font-black">
+          <div className="mt-10 bg-[#FFFDF9]/10 border-2 border-dashed border-[#FFF275]/20 text-[#FFFDF9]/80 p-5 rounded-[24px] text-center text-xs font-black">
             🔒 Collect all 6 stamps to unlock the official Trip Countdown Timer & prove you are fully prepared!
           </div>
         )}

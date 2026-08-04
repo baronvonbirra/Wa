@@ -1,9 +1,38 @@
+export interface AvatarCustomization {
+  face: string;
+  hair: string;
+  outfit: string;
+  customName: string;
+}
+
+export interface DailyQuest {
+  id: string;
+  title: string;
+  description: string;
+  progress: number;
+  target: number;
+  rewardXP: number;
+  completed: boolean;
+  claimed: boolean;
+}
+
+export interface ParentMessage {
+  id: string;
+  text: string;
+  date: string;
+  read: boolean;
+  rewardXP?: number;
+  claimed?: boolean;
+}
+
 export interface PlayerProgress {
   name: string;
   age: number;
-  avatar: string;
+  avatar: string; // fallback simple emoji
+  avatarCustomization: AvatarCustomization;
   level: number;
   totalXP: number;
+  spendableXP: number; // For sticker store and custom items
   streak: number;
   lastPlayedDate: string | null; // YYYY-MM-DD
   // Map of destinationId -> list of vocabulary ids that are mastered (correct answer on first try or multiple correct)
@@ -18,6 +47,14 @@ export interface PlayerProgress {
   completedChallenges: string[];
   // Completed trivia facts: { [factKey]: boolean }
   unlockedFacts: string[];
+  // Sticker Store inventory
+  unlockedStickers: string[]; // List of sticker IDs owned
+  // Active daily quests for today
+  dailyQuests: DailyQuest[];
+  // Received parent messages / rewards
+  parentMessages: ParentMessage[];
+  // Custom goal set by parent
+  customGoal: { text: string; targetWords: number; completed: boolean } | null;
 }
 
 export interface FamilyChallenge {
@@ -70,14 +107,54 @@ export interface AppState {
   activeChallengeId: string | null;
 }
 
+export const DEFAULT_QUESTS = (playerKey: "james" | "lily"): DailyQuest[] => [
+  {
+    id: "morning-learner",
+    title: "☀️ Morning Learner",
+    description: "Earn 20 XP today to prove your morning spirit!",
+    progress: 0,
+    target: 20,
+    rewardXP: 20,
+    completed: false,
+    claimed: false
+  },
+  {
+    id: "speed-demon",
+    title: "⚡ Speed Demon",
+    description: "Complete 2 separate games today!",
+    progress: 0,
+    target: 2,
+    rewardXP: 25,
+    completed: false,
+    claimed: false
+  },
+  {
+    id: "accuracy-star",
+    title: "🎯 Accuracy Star",
+    description: "Answer 10 words correctly across any of your games!",
+    progress: 0,
+    target: 10,
+    rewardXP: 30,
+    completed: false,
+    claimed: false
+  }
+];
+
 export const INITIAL_STATE: AppState = {
   profiles: {
     james: {
       name: "James",
       age: 9,
       avatar: "👦🏻",
+      avatarCustomization: {
+        face: "😊",
+        hair: "🎀 Black",
+        outfit: "🧥 Casual",
+        customName: "James the Great"
+      },
       level: 1,
       totalXP: 0,
+      spendableXP: 150, // Start with some free credits so they can try out the Sticker Store immediately!
       streak: 0,
       lastPlayedDate: null,
       masteredVocab: {
@@ -99,14 +176,34 @@ export const INITIAL_STATE: AppState = {
         takayama: false
       },
       completedChallenges: [],
-      unlockedFacts: []
+      unlockedFacts: [],
+      unlockedStickers: [],
+      dailyQuests: DEFAULT_QUESTS("james"),
+      parentMessages: [
+        {
+          id: "welcome",
+          text: "Welcome to Japan Quest! Learn together with Lily and prepare for our awesome trip! 🗻✈️",
+          date: new Date().toISOString().split('T')[0],
+          read: false,
+          rewardXP: 10,
+          claimed: false
+        }
+      ],
+      customGoal: null
     },
     lily: {
       name: "Lily",
       age: 5,
       avatar: "👧🏻",
+      avatarCustomization: {
+        face: "🥰",
+        hair: "🎀 Brown",
+        outfit: "👗 School",
+        customName: "Cute Lily"
+      },
       level: 1,
       totalXP: 0,
+      spendableXP: 150, // Start with some free credits so they can try out the Sticker Store immediately!
       streak: 0,
       lastPlayedDate: null,
       masteredVocab: {
@@ -128,7 +225,20 @@ export const INITIAL_STATE: AppState = {
         takayama: false
       },
       completedChallenges: [],
-      unlockedFacts: []
+      unlockedFacts: [],
+      unlockedStickers: [],
+      dailyQuests: DEFAULT_QUESTS("lily"),
+      parentMessages: [
+        {
+          id: "welcome",
+          text: "Welcome to Japan Quest! Learn together with James and prepare for our awesome trip! 🗻✈️",
+          date: new Date().toISOString().split('T')[0],
+          read: false,
+          rewardXP: 10,
+          claimed: false
+        }
+      ],
+      customGoal: null
     }
   },
   activePlayer: "james",
