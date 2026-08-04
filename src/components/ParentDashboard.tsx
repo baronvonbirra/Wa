@@ -10,8 +10,13 @@ export const ParentDashboard: React.FC = () => {
     resetAllProgress,
     completeChallenge,
     sendParentMessage,
-    setCustomGoal
+    setCustomGoal,
+    switchPlayer
   } = useAppState();
+
+  const [dashboardView, setDashboardView] = useState<'parent' | 'merche'>(
+    state.activePlayer === 'merche' ? 'merche' : 'parent'
+  );
 
   const [tripDateInput, setTripDateInput] = useState(state.tripDate);
 
@@ -154,15 +159,130 @@ export const ParentDashboard: React.FC = () => {
 
   return (
     <div className="max-w-6xl mx-auto px-4 py-8 space-y-8">
-      {/* Title */}
-      <div className="border-b border-indigo-100 pb-4">
-        <h2 className="text-3xl font-black text-indigo-950 flex items-center gap-2">
-          👨‍👩‍👧‍👦 Mike's Parent Control Center 2.0
-        </h2>
-        <p className="text-slate-500 font-medium text-sm mt-1">
-          Monitor your family's learning curve statistics, send custom encouragement notes, and set study goals!
-        </p>
-      </div>
+      {/* Toggle View buttons for Merche */}
+      {state.activePlayer === 'merche' && (
+        <div className="flex justify-center gap-4 bg-indigo-50 border-4 border-indigo-200 p-2.5 rounded-3xl max-w-md mx-auto">
+          <button
+            onClick={() => setDashboardView('merche')}
+            className={`flex-1 py-2 px-5 text-sm font-black rounded-2xl transition-all ${
+              dashboardView === 'merche'
+                ? 'bg-indigo-600 text-white shadow-md'
+                : 'bg-white text-indigo-700 hover:bg-indigo-100'
+            }`}
+          >
+            📚 Merche's Adult Path
+          </button>
+          <button
+            onClick={() => setDashboardView('parent')}
+            className={`flex-1 py-2 px-5 text-sm font-black rounded-2xl transition-all ${
+              dashboardView === 'parent'
+                ? 'bg-indigo-600 text-white shadow-md'
+                : 'bg-white text-indigo-700 hover:bg-indigo-100'
+            }`}
+          >
+            👨‍👩‍👧‍👦 Parent Controls
+          </button>
+        </div>
+      )}
+
+      {/* RENDER ADULT ADVANCED PATH FOR MERCHE */}
+      {dashboardView === 'merche' && state.activePlayer === 'merche' ? (
+        <div className="space-y-8">
+          {/* Header Hero */}
+          <div className="bg-gradient-to-r from-indigo-100 via-purple-50 to-indigo-200 border-8 border-indigo-300 rounded-[36px] p-8 shadow-md">
+            <div className="flex items-center gap-4 mb-3">
+              <span className="text-7xl animate-soft">🤩</span>
+              <div>
+                <h2 className="text-3xl font-black text-indigo-950">
+                  Welcome to Your Adult Path, Merche!
+                </h2>
+                <p className="text-xs font-black text-indigo-700 bg-white border border-indigo-100 px-3 py-1 rounded-full inline-block mt-1">
+                  🎯 Focus Path: Conversational Japanese (Advanced)
+                </p>
+              </div>
+            </div>
+            <p className="text-sm font-bold text-indigo-900 mt-2 max-w-xl">
+              Gain intermediate-to-advanced proficiency, study formal registers (Keigo), culture trivia, grammar particles, and hold natural conversations with locals.
+            </p>
+          </div>
+
+          <div className="grid grid-cols-1 md:grid-cols-2 gap-8">
+            {/* Merche's Skill breakdown metrics */}
+            <div className="bg-white border-4 border-indigo-200 rounded-[32px] p-6 shadow-sm">
+              <h3 className="text-lg font-black text-indigo-950 mb-4 flex items-center gap-1.5">
+                <span>📈</span> Language Competency Breakdown
+              </h3>
+
+              <div className="space-y-4">
+                {[
+                  { skill: "Listening & Pronunciation", pct: 65, color: "bg-emerald-400" },
+                  { skill: "Conversational Fluency", pct: 45, color: "bg-indigo-500" },
+                  { skill: "Grammar Analysis (Particles)", pct: 70, color: "bg-blue-400" },
+                  { skill: "Reading & Writing (Hiragana)", pct: 55, color: "bg-rose-400" }
+                ].map((item, idx) => (
+                  <div key={idx}>
+                    <div className="flex justify-between text-xs font-black text-slate-600 mb-1.5">
+                      <span>{item.skill}</span>
+                      <span>{item.pct}% Proficiency</span>
+                    </div>
+                    <div className="w-full bg-slate-100 h-3.5 rounded-full overflow-hidden border border-slate-200">
+                      <div className={`${item.color} h-full rounded-full`} style={{ width: `${item.pct}%` }}></div>
+                    </div>
+                  </div>
+                ))}
+              </div>
+            </div>
+
+            {/* Cultural Context Insights */}
+            <div className="bg-white border-4 border-amber-200 rounded-[32px] p-6 shadow-sm">
+              <h3 className="text-lg font-black text-[#B45309] mb-4 flex items-center gap-1.5">
+                <span>💡</span> Adult Cultural & Etiquette Guide
+              </h3>
+
+              <div className="space-y-4 text-xs font-bold text-slate-700 leading-relaxed max-h-[250px] overflow-y-auto">
+                <div className="bg-amber-50/50 p-3.5 rounded-2xl border border-amber-100">
+                  <span className="text-[10px] font-black uppercase text-amber-700">Polite Bowing Registers</span>
+                  <p className="mt-1">In Japan, bowing (Ojigi) represents respect, gratitude, and politeness. Adults use 'Eirei' (30-degree bow) for greeting clients or tea masters, and 'Saikeirei' (45-degree bow) for deep apologies.</p>
+                </div>
+
+                <div className="bg-amber-50/50 p-3.5 rounded-2xl border border-amber-100">
+                  <span className="text-[10px] font-black uppercase text-amber-700">The 3 Politeness Registers</span>
+                  <p className="mt-1">Japanese syntax varies significantly. Casual style is used with kids, 'Teineigo' (polite desu/masu) with service staff, and 'Keigo' (honorific/humble) during professional encounters.</p>
+                </div>
+              </div>
+            </div>
+          </div>
+
+          {/* Textbook style notes */}
+          <div className="bg-[#FFFDF9] border-4 border-[#FDE047] rounded-[36px] p-6 shadow-md">
+            <h3 className="text-lg font-black text-amber-950 mb-3 flex items-center gap-2">
+              <span>📖</span> Merche's Reference Grammar Guide
+            </h3>
+
+            <div className="grid grid-cols-1 md:grid-cols-2 gap-6 text-xs font-bold text-slate-700 leading-relaxed">
+              <div className="bg-white p-4 rounded-2xl border border-slate-100">
+                <h4 className="font-black text-rose-600 mb-1">Direct Object Particle を (o/wo)</h4>
+                <p>Marks what the verb acts on. In <em>"お茶を飲みます"</em> (I drink tea), tea (ocha) takes <em>を</em> because it's being drunk.</p>
+              </div>
+
+              <div className="bg-white p-4 rounded-2xl border border-slate-100">
+                <h4 className="font-black text-rose-600 mb-1">Polite Request ください (Kudasai)</h4>
+                <p>Say <em>"Noun + をください"</em> to politely request items in convenience stores, ramen stalls, and cafes.</p>
+              </div>
+            </div>
+          </div>
+        </div>
+      ) : (
+        <>
+          {/* Title */}
+          <div className="border-b border-indigo-100 pb-4">
+            <h2 className="text-3xl font-black text-indigo-950 flex items-center gap-2">
+              👨‍👩‍👧‍👦 Mike's Parent Control Center 2.0
+            </h2>
+            <p className="text-slate-500 font-medium text-sm mt-1">
+              Monitor your family's learning curve statistics, send custom encouragement notes, and set study goals!
+            </p>
+          </div>
 
       {/* Side-by-side Progress Cards */}
       <div className="grid grid-cols-1 md:grid-cols-2 gap-8">
@@ -435,8 +555,12 @@ export const ParentDashboard: React.FC = () => {
         </div>
       </div>
 
+        </>
+      )}
+
       {/* Global settings and scheduler */}
-      <div className="grid grid-cols-1 md:grid-cols-2 gap-8">
+      {dashboardView === 'parent' && (
+        <div className="grid grid-cols-1 md:grid-cols-2 gap-8">
 
         {/* Trip Settings */}
         <div className="bg-white border-2 border-indigo-50 rounded-3xl p-6 shadow-sm">
@@ -520,6 +644,7 @@ export const ParentDashboard: React.FC = () => {
         </div>
 
       </div>
+      )}
     </div>
   );
 };

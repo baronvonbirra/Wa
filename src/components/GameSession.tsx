@@ -12,7 +12,7 @@ export const GameSession: React.FC<GameSessionProps> = ({ destination, onClose }
   const { state, updateXP, recordVocabAttempt, updateHighScore } = useAppState();
   const activeKid = state.activePlayer === 'parent' ? 'james' : state.activePlayer;
 
-  const [gameType, setGameType] = useState<'match' | 'listen' | 'read' | 'dialogue' | 'pronounce' | 'emojiMatch' | 'dragDrop' | null>(null);
+  const [gameType, setGameType] = useState<'match' | 'listen' | 'read' | 'dialogue' | 'pronounce' | 'emojiMatch' | 'dragDrop' | 'conversation' | 'grammar' | 'listeningEx' | 'readingEx' | 'writingEx' | null>(null);
   const [currentStep, setCurrentStep] = useState(0);
   const [score, setScore] = useState(0);
   const [streakCount, setStreakCount] = useState(0);
@@ -23,6 +23,18 @@ export const GameSession: React.FC<GameSessionProps> = ({ destination, onClose }
   // States specific to card matching
   const [matchCards, setMatchCards] = useState<{ id: string; val: string; type: 'jp' | 'en'; isFlipped: boolean; isMatched: boolean }[]>([]);
   const [selectedCards, setSelectedCards] = useState<number[]>([]);
+
+  // States specific to Advanced Phase 3 Features
+  const [convScenarioIdx, setConvScenarioIdx] = useState(0);
+  const [convTurnIdx, setConvTurnIdx] = useState(0);
+  const [convHistory, setConvHistory] = useState<{ speaker: string; text: string; english: string }[]>([]);
+
+  const [grammarIdx, setGrammarIdx] = useState(0);
+  const [listeningExIdx, setListeningExIdx] = useState(0);
+  const [readingExIdx, setReadingExIdx] = useState(0);
+  const [writingExIdx, setWritingExIdx] = useState(0);
+  const [writingInput, setWritingInput] = useState("");
+  const [writingFeedback, setWritingFeedback] = useState<{ matches: string[]; missing: string[]; rating: string } | null>(null);
 
   // States specific to quizzes
   const [quizWord, setQuizWord] = useState<VocabularyWord | null>(null);
@@ -55,7 +67,7 @@ export const GameSession: React.FC<GameSessionProps> = ({ destination, onClose }
   };
 
   // Start selected game mode
-  const startGame = (type: 'match' | 'listen' | 'read' | 'dialogue' | 'pronounce' | 'emojiMatch' | 'dragDrop') => {
+  const startGame = (type: 'match' | 'listen' | 'read' | 'dialogue' | 'pronounce' | 'emojiMatch' | 'dragDrop' | 'conversation' | 'grammar' | 'listeningEx' | 'readingEx' | 'writingEx' | null) => {
     setGameType(type);
     setCurrentStep(0);
     setScore(0);
@@ -77,6 +89,33 @@ export const GameSession: React.FC<GameSessionProps> = ({ destination, onClose }
       initEmojiMatchStep(0);
     } else if (type === 'dragDrop') {
       initDragDropStep(0);
+    } else if (type === 'conversation') {
+      initConversationGame();
+    } else if (type === 'grammar') {
+      setGrammarIdx(0);
+    } else if (type === 'listeningEx') {
+      setListeningExIdx(0);
+    } else if (type === 'readingEx') {
+      setReadingExIdx(0);
+    } else if (type === 'writingEx') {
+      setWritingExIdx(0);
+      setWritingInput("");
+      setWritingFeedback(null);
+    }
+  };
+
+  const initConversationGame = () => {
+    setConvScenarioIdx(0);
+    setConvTurnIdx(0);
+    const scen = destination.conversations?.[0];
+    if (scen && scen.turns[0]) {
+      setConvHistory([{
+        speaker: scen.turns[0].speaker,
+        text: scen.turns[0].japanese,
+        english: scen.turns[0].english
+      }]);
+    } else {
+      setConvHistory([]);
     }
   };
 
@@ -377,6 +416,174 @@ export const GameSession: React.FC<GameSessionProps> = ({ destination, onClose }
     }
   };
 
+  // --- GRAMMAR MODE LOGIC ---
+  const handleGrammarAnswer = (ans: string, correct: string, expl: string) => {
+    if (feedback) return;
+
+    const isCorrect = ans === correct;
+    setScore(prev => prev + (isCorrect ? 25 : 0));
+    updateXP(activeKid, isCorrect ? 15 : 5);
+
+    setFeedback({
+      isCorrect,
+      text: isCorrect
+        ? `🎉 Perfect! Correct Answer. Explanation: ${expl}`
+        : `❌ Oh no! Correct was: ${correct}. Explanation: ${expl}`
+    });
+  };
+
+  const handleNextGrammarQuestion = () => {
+    setFeedback(null);
+    const nextIdx = grammarIdx + 1;
+    if (destination.grammarQuestions && nextIdx < destination.grammarQuestions.length) {
+      setGrammarIdx(nextIdx);
+    } else {
+      setIsGameOver(true);
+    }
+  };
+
+  // --- LISTENING MODE LOGIC ---
+  const handleListeningAnswer = (ans: string, correct: string) => {
+    if (feedback) return;
+
+    const isCorrect = ans === correct;
+    setScore(prev => prev + (isCorrect ? 25 : 0));
+    updateXP(activeKid, isCorrect ? 15 : 5);
+
+    setFeedback({
+      isCorrect,
+      text: isCorrect ? "🎉 Perfect! That is exactly what they said!" : `❌ Oh no! The correct interpretation is: ${correct}`
+    });
+  };
+
+  const handleNextListeningQuestion = () => {
+    setFeedback(null);
+    const nextIdx = listeningExIdx + 1;
+    if (destination.listeningExercises && nextIdx < destination.listeningExercises.length) {
+      setListeningExIdx(nextIdx);
+    } else {
+      setIsGameOver(true);
+    }
+  };
+
+  // --- READING COMPREHENSION LOGIC ---
+  const handleReadingAnswer = (ans: string, correct: string) => {
+    if (feedback) return;
+
+    const isCorrect = ans === correct;
+    setScore(prev => prev + (isCorrect ? 25 : 0));
+    updateXP(activeKid, isCorrect ? 15 : 5);
+
+    setFeedback({
+      isCorrect,
+      text: isCorrect ? "🎉 Excellent reading skills! You understood perfectly!" : `❌ Not quite right! The correct answer is: ${correct}`
+    });
+  };
+
+  const handleNextReadingQuestion = () => {
+    setFeedback(null);
+    const nextIdx = readingExIdx + 1;
+    if (destination.readingPassages && nextIdx < destination.readingPassages.length) {
+      setReadingExIdx(nextIdx);
+    } else {
+      setIsGameOver(true);
+    }
+  };
+
+  // --- GUIDED WRITING LOGIC ---
+  const handleVerifyWriting = (prompt: any) => {
+    if (feedback) return;
+
+    const lowerInput = writingInput.toLowerCase().trim();
+    const matched: string[] = [];
+    const missing: string[] = [];
+
+    prompt.requiredElements.forEach((el: string) => {
+      // search for parts of elements (simplified check for testing)
+      const cleanEl = el.split(' ')[0].replace(/['"「」]/g, '');
+      if (lowerInput.includes(cleanEl.toLowerCase())) {
+        matched.push(el);
+      } else {
+        missing.push(el);
+      }
+    });
+
+    const matchRatio = matched.length / prompt.requiredElements.length;
+    let rating = "Good Job!";
+    let points = 10;
+    if (matchRatio === 1) {
+      rating = "✨ Perfect Native Quality! Exceptional Grammar!";
+      points = 35;
+    } else if (matchRatio >= 0.5) {
+      rating = "👍 Pretty Good. Add missing elements to make it fully authentic!";
+      points = 20;
+    } else {
+      rating = "⚠️ Needs some rework. Review the required cues and try again!";
+      points = 5;
+    }
+
+    setScore(prev => prev + points);
+    updateXP(activeKid, points);
+    setWritingFeedback({ matches: matched, missing, rating });
+
+    setFeedback({
+      isCorrect: matchRatio >= 0.5,
+      text: rating
+    });
+  };
+
+  const handleNextWritingPrompt = () => {
+    setFeedback(null);
+    setWritingFeedback(null);
+    setWritingInput("");
+    const nextIdx = writingExIdx + 1;
+    if (destination.writingPrompts && nextIdx < destination.writingPrompts.length) {
+      setWritingExIdx(nextIdx);
+    } else {
+      setIsGameOver(true);
+    }
+  };
+
+  // --- CONVERSATION BRANCHING LOGIC ---
+  const handleConversationOption = (opt: any) => {
+    if (feedback) return;
+
+    setScore(prev => prev + opt.score);
+    updateXP(activeKid, opt.isCorrect ? 15 : 5);
+
+    setFeedback({
+      isCorrect: opt.isCorrect,
+      text: opt.feedback
+    });
+
+    // Add Player's reply to history
+    setConvHistory(prev => [
+      ...prev,
+      { speaker: "You", text: opt.text, english: opt.english }
+    ]);
+  };
+
+  const handleNextConversationTurn = () => {
+    setFeedback(null);
+    const scen = destination.conversations?.[convScenarioIdx];
+    if (!scen) return;
+
+    const nextTurnIdx = convTurnIdx + 2; // skip player select turn to next system turn
+    if (nextTurnIdx < scen.turns.length) {
+      setConvTurnIdx(nextTurnIdx);
+      // Speak next system turn
+      const systemTurn = scen.turns[nextTurnIdx];
+      playAudio(systemTurn.japanese);
+      setConvHistory(prev => [
+        ...prev,
+        { speaker: systemTurn.speaker, text: systemTurn.japanese, english: systemTurn.english }
+      ]);
+    } else {
+      // Scenario done
+      setIsGameOver(true);
+    }
+  };
+
   // --- PRONUNCIATION SANDBOX LOGIC ---
   const handlePronounceAttempt = () => {
     setIsPronouncing(true);
@@ -462,76 +669,166 @@ export const GameSession: React.FC<GameSessionProps> = ({ destination, onClose }
                 </div>
               </button>
 
-              {/* Conditional rendering depending on player age: Lily is 5yo, James is 9yo */}
-              {state.profiles[activeKid].age === 5 ? (
+              {/* Conditional rendering depending on player path and age */}
+              {state.profiles[activeKid].learningPath === "adult_advanced" ? (
                 <>
                   <button
-                    onClick={() => startGame('emojiMatch')}
-                    className="p-5 bg-amber-50 border-4 border-amber-200 hover:border-amber-400 rounded-3xl text-left transition-all hover:shadow-lg active:scale-95 group flex items-start gap-4 text-left"
+                    onClick={() => startGame('conversation')}
+                    disabled={!destination.conversations || destination.conversations.length === 0}
+                    className="p-5 bg-indigo-50 border-4 border-indigo-200 hover:border-indigo-400 rounded-3xl text-left transition-all hover:shadow-lg active:scale-95 group flex items-start gap-4"
                   >
-                    <span className="text-5xl bg-white p-3 rounded-2xl border-2 border-amber-100 group-hover:scale-110 transition-transform shadow-sm">⭐️</span>
+                    <span className="text-5xl bg-white p-3 rounded-2xl border-2 border-indigo-100 group-hover:scale-110 transition-transform shadow-sm">💬</span>
                     <div>
-                      <h5 className="font-black text-amber-950 text-lg flex items-center gap-1.5">
-                        Audio + Emoji Match <span className="text-xs font-black bg-rose-500 text-white px-1.5 py-0.5 rounded-full uppercase">NEW</span>
+                      <h5 className="font-black text-indigo-900 text-lg flex items-center gap-1.5">
+                        Conversations <span className="text-xs font-black bg-rose-500 text-white px-1.5 py-0.5 rounded-full uppercase">HOT</span>
                       </h5>
-                      <p className="text-xs text-amber-700 font-bold mt-1">Hear the word, then choose the correct picture card. No reading needed!</p>
+                      <p className="text-xs text-indigo-700 font-bold mt-1">Roleplay and converse in real Japanese scenarios.</p>
                     </div>
                   </button>
 
                   <button
-                    onClick={() => startGame('dragDrop')}
-                    className="p-5 bg-blue-50 border-4 border-blue-200 hover:border-blue-400 rounded-3xl text-left transition-all hover:shadow-lg active:scale-95 group flex items-start gap-4 text-left"
+                    onClick={() => startGame('grammar')}
+                    disabled={!destination.grammarQuestions || destination.grammarQuestions.length === 0}
+                    className="p-5 bg-blue-50 border-4 border-blue-200 hover:border-blue-400 rounded-3xl text-left transition-all hover:shadow-lg active:scale-95 group flex items-start gap-4"
                   >
-                    <span className="text-5xl bg-white p-3 rounded-2xl border-2 border-blue-100 group-hover:scale-110 transition-transform shadow-sm">👉</span>
+                    <span className="text-5xl bg-white p-3 rounded-2xl border-2 border-blue-100 group-hover:scale-110 transition-transform shadow-sm">📝</span>
                     <div>
-                      <h5 className="font-black text-blue-950 text-lg flex items-center gap-1.5">
-                        Audio + Drag & Drop <span className="text-xs font-black bg-rose-500 text-white px-1.5 py-0.5 rounded-full uppercase">NEW</span>
+                      <h5 className="font-black text-blue-900 text-lg flex items-center gap-1.5">
+                        Grammar Deep Dive <span className="text-xs font-black bg-rose-500 text-white px-1.5 py-0.5 rounded-full uppercase">NEW</span>
                       </h5>
-                      <p className="text-xs text-blue-700 font-bold mt-1">Drag (or tap) the emoji into its correct category box. Fun & tactile!</p>
+                      <p className="text-xs text-blue-700 font-bold mt-1">Master particles (は vs を) and complex travel syntax.</p>
+                    </div>
+                  </button>
+
+                  <button
+                    onClick={() => startGame('listeningEx')}
+                    disabled={!destination.listeningExercises || destination.listeningExercises.length === 0}
+                    className="p-5 bg-[#ECFDF5] border-4 border-emerald-200 hover:border-emerald-400 rounded-3xl text-left transition-all hover:shadow-lg active:scale-95 group flex items-start gap-4"
+                  >
+                    <span className="text-5xl bg-white p-3 rounded-2xl border-2 border-emerald-100 group-hover:scale-110 transition-transform shadow-sm">🚄</span>
+                    <div>
+                      <h5 className="font-black text-emerald-900 text-lg flex items-center gap-1.5">
+                        Native-Speed Listening
+                      </h5>
+                      <p className="text-xs text-emerald-700 font-bold mt-1">Practice comprehension listening to full speed native dialogue.</p>
+                    </div>
+                  </button>
+
+                  <button
+                    onClick={() => startGame('readingEx')}
+                    disabled={!destination.readingPassages || destination.readingPassages.length === 0}
+                    className="p-5 bg-rose-50 border-4 border-rose-200 hover:border-rose-400 rounded-3xl text-left transition-all hover:shadow-lg active:scale-95 group flex items-start gap-4"
+                  >
+                    <span className="text-5xl bg-white p-3 rounded-2xl border-2 border-rose-100 group-hover:scale-110 transition-transform shadow-sm">📖</span>
+                    <div>
+                      <h5 className="font-black text-rose-900 text-lg flex items-center gap-1.5">
+                        Reading Comprehension
+                      </h5>
+                      <p className="text-xs text-rose-700 font-bold mt-1">Analyze and read authentic Japanese travel blog posts.</p>
+                    </div>
+                  </button>
+
+                  <button
+                    onClick={() => startGame('writingEx')}
+                    disabled={!destination.writingPrompts || destination.writingPrompts.length === 0}
+                    className="p-5 bg-purple-50 border-4 border-purple-200 hover:border-purple-400 rounded-3xl text-left transition-all hover:shadow-lg active:scale-95 group flex items-start gap-4 col-span-1 md:col-span-2"
+                  >
+                    <span className="text-5xl bg-white p-3 rounded-2xl border-2 border-purple-100 group-hover:scale-110 transition-transform shadow-sm">✍️</span>
+                    <div>
+                      <h5 className="font-black text-purple-900 text-lg flex items-center gap-1.5">
+                        Guided Composition & Writing <span className="text-xs font-black bg-rose-500 text-white px-1.5 py-0.5 rounded-full uppercase">NEW</span>
+                      </h5>
+                      <p className="text-xs text-purple-700 font-bold mt-1">Write emails to booking agents and messages to friends with instant AI suggestions!</p>
                     </div>
                   </button>
                 </>
               ) : (
                 <>
-                  <button
-                    onClick={() => startGame('read')}
-                    className="p-5 bg-amber-50 border-4 border-amber-200 hover:border-amber-400 rounded-3xl text-left transition-all hover:shadow-lg active:scale-95 group flex items-start gap-4"
-                  >
-                    <span className="text-5xl bg-white p-3 rounded-2xl border-2 border-amber-100 group-hover:scale-110 transition-transform shadow-sm">📚</span>
-                    <div>
-                      <h5 className="font-black text-amber-900 text-lg">Read & Understand</h5>
-                      <p className="text-xs text-amber-700 font-bold mt-1">Choose the English meaning for Japanese hiragana text.</p>
-                    </div>
-                  </button>
+                  {state.profiles[activeKid].age === 5 ? (
+                    <>
+                      <button
+                        onClick={() => startGame('emojiMatch')}
+                        className="p-5 bg-amber-50 border-4 border-amber-200 hover:border-amber-400 rounded-3xl text-left transition-all hover:shadow-lg active:scale-95 group flex items-start gap-4 text-left"
+                      >
+                        <span className="text-5xl bg-white p-3 rounded-2xl border-2 border-amber-100 group-hover:scale-110 transition-transform shadow-sm">⭐️</span>
+                        <div>
+                          <h5 className="font-black text-amber-950 text-lg flex items-center gap-1.5">
+                            Audio + Emoji Match <span className="text-xs font-black bg-rose-500 text-white px-1.5 py-0.5 rounded-full uppercase">NEW</span>
+                          </h5>
+                          <p className="text-xs text-amber-700 font-bold mt-1">Hear the word, then choose the correct picture card. No reading needed!</p>
+                        </div>
+                      </button>
+
+                      <button
+                        onClick={() => startGame('dragDrop')}
+                        className="p-5 bg-blue-50 border-4 border-blue-200 hover:border-blue-400 rounded-3xl text-left transition-all hover:shadow-lg active:scale-95 group flex items-start gap-4 text-left"
+                      >
+                        <span className="text-5xl bg-white p-3 rounded-2xl border-2 border-blue-100 group-hover:scale-110 transition-transform shadow-sm">👉</span>
+                        <div>
+                          <h5 className="font-black text-blue-950 text-lg flex items-center gap-1.5">
+                            Audio + Drag & Drop <span className="text-xs font-black bg-rose-500 text-white px-1.5 py-0.5 rounded-full uppercase">NEW</span>
+                          </h5>
+                          <p className="text-xs text-blue-700 font-bold mt-1">Drag (or tap) the emoji into its correct category box. Fun & tactile!</p>
+                        </div>
+                      </button>
+                    </>
+                  ) : (
+                    <>
+                      <button
+                        onClick={() => startGame('read')}
+                        className="p-5 bg-amber-50 border-4 border-amber-200 hover:border-amber-400 rounded-3xl text-left transition-all hover:shadow-lg active:scale-95 group flex items-start gap-4"
+                      >
+                        <span className="text-5xl bg-white p-3 rounded-2xl border-2 border-amber-100 group-hover:scale-110 transition-transform shadow-sm">📚</span>
+                        <div>
+                          <h5 className="font-black text-amber-900 text-lg">Read & Understand</h5>
+                          <p className="text-xs text-amber-700 font-bold mt-1">Choose the English meaning for Japanese hiragana text.</p>
+                        </div>
+                      </button>
+
+                      <button
+                        onClick={() => startGame('dialogue')}
+                        disabled={destination.dialogues.length === 0}
+                        className={`p-5 rounded-3xl text-left transition-all group flex items-start gap-4 ${
+                          destination.dialogues.length > 0
+                            ? 'bg-blue-50 border-4 border-blue-200 hover:border-blue-400 hover:shadow-lg active:scale-95'
+                            : 'bg-slate-50 border-4 border-slate-100 opacity-50 cursor-not-allowed'
+                        }`}
+                      >
+                        <span className="text-5xl bg-white p-3 rounded-2xl border-2 border-blue-100 group-hover:scale-110 transition-transform shadow-sm">💬</span>
+                        <div>
+                          <h5 className="font-black text-blue-900 text-lg">Dialogue Fill-in</h5>
+                          <p className="text-xs text-blue-700 font-bold mt-1">Complete blank conversations with vocabulary context.</p>
+                        </div>
+                      </button>
+
+                      <button
+                        onClick={() => startGame('conversation')}
+                        disabled={!destination.conversations || destination.conversations.length === 0}
+                        className="p-5 bg-indigo-50 border-4 border-indigo-200 hover:border-indigo-400 rounded-3xl text-left transition-all hover:shadow-lg active:scale-95 group flex items-start gap-4"
+                      >
+                        <span className="text-5xl bg-white p-3 rounded-2xl border-2 border-indigo-100 group-hover:scale-110 transition-transform shadow-sm">💬</span>
+                        <div>
+                          <h5 className="font-black text-indigo-900 text-lg flex items-center gap-1.5">
+                            Conversations <span className="text-xs font-black bg-rose-500 text-white px-1.5 py-0.5 rounded-full uppercase">NEW</span>
+                          </h5>
+                          <p className="text-xs text-indigo-700 font-bold mt-1">Participate in branching real-life conversations!</p>
+                        </div>
+                      </button>
+                    </>
+                  )}
 
                   <button
-                    onClick={() => startGame('dialogue')}
-                    disabled={destination.dialogues.length === 0}
-                    className={`p-5 rounded-3xl text-left transition-all group flex items-start gap-4 ${
-                      destination.dialogues.length > 0
-                        ? 'bg-blue-50 border-4 border-blue-200 hover:border-blue-400 hover:shadow-lg active:scale-95'
-                        : 'bg-slate-50 border-4 border-slate-100 opacity-50 cursor-not-allowed'
-                    }`}
+                    onClick={() => startGame('pronounce')}
+                    className="p-5 bg-purple-50 border-4 border-purple-200 hover:border-purple-400 rounded-3xl text-left transition-all hover:shadow-lg active:scale-95 group flex items-start gap-4 animate-soft"
                   >
-                    <span className="text-5xl bg-white p-3 rounded-2xl border-2 border-blue-100 group-hover:scale-110 transition-transform shadow-sm">💬</span>
+                    <span className="text-5xl bg-white p-3 rounded-2xl border-2 border-purple-100 group-hover:scale-110 transition-transform shadow-sm">🎤</span>
                     <div>
-                      <h5 className="font-black text-blue-900 text-lg">Dialogue Fill-in</h5>
-                      <p className="text-xs text-blue-700 font-bold mt-1">Complete blank conversations with vocabulary context.</p>
+                      <h5 className="font-black text-purple-900 text-lg">Pronounce Challenge</h5>
+                      <p className="text-xs text-purple-700 font-bold mt-1">Read out loud and test speech clarity with native accents.</p>
                     </div>
                   </button>
                 </>
               )}
-
-              <button
-                onClick={() => startGame('pronounce')}
-                className="p-5 bg-purple-50 border-4 border-purple-200 hover:border-purple-400 rounded-3xl text-left transition-all hover:shadow-lg active:scale-95 group flex items-start gap-4 animate-soft"
-              >
-                <span className="text-5xl bg-white p-3 rounded-2xl border-2 border-purple-100 group-hover:scale-110 transition-transform shadow-sm">🎤</span>
-                <div>
-                  <h5 className="font-black text-purple-900 text-lg">Pronounce Challenge</h5>
-                  <p className="text-xs text-purple-700 font-bold mt-1">Read out loud and test speech clarity with native accents.</p>
-                </div>
-              </button>
             </div>
           </div>
         )}
@@ -1013,6 +1310,369 @@ export const GameSession: React.FC<GameSessionProps> = ({ destination, onClose }
             )}
           </div>
         )}
+
+        {/* --- GRAMMAR DEEP DIVE VIEW (PHASE 3) --- */}
+        {gameType === 'grammar' && !isGameOver && destination.grammarQuestions?.[grammarIdx] && (() => {
+          const quest = destination.grammarQuestions[grammarIdx];
+          const isAnswered = feedback !== null;
+
+          return (
+            <div className="p-6 max-w-xl mx-auto space-y-6">
+              <div className="border-b-4 border-blue-100 pb-4 flex justify-between items-center">
+                <div>
+                  <h4 className="font-black text-blue-950 text-xl">Grammar Deep Dive 📝</h4>
+                  <p className="text-xs font-bold text-slate-500 mt-1">Topic: {quest.topic}</p>
+                </div>
+                <span className="text-xs font-black bg-blue-100 text-blue-700 px-3 py-1 rounded-full uppercase tracking-wider">Grammar</span>
+              </div>
+
+              {/* Core Sentence Cues */}
+              <div className="bg-blue-50 border-4 border-blue-200 rounded-[32px] p-6 text-center shadow-inner">
+                <p className="text-[10px] font-black uppercase text-blue-600 tracking-wider">Study Sentence</p>
+                <h3 className="text-2xl font-black text-blue-950 mt-1">{quest.sentence}</h3>
+              </div>
+
+              {/* Core Question Cues */}
+              <div className="space-y-4">
+                <p className="font-extrabold text-slate-800 text-sm">{quest.question}</p>
+                <div className="grid grid-cols-1 gap-3">
+                  {quest.options.map((opt, idx) => (
+                    <button
+                      key={idx}
+                      disabled={isAnswered}
+                      onClick={() => handleGrammarAnswer(opt, quest.correctAnswer, quest.explanation)}
+                      className={`w-full p-4 rounded-[20px] font-black text-left text-sm border-4 transition-all ${
+                        isAnswered
+                          ? opt === quest.correctAnswer
+                            ? 'bg-emerald-100 border-emerald-400 text-emerald-950 shadow-inner'
+                            : 'bg-slate-100 border-slate-200 text-slate-400'
+                          : 'bg-white border-slate-200 hover:border-blue-400 hover:bg-blue-50/40 text-slate-700 hover:scale-102 shadow-sm border-b-8 active:border-b-2 active:translate-y-0.5'
+                      }`}
+                    >
+                      {opt}
+                    </button>
+                  ))}
+                </div>
+              </div>
+
+              {/* Action and feedback banner */}
+              {feedback && (
+                <div className="border-t-2 border-slate-100 pt-6">
+                  <div className={`p-4 rounded-[20px] font-black text-sm text-center mb-4 border-2 ${
+                    feedback.isCorrect ? 'bg-emerald-50 text-emerald-900 border-emerald-200' : 'bg-red-50 text-red-900 border-red-200'
+                  }`}>
+                    {feedback.text}
+                  </div>
+                  <button
+                    onClick={handleNextGrammarQuestion}
+                    className="w-full bg-slate-800 hover:bg-slate-900 text-white font-black py-4 rounded-[20px] shadow-lg flex items-center justify-center gap-2 border-b-4 border-slate-950 hover:border-b-0 active:translate-y-1"
+                  >
+                    Next Question ➡️
+                  </button>
+                </div>
+              )}
+            </div>
+          );
+        })()}
+
+        {/* --- NATIVE-SPEED LISTENING COMPREHENSION (PHASE 3) --- */}
+        {gameType === 'listeningEx' && !isGameOver && destination.listeningExercises?.[listeningExIdx] && (() => {
+          const ex = destination.listeningExercises[listeningExIdx];
+          const quest = ex.questions[0]; // Simplified for single question
+          const isAnswered = feedback !== null;
+
+          return (
+            <div className="p-6 max-w-xl mx-auto space-y-6">
+              <div className="border-b-4 border-emerald-100 pb-4 flex justify-between items-center">
+                <div>
+                  <h4 className="font-black text-emerald-950 text-xl">Native-Speed Listening 🚄</h4>
+                  <p className="text-xs font-bold text-slate-500 mt-1">{ex.title}</p>
+                </div>
+                <span className="text-xs font-black bg-emerald-100 text-emerald-700 px-3 py-1 rounded-full uppercase tracking-wider">Listening</span>
+              </div>
+
+              {/* Sound Player Cue Card */}
+              <div className="bg-[#ECFDF5] border-4 border-emerald-300 rounded-[32px] p-6 text-center shadow-inner flex flex-col items-center">
+                <button
+                  onClick={() => {
+                    // Speak the whole natural speech using ja locale
+                    speakJapanese(ex.dialogueText, true);
+                  }}
+                  className="w-20 h-20 bg-emerald-500 hover:bg-emerald-600 hover:scale-110 active:scale-95 text-white rounded-full shadow-lg flex items-center justify-center text-4xl transition-transform border-4 border-white animate-soft"
+                >
+                  🔊
+                </button>
+                <p className="text-base font-black text-slate-800 mt-3">Click to hear the natural-speed spoken dialogue!</p>
+              </div>
+
+              {/* Question options */}
+              <div className="space-y-4">
+                <p className="font-extrabold text-slate-800 text-sm">{quest.question}</p>
+                <div className="grid grid-cols-1 gap-3">
+                  {quest.options.map((opt, idx) => (
+                    <button
+                      key={idx}
+                      disabled={isAnswered}
+                      onClick={() => handleListeningAnswer(opt, quest.correctAnswer)}
+                      className={`w-full p-4 rounded-[20px] font-black text-left text-sm border-4 transition-all ${
+                        isAnswered
+                          ? opt === quest.correctAnswer
+                            ? 'bg-emerald-100 border-emerald-400 text-emerald-950 shadow-inner'
+                            : 'bg-slate-100 border-slate-200 text-slate-400'
+                          : 'bg-white border-slate-200 hover:border-emerald-400 hover:bg-emerald-50/40 text-slate-700 hover:scale-102 shadow-sm border-b-8 active:border-b-2 active:translate-y-0.5'
+                      }`}
+                    >
+                      {opt}
+                    </button>
+                  ))}
+                </div>
+              </div>
+
+              {/* Feedback and next */}
+              {feedback && (
+                <div className="border-t-2 border-slate-100 pt-6">
+                  <div className={`p-4 rounded-[20px] font-black text-sm text-center mb-4 border-2 ${
+                    feedback.isCorrect ? 'bg-emerald-50 text-emerald-900 border-emerald-200' : 'bg-red-50 text-red-900 border-red-200'
+                  }`}>
+                    {feedback.text}
+                  </div>
+                  <button
+                    onClick={handleNextListeningQuestion}
+                    className="w-full bg-slate-800 hover:bg-slate-900 text-white font-black py-4 rounded-[20px] shadow-lg flex items-center justify-center gap-2 border-b-4 border-slate-950 hover:border-b-0 active:translate-y-1"
+                  >
+                    Next Exercise ➡️
+                  </button>
+                </div>
+              )}
+            </div>
+          );
+        })()}
+
+        {/* --- READING COMPREHENSION PASSAGES (PHASE 3) --- */}
+        {gameType === 'readingEx' && !isGameOver && destination.readingPassages?.[readingExIdx] && (() => {
+          const pass = destination.readingPassages[readingExIdx];
+          const quest = pass.questions[0]; // Simplified for single question
+          const isAnswered = feedback !== null;
+
+          return (
+            <div className="p-6 max-w-xl mx-auto space-y-6">
+              <div className="border-b-4 border-rose-100 pb-4 flex justify-between items-center">
+                <div>
+                  <h4 className="font-black text-rose-950 text-xl">Reading Comprehension 📖</h4>
+                  <p className="text-xs font-bold text-slate-500 mt-1">{pass.title}</p>
+                </div>
+                <span className="text-xs font-black bg-rose-100 text-rose-700 px-3 py-1 rounded-full uppercase tracking-wider">Reading</span>
+              </div>
+
+              {/* Scrollable text blog post */}
+              <div className="bg-rose-50/40 border-4 border-rose-200 rounded-[32px] p-5 shadow-inner max-h-[180px] overflow-y-auto">
+                <p className="text-xs font-black text-rose-700 uppercase tracking-wide mb-2">Authentic Japanese Entry</p>
+                <p className="text-base font-black text-slate-800 leading-relaxed italic">{pass.content}</p>
+              </div>
+
+              {/* Reading question */}
+              <div className="space-y-4">
+                <p className="font-extrabold text-slate-800 text-sm">{quest.question}</p>
+                <div className="grid grid-cols-1 gap-3">
+                  {quest.options.map((opt, idx) => (
+                    <button
+                      key={idx}
+                      disabled={isAnswered}
+                      onClick={() => handleReadingAnswer(opt, quest.correctAnswer)}
+                      className={`w-full p-4 rounded-[20px] font-black text-left text-sm border-4 transition-all ${
+                        isAnswered
+                          ? opt === quest.correctAnswer
+                            ? 'bg-emerald-100 border-emerald-400 text-emerald-950 shadow-inner'
+                            : 'bg-slate-100 border-slate-200 text-slate-400'
+                          : 'bg-white border-slate-200 hover:border-rose-400 hover:bg-rose-50/40 text-slate-700 hover:scale-102 shadow-sm border-b-8 active:border-b-2 active:translate-y-0.5'
+                      }`}
+                    >
+                      {opt}
+                    </button>
+                  ))}
+                </div>
+              </div>
+
+              {/* Feedback banner */}
+              {feedback && (
+                <div className="border-t-2 border-slate-100 pt-6">
+                  <div className={`p-4 rounded-[20px] font-black text-sm text-center mb-4 border-2 ${
+                    feedback.isCorrect ? 'bg-emerald-50 text-emerald-900 border-emerald-200' : 'bg-red-50 text-red-900 border-red-200'
+                  }`}>
+                    {feedback.text}
+                  </div>
+                  <button
+                    onClick={handleNextReadingQuestion}
+                    className="w-full bg-slate-800 hover:bg-slate-900 text-white font-black py-4 rounded-[20px] shadow-lg flex items-center justify-center gap-2 border-b-4 border-slate-950 hover:border-b-0 active:translate-y-1"
+                  >
+                    Next Passage ➡️
+                  </button>
+                </div>
+              )}
+            </div>
+          );
+        })()}
+
+        {/* --- GUIDED COMPOSITION & WRITING EXERCISE (PHASE 3) --- */}
+        {gameType === 'writingEx' && !isGameOver && destination.writingPrompts?.[writingExIdx] && (() => {
+          const prompt = destination.writingPrompts[writingExIdx];
+          const isAnswered = feedback !== null;
+
+          return (
+            <div className="p-6 max-w-xl mx-auto space-y-6">
+              <div className="border-b-4 border-purple-100 pb-4 flex justify-between items-center">
+                <div>
+                  <h4 className="font-black text-purple-950 text-xl">Guided Composition & Writing ✍️</h4>
+                  <p className="text-xs font-bold text-slate-500 mt-1">{prompt.title}</p>
+                </div>
+                <span className="text-xs font-black bg-purple-100 text-purple-700 px-3 py-1 rounded-full uppercase tracking-wider">Composition</span>
+              </div>
+
+              {/* Task Details Cues */}
+              <div className="bg-purple-50/50 border-4 border-purple-200 rounded-[32px] p-5 shadow-inner">
+                <span className="text-[10px] font-black uppercase text-purple-700 tracking-wider">Your Task Instructions</span>
+                <p className="text-xs font-bold text-slate-700 mt-1 leading-relaxed">{prompt.task}</p>
+
+                {/* Required criteria check off */}
+                <div className="mt-3.5 space-y-1.5 text-left border-t border-purple-100 pt-3">
+                  <span className="text-[9px] font-black uppercase text-slate-400">Required elements:</span>
+                  {prompt.requiredElements.map((el, eIdx) => {
+                    const cleanEl = el.split(' ')[0].replace(/['"「」]/g, '');
+                    const isMatched = writingInput.toLowerCase().includes(cleanEl.toLowerCase());
+                    return (
+                      <div key={eIdx} className="flex items-center gap-2 text-xs font-bold text-slate-600">
+                        <span>{isMatched ? "✅" : "⬜"}</span>
+                        <span>{el}</span>
+                      </div>
+                    );
+                  })}
+                </div>
+              </div>
+
+              {/* Text area draft box */}
+              <div className="space-y-3">
+                <label className="block text-xs font-black text-slate-500 uppercase tracking-widest">Type your draft in Japanese:</label>
+                <textarea
+                  value={writingInput}
+                  disabled={isAnswered}
+                  onChange={(e) => setWritingInput(e.target.value)}
+                  placeholder="e.g. こんにちは。美味しいお茶をありがとうございます。"
+                  className="w-full h-28 bg-slate-50 border-4 border-slate-200 hover:border-purple-300 focus:border-purple-500 rounded-2xl p-4 text-sm font-bold text-slate-800 placeholder-slate-400 focus:outline-none resize-none shadow-inner"
+                />
+              </div>
+
+              {/* Action Trigger button */}
+              {!isAnswered && (
+                <button
+                  onClick={() => handleVerifyWriting(prompt)}
+                  className="w-full bg-purple-600 hover:bg-purple-700 text-white font-black py-4 rounded-[20px] shadow-lg border-b-8 border-purple-800 active:border-b-2 active:translate-y-0.5"
+                >
+                  🚀 Click to Verify Draft Composition
+                </button>
+              )}
+
+              {/* AI Feedback evaluation report */}
+              {isAnswered && writingFeedback && (
+                <div className="space-y-4 border-t-2 border-slate-100 pt-6">
+                  <div className="bg-emerald-50 border-2 border-emerald-200 p-4 rounded-2xl text-center">
+                    <span className="text-[9px] font-black uppercase text-emerald-700 bg-white px-2 py-0.5 rounded-full border border-emerald-100">AI Grammar evaluation</span>
+                    <p className="text-sm font-black text-emerald-950 mt-1.5">{writingFeedback.rating}</p>
+                  </div>
+
+                  <div className="bg-slate-50 p-4 rounded-2xl border border-slate-200 space-y-2">
+                    <h5 className="text-[10px] font-black uppercase text-slate-400">Suggested Authentic Japanese reference:</h5>
+                    <div className="bg-white border p-3 rounded-xl">
+                      <p className="text-xs font-black text-slate-800">"{prompt.suggestedAnswers[0]}"</p>
+                    </div>
+                  </div>
+
+                  <button
+                    onClick={handleNextWritingPrompt}
+                    className="w-full bg-slate-800 hover:bg-slate-900 text-white font-black py-4 rounded-[20px] shadow-lg flex items-center justify-center gap-2 border-b-4 border-slate-950"
+                  >
+                    Next Writing Challenge ➡️
+                  </button>
+                </div>
+              )}
+            </div>
+          );
+        })()}
+
+        {/* --- CONVERSATION VIEW (PHASE 3) --- */}
+        {gameType === 'conversation' && !isGameOver && destination.conversations?.[convScenarioIdx] && (() => {
+          const scen = destination.conversations[convScenarioIdx];
+          const currentTurn = scen.turns[convTurnIdx];
+          const nextTurn = scen.turns[convTurnIdx + 1]; // This is the user choose turn
+          const isUserChoosing = nextTurn && nextTurn.options;
+
+          return (
+            <div className="p-6 max-w-xl mx-auto space-y-6">
+              {/* Scenario Info */}
+              <div className="border-b-4 border-indigo-100 pb-4 flex justify-between items-center">
+                <div>
+                  <h4 className="font-black text-indigo-950 text-xl">{scen.title}</h4>
+                  <p className="text-xs font-bold text-slate-500 mt-1">{scen.description}</p>
+                </div>
+                <span className="text-xs font-black bg-indigo-100 text-indigo-700 px-3 py-1 rounded-full uppercase tracking-wider">Roleplay</span>
+              </div>
+
+              {/* Dialogue History Scroll */}
+              <div className="bg-slate-50 border-4 border-slate-200 rounded-[32px] p-5 max-h-[300px] overflow-y-auto space-y-4 shadow-inner">
+                {convHistory.map((item, idx) => {
+                  const isYou = item.speaker === "You";
+                  return (
+                    <div key={idx} className={`flex gap-3 items-start ${isYou ? 'flex-row-reverse' : ''}`}>
+                      <div className={`p-3 rounded-2xl shadow-sm border-2 max-w-[85%] ${
+                        isYou ? 'bg-indigo-500 text-white border-indigo-600' : 'bg-white text-slate-800 border-slate-100'
+                      }`}>
+                        <span className="text-[10px] font-black uppercase tracking-wider block opacity-70 mb-1">{item.speaker}</span>
+                        <p className="text-sm font-black leading-snug">{item.text}</p>
+                        <p className={`text-xs mt-1 ${isYou ? 'text-indigo-100' : 'text-slate-400'}`}>({item.english})</p>
+                      </div>
+                    </div>
+                  );
+                })}
+              </div>
+
+              {/* User Selector Turn options */}
+              {isUserChoosing && !feedback && (
+                <div className="space-y-3">
+                  <span className="text-xs font-black text-slate-400 uppercase tracking-widest block text-center mb-1">What do you say next?</span>
+                  {nextTurn.options?.map((opt, oIdx) => (
+                    <button
+                      key={oIdx}
+                      onClick={() => handleConversationOption(opt)}
+                      className="w-full bg-white border-4 border-slate-200 hover:border-indigo-500 hover:bg-indigo-50/20 p-4 rounded-[24px] font-black text-left text-sm transition-all shadow-sm active:scale-98 flex items-center justify-between group"
+                    >
+                      <div>
+                        <p className="text-slate-800 group-hover:text-indigo-950">{opt.text}</p>
+                        <p className="text-xs text-slate-400 font-bold mt-0.5">({opt.english})</p>
+                      </div>
+                      <span className="text-xl opacity-0 group-hover:opacity-100 transition-opacity">➡️</span>
+                    </button>
+                  ))}
+                </div>
+              )}
+
+              {/* Feedbacks with Next button */}
+              {feedback && (
+                <div className="border-t-2 border-slate-100 pt-6">
+                  <div className={`p-4 rounded-[20px] font-black text-base text-center mb-4 border-2 ${
+                    feedback.isCorrect ? 'bg-emerald-50 text-emerald-900 border-emerald-200' : 'bg-red-50 text-red-900 border-red-200'
+                  }`}>
+                    {feedback.text}
+                  </div>
+                  <button
+                    onClick={handleNextConversationTurn}
+                    className="w-full bg-slate-800 hover:bg-slate-900 text-white font-black py-4 rounded-[20px] shadow-lg flex items-center justify-center gap-2 border-b-4 border-slate-950 hover:border-b-0 active:translate-y-1"
+                  >
+                    Continue Conversation ➡️
+                  </button>
+                </div>
+              )}
+            </div>
+          );
+        })()}
 
         {/* --- PRONUNCIATION CHALLENGE VIEW --- */}
         {gameType === 'pronounce' && !isGameOver && (
