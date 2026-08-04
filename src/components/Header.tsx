@@ -7,8 +7,22 @@ interface HeaderProps {
 }
 
 export const Header: React.FC<HeaderProps> = ({ currentTab, setCurrentTab }) => {
-  const { state, switchPlayer, toggleSound } = useAppState();
+  const { state, switchPlayer, toggleSound, readParentMessage, claimParentMessageReward } = useAppState();
   const active = state.activePlayer;
+
+  // Active kid unread message lookups
+  const activeKidProfile = active !== 'parent' ? state.profiles[active] : null;
+  const activeMessages = activeKidProfile?.parentMessages || [];
+  const pendingMessage = activeMessages.find(m => !m.read || (m.rewardXP && !m.claimed));
+
+  const handleClaimReward = (id: string) => {
+    claimParentMessageReward(active as "james" | "lily", id);
+    alert("🪙 Awesome! Your parent message reward was added to your balance!");
+  };
+
+  const handleDismiss = (id: string) => {
+    readParentMessage(active as "james" | "lily", id);
+  };
 
   return (
     <header className="bg-gradient-to-b from-[#FFF9EB] to-white border-b-4 border-[#FDE047] shadow-md sticky top-0 z-50">
@@ -42,7 +56,7 @@ export const Header: React.FC<HeaderProps> = ({ currentTab, setCurrentTab }) => 
                 : 'text-slate-700 bg-white hover:bg-slate-100 border-slate-200'
             }`}
           >
-            <span>👦🏻</span> James ({state.profiles.james.age})
+            <span>{state.profiles.james.avatarCustomization?.face || "👦🏻"}</span> {state.profiles.james.avatarCustomization?.customName || "James"} ({state.profiles.james.age})
           </button>
           <button
             onClick={() => {
@@ -57,7 +71,7 @@ export const Header: React.FC<HeaderProps> = ({ currentTab, setCurrentTab }) => 
                 : 'text-slate-700 bg-white hover:bg-slate-100 border-slate-200'
             }`}
           >
-            <span>👧🏻</span> Lily ({state.profiles.lily.age})
+            <span>{state.profiles.lily.avatarCustomization?.face || "👧🏻"}</span> {state.profiles.lily.avatarCustomization?.customName || "Lily"} ({state.profiles.lily.age})
           </button>
           <button
             onClick={() => {
@@ -97,6 +111,43 @@ export const Header: React.FC<HeaderProps> = ({ currentTab, setCurrentTab }) => 
           )}
         </div>
       </div>
+
+      {/* Parent-to-Kid Encouragement Banner */}
+      {pendingMessage && active !== 'parent' && (
+        <div className="bg-indigo-50 border-y-4 border-indigo-300 py-3.5 px-4 shadow-inner">
+          <div className="max-w-6xl mx-auto flex flex-col sm:flex-row items-center justify-between gap-4">
+            <div className="flex items-center gap-3">
+              <span className="text-3xl animate-bounce">✉️</span>
+              <div>
+                <span className="text-[9px] font-black uppercase tracking-wider text-indigo-700 bg-white border border-indigo-200 px-2.5 py-0.5 rounded-full inline-block">
+                  Message From Parent Mike
+                </span>
+                <p className="text-xs font-black text-indigo-950 mt-1">
+                  "{pendingMessage.text}"
+                </p>
+              </div>
+            </div>
+
+            <div className="flex items-center gap-2 flex-shrink-0">
+              {pendingMessage.rewardXP && !pendingMessage.claimed ? (
+                <button
+                  onClick={() => handleClaimReward(pendingMessage.id)}
+                  className="bg-emerald-400 hover:bg-emerald-500 text-white font-black text-xs px-4 py-2 rounded-xl border-b-2 border-emerald-600 active:translate-y-0.5 transition-all flex items-center gap-1 shadow-sm"
+                >
+                  🎁 Claim +{pendingMessage.rewardXP} Coins!
+                </button>
+              ) : (
+                <button
+                  onClick={() => handleDismiss(pendingMessage.id)}
+                  className="bg-indigo-200 hover:bg-indigo-300 text-indigo-800 font-black text-xs px-4 py-2 rounded-xl active:translate-y-0.5 transition-all"
+                >
+                  ✕ Mark Read
+                </button>
+              )}
+            </div>
+          </div>
+        </div>
+      )}
 
       {/* Navigation Tabs with Bubble Buttons style */}
       <nav className="bg-[#FFFDF9] border-t-2 border-[#FEF08A] py-2">
