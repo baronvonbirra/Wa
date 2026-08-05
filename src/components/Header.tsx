@@ -56,7 +56,7 @@ export const Header: React.FC<HeaderProps> = ({ currentTab, setCurrentTab }) => 
                 : 'text-slate-700 bg-white hover:bg-slate-100 border-slate-200'
             }`}
           >
-            <span>{state.profiles.lily.avatarCustomization?.face || "👧🏻"}</span> {state.profiles.lily.avatarCustomization?.customName || "Sofia"} ({state.profiles.lily.age})
+            <span>{state.profiles.lily.avatarCustomization?.face || "👧🏻"}</span> {state.profiles.lily.avatarCustomization?.customName || "Sofia"}
           </button>
 
           <button
@@ -72,7 +72,7 @@ export const Header: React.FC<HeaderProps> = ({ currentTab, setCurrentTab }) => 
                 : 'text-slate-700 bg-white hover:bg-slate-100 border-slate-200'
             }`}
           >
-            <span>{state.profiles.james.avatarCustomization?.face || "👦🏻"}</span> {state.profiles.james.avatarCustomization?.customName || "Marco"} ({state.profiles.james.age})
+            <span>{state.profiles.james.avatarCustomization?.face || "👦🏻"}</span> {state.profiles.james.avatarCustomization?.customName || "Marco"}
           </button>
 
           <button

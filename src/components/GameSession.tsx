@@ -744,7 +744,7 @@ export const GameSession: React.FC<GameSessionProps> = ({ destination, onClose }
                 </>
               ) : (
                 <>
-                  {state.profiles[activeKid].age === 5 ? (
+                  {state.profiles[activeKid].learningPath === "kids_basic" ? (
                     <>
                       <button
                         onClick={() => startGame('emojiMatch')}

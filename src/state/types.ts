@@ -27,7 +27,7 @@ export interface ParentMessage {
 
 export interface PlayerProgress {
   name: string;
-  age: number;
+  age?: number;
   avatar: string; // fallback simple emoji
   avatarCustomization: AvatarCustomization;
   level: number;
@@ -98,7 +98,7 @@ export const FAMILY_CHALLENGES: FamilyChallenge[] = [
 
 export interface PlayerProgress {
   name: string;
-  age: number;
+  age?: number;
   avatar: string; // fallback simple emoji
   avatarCustomization: AvatarCustomization;
   level: number;
@@ -184,7 +184,6 @@ export const INITIAL_STATE: AppState = {
   profiles: {
     james: {
       name: "James",
-      age: 9,
       role: "child",
       learningPath: "kids_advanced",
       avatar: "👦🏻",
@@ -237,7 +236,6 @@ export const INITIAL_STATE: AppState = {
     },
     lily: {
       name: "Lily",
-      age: 5,
       role: "child",
       learningPath: "kids_basic",
       avatar: "👧🏻",
@@ -290,7 +288,6 @@ export const INITIAL_STATE: AppState = {
     },
     merche: {
       name: "Merche",
-      age: 35,
       role: "parent",
       learningPath: "adult_advanced",
       motivation: "learn_together_with_kids",

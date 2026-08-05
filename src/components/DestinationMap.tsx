@@ -69,7 +69,18 @@ export const DestinationMap: React.FC<DestinationMapProps> = ({ onSelectDestinat
         <div className="flex-1 relative z-10">
           <div className="flex items-center gap-4 mb-3">
             <div className="relative group cursor-pointer" onClick={() => setIsAvatarOpen(true)}>
-              <span className="text-7xl animate-soft block select-none">{profile.avatarCustomization?.face || profile.avatar}</span>
+              <div className="relative w-24 h-24 bg-white rounded-full shadow-md border-4 border-rose-300 flex items-center justify-center overflow-visible animate-soft">
+                {/* Accessory/Hair background or overlay */}
+                <div className="absolute top-0 text-xl z-10 select-none">
+                  {profile.avatarCustomization?.hair?.startsWith("🎀") ? "💇" : profile.avatarCustomization?.hair?.split(" ")[0] || "💇"}
+                </div>
+                {/* Face Emoji */}
+                <div className="text-5xl select-none relative z-0">{profile.avatarCustomization?.face || profile.avatar}</div>
+                {/* Outfit overlay below face */}
+                <div className="absolute -bottom-1 text-2xl bg-white/90 rounded-full p-1 shadow-md border border-rose-100 z-10 select-none">
+                  {profile.avatarCustomization?.outfit?.split(" ")[0] || "🧥"}
+                </div>
+              </div>
               <span className="absolute -bottom-1 -right-1 bg-rose-500 text-white border-2 border-white text-[10px] font-black px-1.5 py-0.5 rounded-full shadow-md animate-bounce">EDIT</span>
             </div>
             <div>
