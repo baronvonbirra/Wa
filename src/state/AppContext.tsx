@@ -1,5 +1,5 @@
 import React, { createContext, useContext, useState, useEffect } from 'react';
-import { AppState, INITIAL_STATE, PlayerProgress, AvatarCustomization, DailyQuest, ParentMessage } from './types';
+import { AppState, INITIAL_STATE, PlayerProgress, AvatarCustomization, DailyQuest, ParentMessage, TradeOffer } from './types';
 import { DESTINATIONS_DATA } from '../data/destinations';
 
 interface AppContextType {
@@ -13,7 +13,6 @@ interface AppContextType {
   toggleSound: () => void;
   unlockNextDestination: (player: "james" | "lily" | "merche", currentDestId: string) => void;
   resetAllProgress: () => void;
-  // Expanded expansion actions:
   updateAvatar: (player: "james" | "lily" | "merche", customization: Partial<AvatarCustomization>) => void;
   buySticker: (player: "james" | "lily" | "merche", stickerId: string, costXP: number) => boolean;
   completeQuestStep: (player: "james" | "lily" | "merche", questId: string, amount: number) => void;
@@ -23,11 +22,22 @@ interface AppContextType {
   sendParentMessage: (player: "james" | "lily" | "merche", text: string, rewardXP?: number) => void;
   setCustomGoal: (player: "james" | "lily" | "merche", goal: { text: string; targetWords: number } | null) => void;
   checkCustomGoalCompletion: (player: "james" | "lily" | "merche") => void;
+
+  // Shop 2.0 State Exts
+  purchaseShopItem: (player: "james" | "lily" | "merche", itemId: string, cost: number, isBadge?: boolean) => boolean;
+  equipShopItem: (player: "james" | "lily" | "merche", itemId: string, category: string) => void;
+  toggleWishlist: (player: "james" | "lily" | "merche", itemId: string) => void;
+  buyBattlePassPremium: (player: "james" | "lily" | "merche", cost: number) => boolean;
+  claimBattlePassLevel: (player: "james" | "lily" | "merche", level: number, isPremium: boolean, itemId: string) => void;
+  usePowerup: (player: "james" | "lily" | "merche", powerupId: string) => void;
+  addTradeOffer: (offer: Omit<TradeOffer, "id" | "date">) => void;
+  acceptTradeOffer: (offerId: string, player: "james" | "lily" | "merche", givingItemId: string) => boolean;
+  cancelTradeOffer: (offerId: string) => void;
 }
 
 const AppContext = createContext<AppContextType | undefined>(undefined);
 
-const LOCAL_STORAGE_KEY = "japan_quest_state_v1";
+const LOCAL_STORAGE_KEY = "japan_quest_state_v2";
 
 export const AppProvider: React.FC<{ children: React.ReactNode }> = ({ children }) => {
   const [state, setState] = useState<AppState>(() => {
@@ -108,7 +118,28 @@ export const AppProvider: React.FC<{ children: React.ReactNode }> = ({ children 
           if (!profile.unlockedFacts) {
             profile.unlockedFacts = [];
           }
+
+          // Shop 2.0 Exts Safeguards
+          if (!profile.unlockedItemIds) profile.unlockedItemIds = [];
+          if (!profile.wishlistItemIds) profile.wishlistItemIds = [];
+          if (profile.equippedThemeId === undefined) profile.equippedThemeId = null;
+          if (profile.equippedFrameId === undefined) profile.equippedFrameId = null;
+          if (profile.equippedSoundId === undefined) profile.equippedSoundId = null;
+          if (profile.equippedTitleId === undefined) profile.equippedTitleId = null;
+          if (profile.equippedFilterId === undefined) profile.equippedFilterId = null;
+          if (profile.equippedAuraId === undefined) profile.equippedAuraId = null;
+          if (profile.equippedMusicId === undefined) profile.equippedMusicId = null;
+          if (profile.battlePassPremiumOwned === undefined) profile.battlePassPremiumOwned = false;
+          if (profile.battlePassXP === undefined) profile.battlePassXP = 0;
+          if (profile.battlePassLevel === undefined) profile.battlePassLevel = 1;
+          if (!profile.claimedFreeLevels) profile.claimedFreeLevels = [];
+          if (!profile.claimedPremiumLevels) profile.claimedPremiumLevels = [];
+          if (!profile.activePowerups) profile.activePowerups = {};
         });
+
+        if (!hydrated.tradingPostOffers) {
+          hydrated.tradingPostOffers = [];
+        }
 
         return hydrated;
       } catch (e) {
@@ -157,9 +188,35 @@ export const AppProvider: React.FC<{ children: React.ReactNode }> = ({ children 
   const updateXP = (player: "james" | "lily" | "merche", amount: number) => {
     setState((prev) => {
       const profile = { ...prev.profiles[player] };
-      profile.totalXP += amount;
-      profile.spendableXP += amount;
+
+      // Calculate multiplier from active powerups
+      let xpMultiplier = 1.0;
+      const now = Date.now();
+      const nextActivePowerups = { ...profile.activePowerups };
+
+      Object.entries(profile.activePowerups).forEach(([pId, details]) => {
+        if (details.expiresAt > now) {
+          if (details.multiplier) {
+            xpMultiplier = Math.max(xpMultiplier, details.multiplier);
+          }
+        } else {
+          delete nextActivePowerups[pId];
+        }
+      });
+      profile.activePowerups = nextActivePowerups;
+
+      const finalAmount = Math.round(amount * xpMultiplier);
+
+      profile.totalXP += finalAmount;
+      profile.spendableXP += finalAmount;
       profile.level = Math.floor(profile.totalXP / 20) + 1;
+
+      // Battle Pass seasonal XP
+      profile.battlePassXP += finalAmount;
+      const bpLevel = Math.floor(profile.battlePassXP / 100) + 1;
+      if (bpLevel > profile.battlePassLevel) {
+        profile.battlePassLevel = bpLevel;
+      }
 
       // Unlock "Japan Facts"
       const expectedFactCount = Math.floor(profile.totalXP / 30);
@@ -186,7 +243,7 @@ export const AppProvider: React.FC<{ children: React.ReactNode }> = ({ children 
       // Automatically tick quests that depend on gaining XP
       const updatedQuests = profile.dailyQuests.map(q => {
         if (q.id === "morning-learner" && !q.completed) {
-          const newProgress = Math.min(q.target, q.progress + amount);
+          const newProgress = Math.min(q.target, q.progress + finalAmount);
           return {
             ...q,
             progress: newProgress,
@@ -387,7 +444,6 @@ export const AppProvider: React.FC<{ children: React.ReactNode }> = ({ children 
     setState(INITIAL_STATE);
   };
 
-  // Expanded actions:
   const updateAvatar = (player: "james" | "lily" | "merche", customization: Partial<AvatarCustomization>) => {
     setState((prev) => {
       const profile = { ...prev.profiles[player] };
@@ -395,7 +451,6 @@ export const AppProvider: React.FC<{ children: React.ReactNode }> = ({ children 
         ...profile.avatarCustomization,
         ...customization
       };
-      // Map custom avatar back to simple avatar representation for compatibility
       if (customization.face) {
         profile.avatar = customization.face;
       }
@@ -416,6 +471,10 @@ export const AppProvider: React.FC<{ children: React.ReactNode }> = ({ children 
       if (profile.spendableXP >= costXP && !profile.unlockedStickers.includes(stickerId)) {
         profile.spendableXP -= costXP;
         profile.unlockedStickers = [...profile.unlockedStickers, stickerId];
+        // Mirror in general shop items for unified ownership check
+        if (!profile.unlockedItemIds.includes(stickerId)) {
+          profile.unlockedItemIds = [...profile.unlockedItemIds, stickerId];
+        }
         success = true;
       }
       return {
@@ -458,7 +517,6 @@ export const AppProvider: React.FC<{ children: React.ReactNode }> = ({ children 
       const profile = { ...prev.profiles[player] };
       profile.dailyQuests = profile.dailyQuests.map(q => {
         if (q.id === questId && q.completed && !q.claimed) {
-          // Give reward!
           profile.totalXP += q.rewardXP;
           profile.spendableXP += q.rewardXP;
           profile.level = Math.floor(profile.totalXP / 20) + 1;
@@ -574,7 +632,6 @@ export const AppProvider: React.FC<{ children: React.ReactNode }> = ({ children 
             ...profile.customGoal,
             completed: true
           };
-          // Give bonus reward
           profile.totalXP += 100;
           profile.spendableXP += 100;
           profile.level = Math.floor(profile.totalXP / 20) + 1;
@@ -598,6 +655,242 @@ export const AppProvider: React.FC<{ children: React.ReactNode }> = ({ children 
     });
   };
 
+  // Shop 2.0 Exts
+  const purchaseShopItem = (player: "james" | "lily" | "merche", itemId: string, cost: number, isBadge: boolean = false): boolean => {
+    let success = false;
+    setState((prev) => {
+      const profile = { ...prev.profiles[player] };
+      if (profile.unlockedItemIds.includes(itemId)) {
+        return prev;
+      }
+      if (cost === 0 && isBadge) {
+        profile.unlockedItemIds = [...profile.unlockedItemIds, itemId];
+        success = true;
+      } else if (profile.spendableXP >= cost) {
+        profile.spendableXP -= cost;
+        profile.unlockedItemIds = [...profile.unlockedItemIds, itemId];
+        if (itemId.startsWith("s_") && !profile.unlockedStickers.includes(itemId)) {
+          profile.unlockedStickers = [...profile.unlockedStickers, itemId];
+        }
+        success = true;
+      }
+      return {
+        ...prev,
+        profiles: {
+          ...prev.profiles,
+          [player]: profile
+        }
+      };
+    });
+    return success;
+  };
+
+  const equipShopItem = (player: "james" | "lily" | "merche", itemId: string, category: string) => {
+    setState((prev) => {
+      const profile = { ...prev.profiles[player] };
+      if (category === 'themes') {
+        profile.equippedThemeId = profile.equippedThemeId === itemId ? null : itemId;
+      } else if (category === 'frames') {
+        profile.equippedFrameId = profile.equippedFrameId === itemId ? null : itemId;
+      } else if (category === 'sounds') {
+        profile.equippedSoundId = profile.equippedSoundId === itemId ? null : itemId;
+      } else if (category === 'status') {
+        if (itemId.startsWith("st_title_") || itemId === "st_word" || itemId === "st_conv" || itemId === "st_speed" || itemId === "st_trip" || itemId === "st_legend") {
+          profile.equippedTitleId = profile.equippedTitleId === itemId ? null : itemId;
+        } else if (itemId.startsWith("st_rainbow") || itemId.startsWith("st_gold")) {
+          profile.equippedAuraId = profile.equippedAuraId === itemId ? null : itemId;
+        }
+      } else if (category === 'filters') {
+        profile.equippedFilterId = profile.equippedFilterId === itemId ? null : itemId;
+      }
+      return {
+        ...prev,
+        profiles: {
+          ...prev.profiles,
+          [player]: profile
+        }
+      };
+    });
+  };
+
+  const toggleWishlist = (player: "james" | "lily" | "merche", itemId: string) => {
+    setState((prev) => {
+      const profile = { ...prev.profiles[player] };
+      const current = [...profile.wishlistItemIds];
+      if (current.includes(itemId)) {
+        profile.wishlistItemIds = current.filter(id => id !== itemId);
+      } else {
+        profile.wishlistItemIds = [...current, itemId];
+      }
+      return {
+        ...prev,
+        profiles: {
+          ...prev.profiles,
+          [player]: profile
+        }
+      };
+    });
+  };
+
+  const buyBattlePassPremium = (player: "james" | "lily" | "merche", cost: number): boolean => {
+    let success = false;
+    setState((prev) => {
+      const profile = { ...prev.profiles[player] };
+      if (profile.battlePassPremiumOwned) return prev;
+      if (profile.spendableXP >= cost) {
+        profile.spendableXP -= cost;
+        profile.battlePassPremiumOwned = true;
+        success = true;
+      }
+      return {
+        ...prev,
+        profiles: {
+          ...prev.profiles,
+          [player]: profile
+        }
+      };
+    });
+    return success;
+  };
+
+  const claimBattlePassLevel = (player: "james" | "lily" | "merche", level: number, isPremium: boolean, itemId: string) => {
+    setState((prev) => {
+      const profile = { ...prev.profiles[player] };
+      if (isPremium) {
+        if (!profile.claimedPremiumLevels.includes(level)) {
+          profile.claimedPremiumLevels = [...profile.claimedPremiumLevels, level];
+          if (!profile.unlockedItemIds.includes(itemId)) {
+            profile.unlockedItemIds = [...profile.unlockedItemIds, itemId];
+          }
+        }
+      } else {
+        if (!profile.claimedFreeLevels.includes(level)) {
+          profile.claimedFreeLevels = [...profile.claimedFreeLevels, level];
+          if (!profile.unlockedItemIds.includes(itemId)) {
+            profile.unlockedItemIds = [...profile.unlockedItemIds, itemId];
+          }
+        }
+      }
+      return {
+        ...prev,
+        profiles: {
+          ...prev.profiles,
+          [player]: profile
+        }
+      };
+    });
+  };
+
+  const usePowerup = (player: "james" | "lily" | "merche", powerupId: string) => {
+    setState((prev) => {
+      const profile = { ...prev.profiles[player] };
+      const now = Date.now();
+      let durationMs = 30 * 60 * 1000;
+      let multiplier = 1.0;
+
+      if (powerupId === 'p_focus') {
+        durationMs = 30 * 60 * 1000;
+        multiplier = 2.0;
+      } else if (powerupId === 'p_speed') {
+        durationMs = 60 * 60 * 1000;
+        multiplier = 2.0;
+      } else if (powerupId === 'p_multiplier') {
+        durationMs = 24 * 60 * 60 * 1000;
+        multiplier = 1.5;
+      } else if (powerupId === 'p_vip') {
+        durationMs = 24 * 60 * 60 * 1000;
+        multiplier = 1.25;
+      }
+
+      profile.activePowerups = {
+        ...profile.activePowerups,
+        [powerupId]: {
+          expiresAt: now + durationMs,
+          multiplier
+        }
+      };
+
+      profile.unlockedItemIds = profile.unlockedItemIds.filter((id) => {
+        return id !== powerupId;
+      });
+
+      return {
+        ...prev,
+        profiles: {
+          ...prev.profiles,
+          [player]: profile
+        }
+      };
+    });
+  };
+
+  const addTradeOffer = (offer: Omit<TradeOffer, "id" | "date">) => {
+    setState((prev) => {
+      const newOffer: TradeOffer = {
+        ...offer,
+        id: `trade-${Date.now()}`,
+        date: new Date().toISOString().split('T')[0]
+      };
+      return {
+        ...prev,
+        tradingPostOffers: [newOffer, ...prev.tradingPostOffers]
+      };
+    });
+  };
+
+  const acceptTradeOffer = (offerId: string, player: "james" | "lily" | "merche", givingItemId: string): boolean => {
+    let success = false;
+    setState((prev) => {
+      const offer = prev.tradingPostOffers.find(o => o.id === offerId);
+      if (!offer) return prev;
+
+      const buyer = { ...prev.profiles[player] };
+      const owner = { ...prev.profiles[offer.ownerId] };
+
+      const hasItem = buyer.unlockedStickers.includes(givingItemId) || buyer.unlockedItemIds.includes(givingItemId);
+      if (!hasItem) return prev;
+
+      buyer.unlockedItemIds = [...buyer.unlockedItemIds.filter(id => id !== givingItemId), offer.offeredItemId];
+      if (offer.offeredItemId.startsWith("s_")) {
+        buyer.unlockedStickers = [...buyer.unlockedStickers, offer.offeredItemId];
+      }
+      if (givingItemId.startsWith("s_")) {
+        buyer.unlockedStickers = buyer.unlockedStickers.filter(id => id !== givingItemId);
+      }
+
+      owner.unlockedItemIds = [...owner.unlockedItemIds.filter(id => id !== offer.offeredItemId), givingItemId];
+      if (givingItemId.startsWith("s_")) {
+        owner.unlockedStickers = [...owner.unlockedStickers, givingItemId];
+      }
+      if (offer.offeredItemId.startsWith("s_")) {
+        owner.unlockedStickers = owner.unlockedStickers.filter(id => id !== offer.offeredItemId);
+      }
+
+      if (buyer.spendableXP >= 5) buyer.spendableXP -= 5;
+      if (owner.spendableXP >= 5) owner.spendableXP -= 5;
+
+      success = true;
+
+      return {
+        ...prev,
+        profiles: {
+          ...prev.profiles,
+          [player]: buyer,
+          [offer.ownerId]: owner
+        },
+        tradingPostOffers: prev.tradingPostOffers.filter(o => o.id !== offerId)
+      };
+    });
+    return success;
+  };
+
+  const cancelTradeOffer = (offerId: string) => {
+    setState((prev) => ({
+      ...prev,
+      tradingPostOffers: prev.tradingPostOffers.filter(o => o.id !== offerId)
+    }));
+  };
+
   return (
     <AppContext.Provider
       value={{
@@ -611,7 +904,6 @@ export const AppProvider: React.FC<{ children: React.ReactNode }> = ({ children 
         toggleSound,
         unlockNextDestination,
         resetAllProgress,
-        // Expanded:
         updateAvatar,
         buySticker,
         completeQuestStep,
@@ -620,7 +912,17 @@ export const AppProvider: React.FC<{ children: React.ReactNode }> = ({ children 
         claimParentMessageReward,
         sendParentMessage,
         setCustomGoal,
-        checkCustomGoalCompletion
+        checkCustomGoalCompletion,
+
+        purchaseShopItem,
+        equipShopItem,
+        toggleWishlist,
+        buyBattlePassPremium,
+        claimBattlePassLevel,
+        usePowerup,
+        addTradeOffer,
+        acceptTradeOffer,
+        cancelTradeOffer
       }}
     >
       {children}

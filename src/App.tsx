@@ -5,6 +5,7 @@ import { DestinationMap } from './components/DestinationMap';
 import { GameSession } from './components/GameSession';
 import { Passport } from './components/Passport';
 import { ParentDashboard } from './components/ParentDashboard';
+import { Shop2 } from './components/Shop2';
 import { DESTINATIONS_DATA, Destination } from './data/destinations';
 
 import { useAppState } from './state/AppContext';
@@ -146,6 +147,10 @@ function MainAppContent({ currentTab, setCurrentTab, selectedDestination, setSel
 
         {currentTab === 'dashboard' && (
           <ParentDashboard />
+        )}
+
+        {currentTab === 'shop' && (
+          <Shop2 />
         )}
       </main>
     </div>

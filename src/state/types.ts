@@ -25,6 +25,18 @@ export interface ParentMessage {
   claimed?: boolean;
 }
 
+export interface TradeOffer {
+  id: string;
+  ownerName: string;
+  ownerId: "james" | "lily" | "merche";
+  offeredItemId: string;
+  offeredItemEmoji: string;
+  offeredItemName: string;
+  requestedItemCategory: string; // e.g., "stickers"
+  requestedRarity: string; // e.g., "common"
+  date: string;
+}
+
 export interface PlayerProgress {
   name: string;
   age?: number;
@@ -55,6 +67,34 @@ export interface PlayerProgress {
   parentMessages: ParentMessage[];
   // Custom goal set by parent
   customGoal: { text: string; targetWords: number; completed: boolean } | null;
+
+  // Phase 3 Extensions
+  role: "child" | "parent";
+  learningPath?: "kids_basic" | "kids_advanced" | "adult_advanced";
+  motivation?: string;
+  createdAt?: string;
+  lastActive?: string;
+
+  // Shop 2.0 State Extensions
+  unlockedItemIds: string[]; // List of all unlocked shop item IDs (cosmetics, themes, sounds, frames, filters, powerups, status etc.)
+  wishlistItemIds: string[]; // Wishlisted items
+  equippedThemeId: string | null;
+  equippedFrameId: string | null;
+  equippedSoundId: string | null;
+  equippedTitleId: string | null;
+  equippedFilterId: string | null;
+  equippedAuraId: string | null;
+  equippedMusicId: string | null;
+
+  // Battle Pass Progress
+  battlePassPremiumOwned: boolean;
+  battlePassXP: number; // XP specifically within the season
+  battlePassLevel: number;
+  claimedFreeLevels: number[]; // levels claimed
+  claimedPremiumLevels: number[]; // premium levels claimed
+
+  // Active Powerups & Inventory
+  activePowerups: { [powerupId: string]: { expiresAt: number; multiplier?: number } }; // powerupId -> details
 }
 
 export interface FamilyChallenge {
@@ -133,6 +173,27 @@ export interface PlayerProgress {
   motivation?: string;
   createdAt?: string;
   lastActive?: string;
+
+  // Shop 2.0 State Extensions
+  unlockedItemIds: string[]; // List of all unlocked shop item IDs (cosmetics, themes, sounds, frames, filters, powerups, status etc.)
+  wishlistItemIds: string[]; // Wishlisted items
+  equippedThemeId: string | null;
+  equippedFrameId: string | null;
+  equippedSoundId: string | null;
+  equippedTitleId: string | null;
+  equippedFilterId: string | null;
+  equippedAuraId: string | null;
+  equippedMusicId: string | null;
+
+  // Battle Pass Progress
+  battlePassPremiumOwned: boolean;
+  battlePassXP: number; // XP specifically within the season
+  battlePassLevel: number;
+  claimedFreeLevels: number[]; // levels claimed
+  claimedPremiumLevels: number[]; // premium levels claimed
+
+  // Active Powerups & Inventory
+  activePowerups: { [powerupId: string]: { expiresAt: number; multiplier?: number } }; // powerupId -> details
 }
 
 export interface AppState {
@@ -145,6 +206,7 @@ export interface AppState {
   tripDate: string; // YYYY-MM-DD
   soundEnabled: boolean;
   activeChallengeId: string | null;
+  tradingPostOffers: TradeOffer[]; // Shop 2.0 Global Trading Post list
 }
 
 export const DEFAULT_QUESTS = (playerKey: "james" | "lily"): DailyQuest[] => [
@@ -232,7 +294,22 @@ export const INITIAL_STATE: AppState = {
       ],
       customGoal: null,
       createdAt: "2024-08-04",
-      lastActive: "2024-08-04"
+      lastActive: "2024-08-04",
+      unlockedItemIds: [],
+      wishlistItemIds: [],
+      equippedThemeId: null,
+      equippedFrameId: null,
+      equippedSoundId: null,
+      equippedTitleId: null,
+      equippedFilterId: null,
+      equippedAuraId: null,
+      equippedMusicId: null,
+      battlePassPremiumOwned: false,
+      battlePassXP: 0,
+      battlePassLevel: 1,
+      claimedFreeLevels: [],
+      claimedPremiumLevels: [],
+      activePowerups: {}
     },
     lily: {
       name: "Lily",
@@ -284,7 +361,22 @@ export const INITIAL_STATE: AppState = {
       ],
       customGoal: null,
       createdAt: "2024-08-04",
-      lastActive: "2024-08-04"
+      lastActive: "2024-08-04",
+      unlockedItemIds: [],
+      wishlistItemIds: [],
+      equippedThemeId: null,
+      equippedFrameId: null,
+      equippedSoundId: null,
+      equippedTitleId: null,
+      equippedFilterId: null,
+      equippedAuraId: null,
+      equippedMusicId: null,
+      battlePassPremiumOwned: false,
+      battlePassXP: 0,
+      battlePassLevel: 1,
+      claimedFreeLevels: [],
+      claimedPremiumLevels: [],
+      activePowerups: {}
     },
     merche: {
       name: "Merche",
@@ -337,7 +429,22 @@ export const INITIAL_STATE: AppState = {
       ],
       customGoal: null,
       createdAt: "2024-08-04",
-      lastActive: "2024-08-04"
+      lastActive: "2024-08-04",
+      unlockedItemIds: [],
+      wishlistItemIds: [],
+      equippedThemeId: null,
+      equippedFrameId: null,
+      equippedSoundId: null,
+      equippedTitleId: null,
+      equippedFilterId: null,
+      equippedAuraId: null,
+      equippedMusicId: null,
+      battlePassPremiumOwned: false,
+      battlePassXP: 0,
+      battlePassLevel: 1,
+      claimedFreeLevels: [],
+      claimedPremiumLevels: [],
+      activePowerups: {}
     }
   },
   activePlayer: "james",
@@ -348,5 +455,6 @@ export const INITIAL_STATE: AppState = {
     return d.toISOString().split('T')[0];
   })(),
   soundEnabled: true,
-  activeChallengeId: "weekend-sync"
+  activeChallengeId: "weekend-sync",
+  tradingPostOffers: []
 };
