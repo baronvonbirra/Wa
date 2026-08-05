@@ -35,33 +35,82 @@ export const AppProvider: React.FC<{ children: React.ReactNode }> = ({ children 
     if (saved) {
       try {
         const parsed = JSON.parse(saved);
-        // Ensure standard destinations and state variables are initialized cleanly
-        ['james', 'lily', 'merche'].forEach((pKey) => {
-          const profile = parsed.profiles?.[pKey as "james" | "lily" | "merche"];
-          if (profile) {
-            if (!profile.masteredVocab) {
-              profile.masteredVocab = {
-                kyoto: [], tokyo: [], osaka: [], train: [], okinawa: [], takayama: []
-              };
-            }
-            if (profile.spendableXP === undefined) {
-              profile.spendableXP = profile.totalXP > 0 ? profile.totalXP + 150 : 150;
-            }
-            if (!profile.unlockedStickers) {
-              profile.unlockedStickers = [];
-            }
-            if (!profile.dailyQuests) {
-              profile.dailyQuests = INITIAL_STATE.profiles[pKey as "james" | "lily" | "merche"].dailyQuests;
-            }
-            if (!profile.parentMessages) {
-              profile.parentMessages = INITIAL_STATE.profiles[pKey as "james" | "lily" | "merche"].parentMessages;
-            }
-            if (!profile.avatarCustomization) {
-              profile.avatarCustomization = INITIAL_STATE.profiles[pKey as "james" | "lily" | "merche"].avatarCustomization;
+
+        // Build hydrated state by spreading default and parsed properties
+        const hydrated: AppState = {
+          ...INITIAL_STATE,
+          ...parsed,
+          profiles: {
+            james: { ...INITIAL_STATE.profiles.james, ...(parsed.profiles?.james || {}) },
+            lily: { ...INITIAL_STATE.profiles.lily, ...(parsed.profiles?.lily || {}) },
+            merche: { ...INITIAL_STATE.profiles.merche, ...(parsed.profiles?.merche || {}) },
+          }
+        };
+
+        // For each profile, ensure inner objects/arrays are hydrated safely if they were missing or had different structure
+        (['james', 'lily', 'merche'] as const).forEach((pKey) => {
+          const profile = hydrated.profiles[pKey];
+          const initialProfile = INITIAL_STATE.profiles[pKey];
+
+          if (!profile.masteredVocab) {
+            profile.masteredVocab = { ...initialProfile.masteredVocab };
+          } else {
+            // Ensure all destination keys exist in masteredVocab
+            const dests = ["kyoto", "tokyo", "osaka", "train", "okinawa", "takayama"] as const;
+            dests.forEach(d => {
+              if (!profile.masteredVocab[d]) {
+                profile.masteredVocab[d] = [];
+              }
+            });
+          }
+
+          if (profile.spendableXP === undefined) {
+            profile.spendableXP = profile.totalXP > 0 ? profile.totalXP + 150 : 150;
+          }
+
+          if (!profile.unlockedStickers) {
+            profile.unlockedStickers = [];
+          }
+
+          if (!profile.dailyQuests || profile.dailyQuests.length === 0) {
+            profile.dailyQuests = initialProfile.dailyQuests;
+          }
+
+          if (!profile.parentMessages || profile.parentMessages.length === 0) {
+            profile.parentMessages = initialProfile.parentMessages;
+          }
+
+          if (!profile.avatarCustomization) {
+            profile.avatarCustomization = initialProfile.avatarCustomization;
+          }
+
+          if (!profile.unlockedDestinations) {
+            profile.unlockedDestinations = { ...initialProfile.unlockedDestinations };
+          } else {
+            // Ensure kyoto is always unlocked
+            if (profile.unlockedDestinations.kyoto === undefined) {
+              profile.unlockedDestinations.kyoto = true;
             }
           }
+
+          if (!profile.vocabStats) {
+            profile.vocabStats = {};
+          }
+
+          if (!profile.highScores) {
+            profile.highScores = {};
+          }
+
+          if (!profile.completedChallenges) {
+            profile.completedChallenges = [];
+          }
+
+          if (!profile.unlockedFacts) {
+            profile.unlockedFacts = [];
+          }
         });
-        return parsed;
+
+        return hydrated;
       } catch (e) {
         console.error("Failed to parse saved state, resetting...", e);
       }
