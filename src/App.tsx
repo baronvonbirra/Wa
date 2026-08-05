@@ -6,6 +6,7 @@ import { GameSession } from './components/GameSession';
 import { Passport } from './components/Passport';
 import { ParentDashboard } from './components/ParentDashboard';
 import { Shop2 } from './components/Shop2';
+import { AdminPanel } from './components/AdminPanel';
 import { DESTINATIONS_DATA, Destination } from './data/destinations';
 
 import { useAppState } from './state/AppContext';
@@ -151,6 +152,10 @@ function MainAppContent({ currentTab, setCurrentTab, selectedDestination, setSel
 
         {currentTab === 'shop' && (
           <Shop2 />
+        )}
+
+        {currentTab === 'admin' && (
+          <AdminPanel onClose={() => setCurrentTab('home')} />
         )}
       </main>
     </div>

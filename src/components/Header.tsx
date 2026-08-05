@@ -1,4 +1,4 @@
-import React from 'react';
+import React, { useState, useEffect } from 'react';
 import { useAppState } from '../state/AppContext';
 import { SHOP_ITEMS } from '../data/shopItems';
 
@@ -10,6 +10,40 @@ interface HeaderProps {
 export const Header: React.FC<HeaderProps> = ({ currentTab, setCurrentTab }) => {
   const { state, switchPlayer, toggleSound, readParentMessage, claimParentMessageReward } = useAppState();
   const active = state.activePlayer;
+
+  const [showSettingsModal, setShowSettingsModal] = useState<boolean>(false);
+  const [clickCount, setClickCount] = useState<number>(0);
+
+  // Auto detect admin query / hash params
+  useEffect(() => {
+    const checkParams = () => {
+      if (window.location.search.includes('admin=true') || window.location.hash === '#admin') {
+        setCurrentTab('admin');
+      }
+    };
+    checkParams();
+    window.addEventListener('hashchange', checkParams);
+    return () => window.removeEventListener('hashchange', checkParams);
+  }, [setCurrentTab]);
+
+  const handleProfileClick = (profileKey: "james" | "lily" | "merche") => {
+    if (active === profileKey) {
+      const nextCount = clickCount + 1;
+      if (nextCount >= 5) {
+        setClickCount(0);
+        setCurrentTab('admin');
+        alert("👑 Secret Pathway Unlocked: Navigating to Admin Panel!");
+      } else {
+        setClickCount(nextCount);
+      }
+    } else {
+      setClickCount(1);
+      switchPlayer(profileKey);
+      if (currentTab === 'dashboard' || currentTab === 'admin') {
+        setCurrentTab('home');
+      }
+    }
+  };
 
   // Active player unread message lookups
   const activeProfile = active !== 'parent' ? state.profiles[active] : null;
@@ -71,12 +105,7 @@ export const Header: React.FC<HeaderProps> = ({ currentTab, setCurrentTab }) => 
         {/* Playful Player Switcher */}
         <div className="flex flex-wrap items-center justify-center gap-2 bg-[#FEF08A] p-2 rounded-3xl border-4 border-[#FACC15] shadow-inner">
           <button
-            onClick={() => {
-              switchPlayer('lily');
-              if (currentTab === 'dashboard') {
-                setCurrentTab('home');
-              }
-            }}
+            onClick={() => handleProfileClick('lily')}
             className={`flex items-center gap-1.5 px-3 py-1.5 rounded-2xl text-xs font-black transition-all duration-200 border-4 ${
               active === 'lily'
                 ? 'bg-amber-500 text-white shadow-md border-amber-300 scale-105'
@@ -87,12 +116,7 @@ export const Header: React.FC<HeaderProps> = ({ currentTab, setCurrentTab }) => 
           </button>
 
           <button
-            onClick={() => {
-              switchPlayer('james');
-              if (currentTab === 'dashboard') {
-                setCurrentTab('home');
-              }
-            }}
+            onClick={() => handleProfileClick('james')}
             className={`flex items-center gap-1.5 px-3 py-1.5 rounded-2xl text-xs font-black transition-all duration-200 border-4 ${
               active === 'james'
                 ? 'bg-rose-500 text-white shadow-md border-rose-300 scale-105'
@@ -103,12 +127,7 @@ export const Header: React.FC<HeaderProps> = ({ currentTab, setCurrentTab }) => 
           </button>
 
           <button
-            onClick={() => {
-              switchPlayer('merche');
-              if (currentTab === 'dashboard') {
-                setCurrentTab('home');
-              }
-            }}
+            onClick={() => handleProfileClick('merche')}
             className={`flex items-center gap-1.5 px-3 py-1.5 rounded-2xl text-xs font-black transition-all duration-200 border-4 ${
               active === 'merche'
                 ? 'bg-indigo-500 text-white shadow-md border-indigo-300 scale-105'
@@ -144,6 +163,13 @@ export const Header: React.FC<HeaderProps> = ({ currentTab, setCurrentTab }) => 
             }`}
           >
             {state.soundEnabled ? '🔊 Sound On' : '🔇 Muted'}
+          </button>
+
+          <button
+            onClick={() => setShowSettingsModal(true)}
+            className="px-4 py-2 rounded-2xl text-sm font-black border-2 bg-white hover:bg-slate-100 border-slate-200 text-slate-700 shadow-md active:translate-y-1 flex items-center gap-1.5"
+          >
+            <span>⚙️</span> Settings
           </button>
 
           {active !== 'parent' && (
@@ -236,6 +262,58 @@ export const Header: React.FC<HeaderProps> = ({ currentTab, setCurrentTab }) => 
             </button>
           </div>
         </nav>
+      )}
+
+      {showSettingsModal && (
+        <div className="fixed inset-0 bg-slate-900/60 backdrop-blur-sm z-50 flex items-center justify-center p-4">
+          <div className="bg-white border-8 border-[#FDE047] rounded-[32px] p-6 shadow-2xl max-w-sm w-full relative">
+            <button
+              onClick={() => setShowSettingsModal(false)}
+              className="absolute top-4 right-4 bg-slate-100 hover:bg-slate-200 text-slate-500 font-extrabold p-1.5 rounded-full h-8 w-8 flex items-center justify-center text-sm"
+            >
+              ✕
+            </button>
+
+            <div className="text-center mb-6">
+              <span className="text-4xl">⚙️</span>
+              <h3 className="text-lg font-black text-slate-800 uppercase mt-2">App Settings</h3>
+              <p className="text-[10px] text-slate-400 font-extrabold mt-0.5">Customize your learning experience</p>
+            </div>
+
+            <div className="space-y-4 mb-6">
+              <div className="flex items-center justify-between p-3 bg-slate-50 rounded-2xl border border-slate-100">
+                <span className="text-xs font-black text-slate-600">Sound Effects & TTS</span>
+                <button
+                  onClick={toggleSound}
+                  className={`px-3 py-1.5 rounded-xl text-xs font-black border-2 ${
+                    state.soundEnabled ? 'bg-emerald-400 border-emerald-500 text-white' : 'bg-slate-300 border-slate-400 text-slate-700'
+                  }`}
+                >
+                  {state.soundEnabled ? '🔊 Enabled' : '🔇 Muted'}
+                </button>
+              </div>
+
+              <div className="flex items-center justify-between p-3 bg-slate-50 rounded-2xl border border-slate-100">
+                <span className="text-xs font-black text-slate-600">Active Profile Role</span>
+                <span className="text-xs font-black text-rose-500 bg-rose-50 px-2.5 py-1 rounded-lg capitalize">
+                  {active}
+                </span>
+              </div>
+            </div>
+
+            <div className="border-t border-slate-100 pt-4 space-y-2">
+              <button
+                onClick={() => {
+                  setShowSettingsModal(false);
+                  setCurrentTab('admin');
+                }}
+                className="w-full bg-indigo-500 hover:bg-indigo-600 text-white font-black text-xs py-3 rounded-2xl border-b-4 border-indigo-700 active:translate-y-0.5 transition-all text-center flex items-center justify-center gap-1.5"
+              >
+                <span>👑</span> Admin Control Panel
+              </button>
+            </div>
+          </div>
+        </div>
       )}
     </header>
   );
