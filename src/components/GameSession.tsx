@@ -1,7 +1,7 @@
 import React, { useState, useEffect } from 'react';
 import { useAppState } from '../state/AppContext';
 import { Destination, VocabularyWord } from '../data/destinations';
-import { speakJapanese } from '../utils/audio';
+import { speakJapanese, playVictorySound } from '../utils/audio';
 
 interface GameSessionProps {
   destination: Destination;
@@ -11,6 +11,7 @@ interface GameSessionProps {
 export const GameSession: React.FC<GameSessionProps> = ({ destination, onClose }) => {
   const { state, updateXP, recordVocabAttempt, updateHighScore } = useAppState();
   const activeKid = state.activePlayer === 'parent' ? 'james' : state.activePlayer;
+  const profile = state.profiles[activeKid];
 
   const [gameType, setGameType] = useState<'match' | 'listen' | 'read' | 'dialogue' | 'pronounce' | 'emojiMatch' | 'dragDrop' | 'conversation' | 'grammar' | 'listeningEx' | 'readingEx' | 'writingEx' | null>(null);
   const [currentStep, setCurrentStep] = useState(0);
@@ -172,6 +173,7 @@ export const GameSession: React.FC<GameSessionProps> = ({ destination, onClose }
           // XP trigger
           updateXP(activeKid, 10);
           recordVocabAttempt(activeKid, destination.id, first.id, true);
+          playVictorySound(profile.equippedSoundId, state.soundEnabled);
 
           // All matched check
           if (matched.every(c => c.isMatched)) {
@@ -239,6 +241,7 @@ export const GameSession: React.FC<GameSessionProps> = ({ destination, onClose }
       setFeedback({ isCorrect: true, text: `🎉 Perfect! ${quizWord.japanese} (${quizWord.romaji}) = ${quizWord.english}` });
       updateXP(activeKid, baseXP + comboXP);
       recordVocabAttempt(activeKid, destination.id, quizWord.id, true);
+      playVictorySound(profile.equippedSoundId, state.soundEnabled);
     } else {
       setStreakCount(0);
       setFeedback({ isCorrect: false, text: `❌ Oh no! Let's try another word. It means: ${quizWord.english}` });

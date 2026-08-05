@@ -1,5 +1,6 @@
 import React from 'react';
 import { useAppState } from '../state/AppContext';
+import { SHOP_ITEMS } from '../data/shopItems';
 
 interface HeaderProps {
   currentTab: string;
@@ -22,6 +23,32 @@ export const Header: React.FC<HeaderProps> = ({ currentTab, setCurrentTab }) => 
 
   const handleDismiss = (id: string) => {
     readParentMessage(active as "james" | "lily" | "merche", id);
+  };
+
+  const getFrameClass = (profile: any) => {
+    if (!profile || !profile.equippedFrameId) return "border-transparent";
+    const frame = SHOP_ITEMS.find(i => i.id === profile.equippedFrameId);
+    if (!frame) return "border-transparent";
+    if (frame.id === 'fr_4') return 'border-cyan-400 ring-2 ring-cyan-200 animate-pulse'; // Neon Glow
+    if (frame.id === 'fr_1') return 'border-emerald-400 ring-2 ring-emerald-100'; // Bamboo
+    if (frame.id === 'fr_2') return 'border-pink-400 ring-2 ring-pink-100'; // Sakura
+    if (frame.id === 'fr_3') return 'border-amber-400 ring-2 ring-amber-200 animate-pulse'; // Golden Crest
+    if (frame.id === 'fr_6') return 'border-yellow-400 ring-2 ring-amber-300'; // Royal Crown
+    if (frame.id === 'fr_7') return 'border-rose-500 ring-2 ring-rose-300 animate-bounce'; // Imperial Dragon
+    return 'border-indigo-400 ring-1 ring-indigo-200';
+  };
+
+  const getAuraClass = (profile: any) => {
+    if (!profile || !profile.equippedAuraId) return "";
+    if (profile.equippedAuraId === 'st_rainbow') return "shadow-[0_0_15px_rgba(168,85,247,0.8)] animate-pulse";
+    if (profile.equippedAuraId === 'st_gold') return "shadow-[0_0_15px_rgba(245,158,11,0.8)] animate-pulse";
+    return "shadow-[0_0_10px_rgba(59,130,246,0.6)]";
+  };
+
+  const getTitleText = (profile: any) => {
+    if (!profile || !profile.equippedTitleId) return "";
+    const titleItem = SHOP_ITEMS.find(i => i.id === profile.equippedTitleId);
+    return titleItem ? ` • 🏆 ${titleItem.name}` : "";
   };
 
   return (
@@ -50,13 +77,13 @@ export const Header: React.FC<HeaderProps> = ({ currentTab, setCurrentTab }) => 
                 setCurrentTab('home');
               }
             }}
-            className={`flex items-center gap-1.5 px-3 py-1.5 rounded-2xl text-xs font-black transition-all duration-200 border-2 ${
+            className={`flex items-center gap-1.5 px-3 py-1.5 rounded-2xl text-xs font-black transition-all duration-200 border-4 ${
               active === 'lily'
                 ? 'bg-amber-500 text-white shadow-md border-amber-300 scale-105'
                 : 'text-slate-700 bg-white hover:bg-slate-100 border-slate-200'
-            }`}
+            } ${getFrameClass(state.profiles.lily)} ${getAuraClass(state.profiles.lily)}`}
           >
-            <span>{state.profiles.lily.avatarCustomization?.face || "👧🏻"}</span> {state.profiles.lily.avatarCustomization?.customName || "Sofia"}
+            <span>{state.profiles.lily.avatarCustomization?.face || "👧🏻"}</span> {state.profiles.lily.avatarCustomization?.customName || "Sofia"}{getTitleText(state.profiles.lily)}
           </button>
 
           <button
@@ -66,13 +93,13 @@ export const Header: React.FC<HeaderProps> = ({ currentTab, setCurrentTab }) => 
                 setCurrentTab('home');
               }
             }}
-            className={`flex items-center gap-1.5 px-3 py-1.5 rounded-2xl text-xs font-black transition-all duration-200 border-2 ${
+            className={`flex items-center gap-1.5 px-3 py-1.5 rounded-2xl text-xs font-black transition-all duration-200 border-4 ${
               active === 'james'
                 ? 'bg-rose-500 text-white shadow-md border-rose-300 scale-105'
                 : 'text-slate-700 bg-white hover:bg-slate-100 border-slate-200'
-            }`}
+            } ${getFrameClass(state.profiles.james)} ${getAuraClass(state.profiles.james)}`}
           >
-            <span>{state.profiles.james.avatarCustomization?.face || "👦🏻"}</span> {state.profiles.james.avatarCustomization?.customName || "Marco"}
+            <span>{state.profiles.james.avatarCustomization?.face || "👦🏻"}</span> {state.profiles.james.avatarCustomization?.customName || "Marco"}{getTitleText(state.profiles.james)}
           </button>
 
           <button
@@ -82,13 +109,13 @@ export const Header: React.FC<HeaderProps> = ({ currentTab, setCurrentTab }) => 
                 setCurrentTab('home');
               }
             }}
-            className={`flex items-center gap-1.5 px-3 py-1.5 rounded-2xl text-xs font-black transition-all duration-200 border-2 ${
+            className={`flex items-center gap-1.5 px-3 py-1.5 rounded-2xl text-xs font-black transition-all duration-200 border-4 ${
               active === 'merche'
                 ? 'bg-indigo-500 text-white shadow-md border-indigo-300 scale-105'
                 : 'text-indigo-700 bg-white hover:bg-slate-100 border-slate-200'
-            }`}
+            } ${getFrameClass(state.profiles.merche)} ${getAuraClass(state.profiles.merche)}`}
           >
-            <span>{state.profiles.merche.avatarCustomization?.face || "🤩"}</span> {state.profiles.merche.avatarCustomization?.customName || "Merche"} (Mom)
+            <span>{state.profiles.merche.avatarCustomization?.face || "🤩"}</span> {state.profiles.merche.avatarCustomization?.customName || "Merche"} (Mom){getTitleText(state.profiles.merche)}
           </button>
 
           <button
@@ -170,7 +197,7 @@ export const Header: React.FC<HeaderProps> = ({ currentTab, setCurrentTab }) => 
       {/* Navigation Tabs with Bubble Buttons style */}
       {active !== 'parent' && (
         <nav className="bg-[#FFFDF9] border-t-2 border-[#FEF08A] py-2">
-          <div className="max-w-6xl mx-auto px-4 flex justify-center gap-4">
+          <div className="max-w-6xl mx-auto px-4 flex justify-center gap-4 flex-wrap">
             <button
               onClick={() => setCurrentTab('home')}
               className={`py-2 px-5 text-sm font-black rounded-full border-2 transition-all ${
@@ -180,6 +207,16 @@ export const Header: React.FC<HeaderProps> = ({ currentTab, setCurrentTab }) => 
               }`}
             >
               🗺️ Destinations Map
+            </button>
+            <button
+              onClick={() => setCurrentTab('shop')}
+              className={`py-2 px-5 text-sm font-black rounded-full border-2 transition-all ${
+                currentTab === 'shop'
+                  ? 'bg-rose-500 text-white border-rose-600 shadow-md'
+                  : 'bg-white text-slate-700 border-slate-200 hover:bg-slate-50'
+              }`}
+            >
+              🛍️ Shop 2.0
             </button>
             <button
               onClick={() => setCurrentTab('passport')}

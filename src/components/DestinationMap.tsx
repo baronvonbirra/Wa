@@ -3,9 +3,11 @@ import { useAppState } from '../state/AppContext';
 import { DESTINATIONS_DATA } from '../data/destinations';
 import { AvatarCustomizer } from './AvatarCustomizer';
 import { StickerStore } from './StickerStore';
+import { Shop2 } from './Shop2';
 import { DailyQuests } from './DailyQuests';
 import { WeakAreaRecommendation } from './WeakAreaRecommendation';
 import { TripCountdownTimeline } from './TripCountdownTimeline';
+import { SHOP_ITEMS } from '../data/shopItems';
 
 interface DestinationMapProps {
   onSelectDestination: (destId: string) => void;
@@ -17,6 +19,7 @@ export const DestinationMap: React.FC<DestinationMapProps> = ({ onSelectDestinat
   const [isFactBookOpen, setIsFactBookOpen] = useState(false);
   const [isAvatarOpen, setIsAvatarOpen] = useState(false);
   const [isStickerStoreOpen, setIsStickerStoreOpen] = useState(false);
+  const [isShopOpen, setIsShopOpen] = useState(false);
 
   // Render a friendly message if the active player is "parent" so they know they need to play as a kid
   if (active === 'parent') {
@@ -48,6 +51,28 @@ export const DestinationMap: React.FC<DestinationMapProps> = ({ onSelectDestinat
 
   const profile = state.profiles[active];
 
+  // Map equipped background theme ID to tailwind class styles
+  const getThemeBannerClass = () => {
+    if (!profile.equippedThemeId) {
+      return "bg-gradient-to-r from-rose-100 via-amber-50 to-emerald-100 border-rose-300 text-rose-950";
+    }
+    const themeId = profile.equippedThemeId;
+    if (themeId === 't_0') return "bg-gradient-to-r from-pink-100 via-rose-50 to-pink-100 border-pink-300 text-pink-950"; // Sakura Garden
+    if (themeId === 't_1') return "bg-gradient-to-r from-indigo-900 via-slate-800 to-indigo-950 border-purple-500 text-indigo-100"; // Tokyo Neon
+    if (themeId === 't_2') return "bg-gradient-to-r from-amber-100 via-orange-100 to-yellow-50 border-amber-300 text-amber-950"; // Obon Festival
+    if (themeId === 't_3') return "bg-gradient-to-r from-yellow-100 via-stone-100 to-amber-50 border-yellow-400 text-slate-800"; // Kyoto Pagoda
+    if (themeId === 't_4') return "bg-gradient-to-r from-blue-100 via-slate-100 to-blue-50 border-blue-300 text-slate-800"; // Snowy Fuji
+    return "bg-gradient-to-r from-indigo-100 via-purple-100 to-pink-100 border-purple-300 text-purple-950";
+  };
+
+  const getTitleText = () => {
+    if (!profile.equippedTitleId) return "";
+    const titleItem = SHOP_ITEMS.find(i => i.id === profile.equippedTitleId);
+    return titleItem ? ` • 🏆 ${titleItem.name}` : "";
+  };
+
+  const unlockedItemIds = profile.unlockedItemIds || [];
+
   return (
     <div className="max-w-6xl mx-auto px-4 py-8 space-y-8">
       {/* Avatar Customizer modal */}
@@ -60,11 +85,20 @@ export const DestinationMap: React.FC<DestinationMapProps> = ({ onSelectDestinat
         <StickerStore onClose={() => setIsStickerStoreOpen(false)} />
       )}
 
+      {/* Shop 2.0 full modular modal */}
+      {isShopOpen && (
+        <div className="fixed inset-0 bg-slate-950/50 backdrop-blur-sm z-[110] overflow-y-auto p-4 flex items-center justify-center">
+          <div className="max-w-5xl w-full">
+            <Shop2 onClose={() => setIsShopOpen(false)} />
+          </div>
+        </div>
+      )}
+
       {/* Dynamic Kid-Friendly Hero Banner */}
-      <div className="bg-gradient-to-r from-rose-100 via-amber-50 to-emerald-100 border-8 border-rose-300 rounded-[36px] p-6 md:p-8 shadow-md flex flex-col md:flex-row items-center justify-between gap-6 relative overflow-hidden">
+      <div className={`border-8 rounded-[36px] p-6 md:p-8 shadow-md flex flex-col md:flex-row items-center justify-between gap-6 relative overflow-hidden transition-all duration-300 ${getThemeBannerClass()}`}>
         {/* Floating clouds/circles background */}
-        <div className="absolute top-0 right-10 w-24 h-24 bg-white/40 rounded-full filter blur-xl"></div>
-        <div className="absolute -bottom-5 left-10 w-32 h-32 bg-yellow-100/40 rounded-full filter blur-xl"></div>
+        <div className="absolute top-0 right-10 w-24 h-24 bg-white/30 rounded-full filter blur-xl"></div>
+        <div className="absolute -bottom-5 left-10 w-32 h-32 bg-yellow-100/30 rounded-full filter blur-xl"></div>
 
         <div className="flex-1 relative z-10">
           <div className="flex items-center gap-4 mb-3">
@@ -84,12 +118,16 @@ export const DestinationMap: React.FC<DestinationMapProps> = ({ onSelectDestinat
               <span className="absolute -bottom-1 -right-1 bg-rose-500 text-white border-2 border-white text-[10px] font-black px-1.5 py-0.5 rounded-full shadow-md animate-bounce">EDIT</span>
             </div>
             <div>
-              <h2 className="text-3xl font-black text-rose-950 flex items-center gap-2 drop-shadow-sm">
-                Hey {profile.avatarCustomization?.customName || profile.name}! <span className="text-xs font-black bg-rose-600 text-white px-3 py-1 rounded-full border-2 border-white animate-pulse">Level {profile.level}</span>
+              <h2 className="text-3xl font-black flex items-center gap-2 drop-shadow-sm flex-wrap">
+                Hey {profile.avatarCustomization?.customName || profile.name}!
+                <span className="text-xs font-black bg-rose-600 text-white px-3 py-1 rounded-full border-2 border-white animate-pulse">
+                  Level {profile.level}{getTitleText()}
+                </span>
               </h2>
               <div className="flex flex-wrap gap-2 mt-1.5">
-                <span className="text-xs font-black text-amber-800 bg-white/75 px-3 py-1 rounded-full border border-amber-200">⭐️ {profile.totalXP} Total XP</span>
-                <span className="text-xs font-black text-rose-800 bg-white/75 px-3 py-1 rounded-full border border-rose-200">🪙 {profile.spendableXP} Coins</span>
+                <span className="text-xs font-black text-amber-800 bg-white/80 px-3 py-1 rounded-full border border-amber-200">⭐️ {profile.totalXP} Total XP</span>
+                <span className="text-xs font-black text-rose-800 bg-white/80 px-3 py-1 rounded-full border border-rose-200">🪙 {profile.spendableXP} Coins</span>
+                <span className="text-xs font-black text-indigo-800 bg-white/80 px-3 py-1 rounded-full border border-indigo-200">🎒 Owned: {unlockedItemIds.length} rewards</span>
                 <button
                   onClick={() => setIsAvatarOpen(true)}
                   className="text-xs font-black text-rose-600 bg-white hover:bg-rose-50 border border-rose-300 px-3 py-1 rounded-full transition-all flex items-center gap-1 shadow-sm active:translate-y-0.5"
@@ -97,21 +135,21 @@ export const DestinationMap: React.FC<DestinationMapProps> = ({ onSelectDestinat
                   🎨 Customize Avatar
                 </button>
                 <button
-                  onClick={() => setIsStickerStoreOpen(true)}
-                  className="text-xs font-black text-amber-600 bg-white hover:bg-amber-50 border border-amber-300 px-3 py-1 rounded-full transition-all flex items-center gap-1 shadow-sm active:translate-y-0.5"
+                  onClick={() => setIsShopOpen(true)}
+                  className="text-xs font-black text-emerald-600 bg-white hover:bg-emerald-50 border border-emerald-300 px-3 py-1 rounded-full transition-all flex items-center gap-1 shadow-sm active:translate-y-0.5 animate-bounce"
                 >
-                  🎫 Sticker Store
+                  🛍️ Shop 2.0 (500+ Items)
                 </button>
               </div>
             </div>
           </div>
-          <p className="text-rose-900 font-extrabold text-sm md:text-base leading-relaxed">
+          <p className="font-extrabold text-sm md:text-base leading-relaxed">
             Let's go on an amazing journey! Pick a place on the map, play games, and collect cute stickers!
           </p>
         </div>
 
         {/* Fact Highlight inside a bubble or generic button if no facts unlocked */}
-        <div className="bg-white border-4 border-amber-300 p-5 rounded-[28px] shadow-md max-w-sm w-full relative z-10 flex flex-col justify-between">
+        <div className="bg-white text-slate-800 border-4 border-amber-300 p-5 rounded-[28px] shadow-md max-w-sm w-full relative z-10 flex flex-col justify-between">
           <div>
             <div className="flex items-center gap-2 mb-2">
               <span className="text-2xl animate-wiggle inline-block">💡</span>
