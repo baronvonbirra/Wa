@@ -39,7 +39,7 @@ function MainAppContent({ currentTab, setCurrentTab, selectedDestination, setSel
             <span className="text-6xl mb-2 select-none">{state.profiles.lily.avatarCustomization?.face || "👧🏻"}</span>
             <div>
               <h3 className="text-xl font-black text-slate-800">{state.profiles.lily.avatarCustomization?.customName || "Sofia"}</h3>
-              <p className="text-xs text-slate-400 font-extrabold mt-0.5">Kids Basic (Age 5)</p>
+              <p className="text-xs text-slate-400 font-extrabold mt-0.5">Kids Basic</p>
             </div>
             <div className="mt-4 bg-amber-50 border-2 border-amber-100 px-4 py-1.5 rounded-full">
               <span className="text-xs font-black text-amber-800">Lvl {state.profiles.lily.level} • {state.profiles.lily.totalXP} XP</span>
@@ -58,7 +58,7 @@ function MainAppContent({ currentTab, setCurrentTab, selectedDestination, setSel
             <span className="text-6xl mb-2 select-none">{state.profiles.james.avatarCustomization?.face || "👦🏻"}</span>
             <div>
               <h3 className="text-xl font-black text-slate-800">{state.profiles.james.avatarCustomization?.customName || "Marco"}</h3>
-              <p className="text-xs text-slate-400 font-extrabold mt-0.5">Kids Advanced (Age 9)</p>
+              <p className="text-xs text-slate-400 font-extrabold mt-0.5">Kids Advanced</p>
             </div>
             <div className="mt-4 bg-rose-50 border-2 border-rose-100 px-4 py-1.5 rounded-full">
               <span className="text-xs font-black text-rose-800">Lvl {state.profiles.james.level} • {state.profiles.james.totalXP} XP</span>

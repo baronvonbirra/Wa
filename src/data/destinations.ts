@@ -321,7 +321,7 @@ export const DESTINATIONS_DATA: Destination[] = [
     emoji: "🍜",
     vocabCount: 30,
     difficulty: "⭐⭐⭐",
-    ageFocus: "James (9)",
+    ageFocus: "James",
     japanFacts: [
       "Tokyo is the most populated metropolitan area in the whole world!",
       "You can buy almost anything from Tokyo's millions of vending machines, including hot canned soup!",
@@ -529,7 +529,7 @@ export const DESTINATIONS_DATA: Destination[] = [
     emoji: "🛕",
     vocabCount: 25,
     difficulty: "⭐",
-    ageFocus: "Lily (5)",
+    ageFocus: "Lily",
     japanFacts: [
       "Osaka castle is one of Japan's most famous landmarks and is surrounded by a giant moat!",
       "Osaka is known as the 'Nation's Kitchen' because the food here is incredibly delicious!",
@@ -668,7 +668,7 @@ export const DESTINATIONS_DATA: Destination[] = [
     emoji: "🏖️",
     vocabCount: 22,
     difficulty: "⭐",
-    ageFocus: "Lily (5)",
+    ageFocus: "Lily",
     japanFacts: [
       "Okinawa is a group of tropical islands in Japan with crystal clear water and white sand beaches!",
       "Okinawa has a world-famous aquarium with massive Whale Sharks called Churaumi!",

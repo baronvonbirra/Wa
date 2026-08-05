@@ -292,7 +292,7 @@ export const ParentDashboard: React.FC = () => {
           <div>
             <div className="flex justify-between items-center border-b border-rose-50 pb-3 mb-4">
               <h3 className="text-xl font-black text-rose-950 flex items-center gap-2">
-                <span>👦🏻</span> James Progress (Age 9)
+                <span>👦🏻</span> James Progress
               </h3>
               <div className="flex items-center gap-1.5">
                 <span className="text-xs font-bold bg-rose-100 text-rose-700 px-2.5 py-0.5 rounded-full">Level {state.profiles.james.level}</span>
@@ -360,7 +360,7 @@ export const ParentDashboard: React.FC = () => {
           <div>
             <div className="flex justify-between items-center border-b border-amber-50 pb-3 mb-4">
               <h3 className="text-xl font-black text-amber-950 flex items-center gap-2">
-                <span>👧🏻</span> Lily Progress (Age 5)
+                <span>👧🏻</span> Lily Progress
               </h3>
               <div className="flex items-center gap-1.5">
                 <span className="text-xs font-bold bg-amber-100 text-amber-700 px-2.5 py-0.5 rounded-full">Level {state.profiles.lily.level}</span>
