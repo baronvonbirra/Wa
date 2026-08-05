@@ -33,6 +33,8 @@ interface AppContextType {
   addTradeOffer: (offer: Omit<TradeOffer, "id" | "date">) => void;
   acceptTradeOffer: (offerId: string, player: "james" | "lily" | "merche", givingItemId: string) => boolean;
   cancelTradeOffer: (offerId: string) => void;
+  updateFullState: (newState: AppState) => void;
+  updateAppStateDirect: (updater: (prev: AppState) => AppState) => void;
 }
 
 const AppContext = createContext<AppContextType | undefined>(undefined);
@@ -139,6 +141,23 @@ export const AppProvider: React.FC<{ children: React.ReactNode }> = ({ children 
 
         if (!hydrated.tradingPostOffers) {
           hydrated.tradingPostOffers = [];
+        }
+
+        // Admin Safeguards
+        if (!hydrated.adminPasswordHash) {
+          hydrated.adminPasswordHash = INITIAL_STATE.adminPasswordHash;
+        }
+        if (!hydrated.adminLogs) {
+          hydrated.adminLogs = [];
+        }
+        if (hydrated.debugMode === undefined) {
+          hydrated.debugMode = false;
+        }
+        if (hydrated.devConsoleEnabled === undefined) {
+          hydrated.devConsoleEnabled = false;
+        }
+        if (hydrated.destinationsAvailableCount === undefined) {
+          hydrated.destinationsAvailableCount = 6;
         }
 
         return hydrated;
@@ -891,6 +910,14 @@ export const AppProvider: React.FC<{ children: React.ReactNode }> = ({ children 
     }));
   };
 
+  const updateFullState = (newState: AppState) => {
+    setState(newState);
+  };
+
+  const updateAppStateDirect = (updater: (prev: AppState) => AppState) => {
+    setState(prev => updater(prev));
+  };
+
   return (
     <AppContext.Provider
       value={{
@@ -922,7 +949,9 @@ export const AppProvider: React.FC<{ children: React.ReactNode }> = ({ children 
         usePowerup,
         addTradeOffer,
         acceptTradeOffer,
-        cancelTradeOffer
+        cancelTradeOffer,
+        updateFullState,
+        updateAppStateDirect
       }}
     >
       {children}

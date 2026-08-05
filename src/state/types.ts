@@ -196,6 +196,14 @@ export interface PlayerProgress {
   activePowerups: { [powerupId: string]: { expiresAt: number; multiplier?: number } }; // powerupId -> details
 }
 
+export interface AdminLog {
+  id: string;
+  timestamp: string;
+  who: string;
+  action: string;
+  details: string;
+}
+
 export interface AppState {
   profiles: {
     james: PlayerProgress;
@@ -207,6 +215,11 @@ export interface AppState {
   soundEnabled: boolean;
   activeChallengeId: string | null;
   tradingPostOffers: TradeOffer[]; // Shop 2.0 Global Trading Post list
+  adminPasswordHash: string;
+  adminLogs: AdminLog[];
+  debugMode: boolean;
+  devConsoleEnabled: boolean;
+  destinationsAvailableCount: number;
 }
 
 export const DEFAULT_QUESTS = (playerKey: "james" | "lily"): DailyQuest[] => [
@@ -456,5 +469,10 @@ export const INITIAL_STATE: AppState = {
   })(),
   soundEnabled: true,
   activeChallengeId: "weekend-sync",
-  tradingPostOffers: []
+  tradingPostOffers: [],
+  adminPasswordHash: "be4ee906d3efecfc34a94a6cd378633a67f7f35d5abbc3f498715ac5dcbee54f",
+  adminLogs: [],
+  debugMode: false,
+  devConsoleEnabled: false,
+  destinationsAvailableCount: 6
 };
