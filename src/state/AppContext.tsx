@@ -68,7 +68,7 @@ export const AppProvider: React.FC<{ children: React.ReactNode }> = ({ children 
             profile.masteredVocab = { ...initialProfile.masteredVocab };
           } else {
             // Ensure all destination keys exist in masteredVocab
-            const dests = ["kyoto", "tokyo", "osaka", "train", "okinawa", "takayama"] as const;
+            const dests = ["kyoto", "tokyo", "osaka", "train", "shopping", "okinawa", "takayama", "sendai", "hiroshima", "takamatsu", "matsuyama", "nagasaki", "fukuoka", "mtfuji", "yokohama"] as const;
             dests.forEach(d => {
               if (!profile.masteredVocab[d]) {
                 profile.masteredVocab[d] = [];
@@ -308,7 +308,7 @@ export const AppProvider: React.FC<{ children: React.ReactNode }> = ({ children 
       };
 
       // Check progression lock: "Complete 50% of lessons in a destination -> unlock next"
-      const destOrder = ["kyoto", "tokyo", "osaka", "train", "okinawa", "takayama"];
+      const destOrder = ["kyoto", "tokyo", "osaka", "train", "shopping", "okinawa", "takayama", "sendai", "hiroshima", "takamatsu", "matsuyama", "nagasaki", "fukuoka", "mtfuji", "yokohama"];
       const currentDestIdx = destOrder.indexOf(destId);
       const currentDest = DESTINATIONS_DATA.find(d => d.id === destId);
 
@@ -440,7 +440,7 @@ export const AppProvider: React.FC<{ children: React.ReactNode }> = ({ children 
   const unlockNextDestination = (player: "james" | "lily" | "merche", currentDestId: string) => {
     setState((prev) => {
       const profile = { ...prev.profiles[player] };
-      const destOrder = ["kyoto", "tokyo", "osaka", "train", "okinawa", "takayama"];
+      const destOrder = ["kyoto", "tokyo", "osaka", "train", "shopping", "okinawa", "takayama", "sendai", "hiroshima", "takamatsu", "matsuyama", "nagasaki", "fukuoka", "mtfuji", "yokohama"];
       const idx = destOrder.indexOf(currentDestId);
       if (idx !== -1 && idx < destOrder.length - 1) {
         const nextId = destOrder[idx + 1];
