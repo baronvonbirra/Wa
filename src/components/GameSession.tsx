@@ -29,6 +29,18 @@ export const GameSession: React.FC<GameSessionProps> = ({ destination, onClose }
   const [convScenarioIdx, setConvScenarioIdx] = useState(0);
   const [convTurnIdx, setConvTurnIdx] = useState(0);
   const [convHistory, setConvHistory] = useState<{ speaker: string; text: string; english: string }[]>([]);
+  const [selectedScenarioIdx, setSelectedScenarioIdx] = useState<number | null>(null);
+  const [filterDifficulty, setFilterDifficulty] = useState<string>("all");
+  const [filterCategory, setFilterCategory] = useState<string>("all");
+  const [viewVocabularyTranslation, setViewVocabularyTranslation] = useState<boolean>(false);
+
+  // States for dynamic conversation rewards
+  const [convMaxPoints, setConvMaxPoints] = useState<number>(10);
+  const [convBaseXP, setConvBaseXP] = useState<number>(0);
+  const [convBonusXP, setConvBonusXP] = useState<number>(0);
+  const [convTotalXP, setConvTotalXP] = useState<number>(0);
+  const [convGrade, setConvGrade] = useState<string>("A");
+  const [convFeedbackMsg, setConvFeedbackMsg] = useState<string>("");
 
   const [grammarIdx, setGrammarIdx] = useState(0);
   const [listeningExIdx, setListeningExIdx] = useState(0);
@@ -76,6 +88,7 @@ export const GameSession: React.FC<GameSessionProps> = ({ destination, onClose }
     setIsGameOver(false);
     setFeedback(null);
     setHasUsedHint(false);
+    setViewVocabularyTranslation(false);
 
     if (type === 'match') {
       initMatchGame();
@@ -107,9 +120,19 @@ export const GameSession: React.FC<GameSessionProps> = ({ destination, onClose }
 
   const initConversationGame = () => {
     setConvScenarioIdx(0);
+    setSelectedScenarioIdx(null); // Force selection screen!
     setConvTurnIdx(0);
-    const scen = destination.conversations?.[0];
+    setConvHistory([]);
+  };
+
+  const initConversationGameForIdx = (idx: number) => {
+    setConvScenarioIdx(idx);
+    setSelectedScenarioIdx(idx);
+    setConvTurnIdx(0);
+    const scen = destination.conversations?.[idx];
     if (scen && scen.turns[0]) {
+      // Auto-play speech for the opening turn
+      playAudio(scen.turns[0].japanese);
       setConvHistory([{
         speaker: scen.turns[0].speaker,
         text: scen.turns[0].japanese,
@@ -612,11 +635,70 @@ export const GameSession: React.FC<GameSessionProps> = ({ destination, onClose }
     }
   };
 
-  // Save best high scores on game over
+  // Save best high scores and trigger dynamic scoring on game over
   useEffect(() => {
     if (isGameOver && gameType) {
       const key = `${gameType}_${destination.id}`;
       updateHighScore(activeKid, key, score);
+
+      if (gameType === 'conversation') {
+        const scen = destination.conversations?.[convScenarioIdx];
+        if (scen) {
+          const numPlayerTurns = scen.turns.filter(t => t.options).length;
+          const maxPoints = numPlayerTurns * 10;
+          setConvMaxPoints(maxPoints);
+
+          // Base XP calculation: (score / maxPoints) * 25
+          const base = maxPoints > 0 ? Math.round((score / maxPoints) * 25) : 10;
+          setConvBaseXP(base);
+
+          // Multiplier based on minLevel
+          const minLvl = scen.minLevel || 11;
+          const isElementary = minLvl <= 25;
+          const isIntermediate = minLvl > 25 && minLvl <= 45;
+          const isAdvanced = minLvl > 45;
+          const multiplier = isElementary ? 1.0 : isIntermediate ? 1.5 : 2.0;
+
+          // Bonuses
+          let bonuses = 0;
+          if (score === maxPoints) bonuses += 10; // Perfect score
+          if (!hasUsedHint) bonuses += 5; // No hints
+
+          // First time check
+          const highScoresKey = `conversation_best_${scen.id}`;
+          const isFirstTime = !profile.highScores[highScoresKey];
+          if (isFirstTime) bonuses += 5;
+
+          const totalEarned = Math.round(base * multiplier) + bonuses;
+          setConvBonusXP(bonuses);
+          setConvTotalXP(totalEarned);
+
+          // Scoring Grade & Rubric
+          const ratio = maxPoints > 0 ? score / maxPoints : 1.0;
+          let grade = "C";
+          let feedbackMsg = "Try again! Practice this scenario.";
+          if (ratio >= 0.9) {
+            grade = "A+";
+            feedbackMsg = "Excellent! You sound like a native!";
+          } else if (ratio >= 0.8) {
+            grade = "A";
+            feedbackMsg = "Great job! Very natural.";
+          } else if (ratio >= 0.7) {
+            grade = "B+";
+            feedbackMsg = "Good! A few improvements.";
+          } else if (ratio >= 0.6) {
+            grade = "B";
+            feedbackMsg = "Decent effort. Keep practicing.";
+          }
+          setConvGrade(grade);
+          setConvFeedbackMsg(feedbackMsg);
+
+          // Update XP & Coins in App State
+          updateXP(activeKid, totalEarned);
+          // Save high score specifically for this scenario ID so first time completion works
+          updateHighScore(activeKid, highScoresKey, score);
+        }
+      }
     }
   }, [isGameOver]);
 
@@ -1602,8 +1684,135 @@ export const GameSession: React.FC<GameSessionProps> = ({ destination, onClose }
         })()}
 
         {/* --- CONVERSATION VIEW (PHASE 3) --- */}
-        {gameType === 'conversation' && !isGameOver && destination.conversations?.[convScenarioIdx] && (() => {
-          const scen = destination.conversations[convScenarioIdx];
+        {gameType === 'conversation' && !isGameOver && (() => {
+          if (selectedScenarioIdx === null) {
+            return (
+              <div className="p-6">
+                <h4 className="text-2xl font-black text-rose-950 mb-4 flex items-center gap-2">
+                  <span>💬</span> Choose a Conversation Scenario
+                </h4>
+                <p className="text-xs text-slate-500 font-bold mb-6">
+                  Practice real-life conversations to build speaking confidence! Select a topic suited for your level.
+                </p>
+
+                {/* Filters */}
+                <div className="flex flex-col sm:flex-row gap-4 mb-6 bg-slate-50 p-4 rounded-2xl border-2 border-slate-100">
+                  {/* Level Filter */}
+                  <div className="flex-1">
+                    <label className="block text-[10px] font-black text-slate-400 uppercase tracking-widest mb-1.5">Filter by Level:</label>
+                    <div className="flex flex-wrap gap-2">
+                      {["all", "elementary", "intermediate", "advanced"].map(lvl => (
+                        <button
+                          key={lvl}
+                          onClick={() => setFilterDifficulty(lvl)}
+                          className={`text-xs font-black px-3 py-1.5 rounded-full border transition-all ${
+                            filterDifficulty === lvl
+                              ? "bg-rose-500 text-white border-rose-600 shadow-sm animate-soft"
+                              : "bg-white text-slate-600 border-slate-200 hover:bg-slate-50"
+                          }`}
+                        >
+                          {lvl === "all" ? "All Tiers" : lvl.toUpperCase()}
+                        </button>
+                      ))}
+                    </div>
+                  </div>
+
+                  {/* Category Filter */}
+                  <div className="w-full sm:w-48">
+                    <label className="block text-[10px] font-black text-slate-400 uppercase tracking-widest mb-1.5">Filter by Category:</label>
+                    <select
+                      value={filterCategory}
+                      onChange={(e) => setFilterCategory(e.target.value)}
+                      className="w-full bg-white border-2 border-slate-200 rounded-xl px-3 py-2 text-xs font-black text-slate-700 focus:outline-none focus:border-rose-400"
+                    >
+                      <option value="all">All Categories</option>
+                      <option value="restaurant">Restaurant 🍜</option>
+                      <option value="hotel">Hotel 🏨</option>
+                      <option value="culture">Culture 🎎</option>
+                      <option value="emergency">Emergency 🚨</option>
+                      <option value="shopping">Shopping 🛍️</option>
+                      <option value="greeting">Greetings 👋</option>
+                      <option value="transportation">Transport 🚄</option>
+                      <option value="sightseeing">Sightseeing 🗺️</option>
+                    </select>
+                  </div>
+                </div>
+
+                {/* Scenario Cards Grid */}
+                <div className="grid grid-cols-1 sm:grid-cols-2 gap-4 max-h-[400px] overflow-y-auto pr-1">
+                  {destination.conversations?.map((scen, idx) => {
+                    const minLvl = scen.minLevel || 11;
+                    const isElementary = minLvl <= 25;
+                    const isIntermediate = minLvl > 25 && minLvl <= 45;
+                    const isAdvanced = minLvl > 45;
+                    const diffLabel = isElementary ? "elementary" : isIntermediate ? "intermediate" : "advanced";
+
+                    // Apply difficulty filter
+                    if (filterDifficulty !== "all" && diffLabel !== filterDifficulty) return null;
+                    // Apply category filter
+                    if (filterCategory !== "all" && scen.category !== filterCategory) return null;
+
+                    const isLocked = profile.level < minLvl;
+
+                    return (
+                      <button
+                        key={scen.id}
+                        disabled={isLocked}
+                        onClick={() => initConversationGameForIdx(idx)}
+                        className={`p-5 rounded-[24px] border-4 text-left transition-all relative flex flex-col justify-between h-44 ${
+                          isLocked
+                            ? "bg-slate-100 border-slate-200 text-slate-400 opacity-60 cursor-not-allowed"
+                            : "bg-white border-rose-100 hover:border-rose-400 hover:shadow-lg active:scale-98"
+                        }`}
+                      >
+                        {/* Top Meta Info */}
+                        <div className="w-full">
+                          <div className="flex justify-between items-start mb-2">
+                            <span className={`text-[10px] font-black uppercase px-2.5 py-0.5 rounded-full border ${
+                              diffLabel === "elementary"
+                                ? "bg-emerald-50 text-emerald-700 border-emerald-200"
+                                : diffLabel === "intermediate"
+                                  ? "bg-amber-50 text-amber-700 border-amber-200"
+                                  : "bg-purple-50 text-purple-700 border-purple-200"
+                            }`}>
+                              {diffLabel.toUpperCase()}
+                            </span>
+                            <span className="text-xs font-black text-rose-500 bg-rose-50 px-2 py-0.5 border border-rose-100 rounded-md">
+                              Min Lvl: {minLvl}
+                            </span>
+                          </div>
+                          <h5 className="font-black text-slate-800 text-base leading-snug">{scen.title}</h5>
+                          <p className="text-xs font-semibold text-slate-500 mt-1 line-clamp-2 leading-relaxed">
+                            {scen.description}
+                          </p>
+                        </div>
+
+                        {/* Locked Overlay Indicator */}
+                        {isLocked ? (
+                          <div className="absolute inset-0 bg-slate-950/5 backdrop-blur-[0.5px] rounded-[20px] flex items-center justify-center">
+                            <div className="bg-slate-800 text-white font-black text-xs px-3 py-1.5 rounded-full border border-white shadow-md flex items-center gap-1.5">
+                              <span>🔒 Locked</span>
+                              <span className="text-[10px] opacity-75">(Requires Level {minLvl})</span>
+                            </div>
+                          </div>
+                        ) : (
+                          <span className="text-xs font-black text-rose-600 bg-rose-50 hover:bg-rose-100 rounded-lg px-3 py-1.5 border border-rose-100 mt-3 inline-block self-end">
+                            Practice Roleplay ➔
+                          </span>
+                        )}
+                      </button>
+                    );
+                  })}
+                  {(!destination.conversations || destination.conversations.length === 0) && (
+                    <p className="text-center text-slate-400 font-bold py-8 col-span-2">No conversations available for this destination.</p>
+                  )}
+                </div>
+              </div>
+            );
+          }
+
+          const scen = destination.conversations?.[selectedScenarioIdx];
+          if (!scen) return null;
           const currentTurn = scen.turns[convTurnIdx];
           const nextTurn = scen.turns[convTurnIdx + 1]; // This is the user choose turn
           const isUserChoosing = nextTurn && nextTurn.options;
@@ -1635,6 +1844,32 @@ export const GameSession: React.FC<GameSessionProps> = ({ destination, onClose }
                     </div>
                   );
                 })}
+              </div>
+
+              {/* Optional Vocabulary Helper Hint */}
+              <div className="bg-amber-50 border-2 border-amber-200 rounded-2xl p-4 text-center">
+                {viewVocabularyTranslation ? (
+                  <div className="text-left animate-fade-in">
+                    <span className="text-[10px] font-black uppercase text-amber-700 bg-white px-2 py-0.5 rounded-full border border-amber-100">💡 City Vocabulary Help (Hint Active)</span>
+                    <div className="grid grid-cols-2 gap-2 mt-2 max-h-24 overflow-y-auto">
+                      {destination.vocabList.slice(0, 6).map((v) => (
+                        <div key={v.id} className="text-xs font-bold text-slate-700">
+                          {v.japanese} ({v.romaji}) = {v.english} {v.emoji}
+                        </div>
+                      ))}
+                    </div>
+                  </div>
+                ) : (
+                  <button
+                    onClick={() => {
+                      setViewVocabularyTranslation(true);
+                      setHasUsedHint(true);
+                    }}
+                    className="text-xs font-black text-amber-900 bg-white hover:bg-amber-100 px-4 py-2 rounded-xl border-2 border-amber-300 transition-all active:scale-95"
+                  >
+                    💡 Toggle Vocabulary Guide (Will disable No-Hints Bonus!)
+                  </button>
+                )}
               </div>
 
               {/* User Selector Turn options */}
@@ -1791,20 +2026,43 @@ export const GameSession: React.FC<GameSessionProps> = ({ destination, onClose }
                 </div>
               </div>
 
-              <div className="bg-rose-50 border-4 border-rose-200 p-6 rounded-[28px] shadow-inner mb-8 space-y-3">
-              <div className="flex justify-between items-center font-black text-base text-rose-900">
-                <span>Points Scored:</span>
-                <span className="text-xl text-rose-600">{score} pts</span>
+              <div className="bg-rose-50 border-4 border-rose-200 p-6 rounded-[28px] shadow-inner mb-8 space-y-3 text-left">
+                <div className="flex justify-between items-center font-black text-base text-rose-900">
+                  <span>Points Scored:</span>
+                  <span className="text-xl text-rose-600">{score} {gameType === 'conversation' && `/ ${convMaxPoints}`} pts</span>
+                </div>
+                {gameType === 'conversation' && (
+                  <div className="flex justify-between items-center font-black text-base text-rose-900">
+                    <span>Performance Grade:</span>
+                    <span className="text-lg text-rose-700 font-black">{convGrade}</span>
+                  </div>
+                )}
+                {gameType === 'conversation' && (
+                  <div className="text-xs font-bold text-slate-500 bg-white border p-2.5 rounded-xl border-rose-100 italic">
+                    "{convFeedbackMsg}"
+                  </div>
+                )}
+                {gameType === 'conversation' && (
+                  <div className="text-xs font-black text-slate-600 bg-slate-50 border p-2.5 rounded-xl border-rose-100 space-y-1">
+                    <div className="flex justify-between">
+                      <span>Base XP (with difficulty scale):</span>
+                      <span className="text-indigo-600">+{Math.round(convBaseXP * (convScenarioIdx !== null && (destination.conversations?.[convScenarioIdx]?.minLevel || 0) > 45 ? 2.0 : (destination.conversations?.[convScenarioIdx]?.minLevel || 0) > 25 ? 1.5 : 1.0))} XP</span>
+                    </div>
+                    <div className="flex justify-between">
+                      <span>Milestone Bonuses:</span>
+                      <span className="text-amber-600">+{convBonusXP} XP</span>
+                    </div>
+                  </div>
+                )}
+                <div className="flex justify-between items-center font-black text-base text-rose-900">
+                  <span>Total XP & Coins Earned:</span>
+                  <span className="text-xl text-emerald-600">+{gameType === 'conversation' ? convTotalXP : 40} XP</span>
+                </div>
+                <div className="flex justify-between items-center font-black text-base text-rose-900">
+                  <span>Current Level:</span>
+                  <span className="text-xl text-indigo-600">Level {state.profiles[activeKid].level}</span>
+                </div>
               </div>
-              <div className="flex justify-between items-center font-black text-base text-rose-900">
-                <span>XP Earned:</span>
-                <span className="text-xl text-emerald-600">+40 XP</span>
-              </div>
-              <div className="flex justify-between items-center font-black text-base text-rose-900">
-                <span>Current Level:</span>
-                <span className="text-xl text-indigo-600">Level {state.profiles[activeKid].level}</span>
-              </div>
-            </div>
 
               <div className="flex flex-col gap-4">
                 <button

@@ -221,10 +221,10 @@ export const AdminPanel: React.FC<AdminPanelProps> = ({ onClose }) => {
           spendableXP: 150,
           streak: 0,
           lastPlayedDate: null,
-          masteredVocab: { kyoto: [], tokyo: [], osaka: [], train: [], okinawa: [], takayama: [] },
+          masteredVocab: { kyoto: [], tokyo: [], osaka: [], train: [], shopping: [], okinawa: [], takayama: [], sendai: [], hiroshima: [], takamatsu: [], matsuyama: [], nagasaki: [], fukuoka: [], mtfuji: [], yokohama: [] },
           vocabStats: {},
           highScores: {},
-          unlockedDestinations: { kyoto: true, tokyo: false, osaka: false, train: false, okinawa: false, takayama: false },
+          unlockedDestinations: { kyoto: true, tokyo: false, osaka: false, train: false, shopping: false, okinawa: false, takayama: false, sendai: false, hiroshima: false, takamatsu: false, matsuyama: false, nagasaki: false, fukuoka: false, mtfuji: false, yokohama: false },
           completedChallenges: [], unlockedFacts: [], unlockedStickers: [],
           dailyQuests: DEFAULT_QUESTS("lily"),
           parentMessages: [{
@@ -254,10 +254,10 @@ export const AdminPanel: React.FC<AdminPanelProps> = ({ onClose }) => {
           spendableXP: 150,
           streak: 0,
           lastPlayedDate: null,
-          masteredVocab: { kyoto: [], tokyo: [], osaka: [], train: [], okinawa: [], takayama: [] },
+          masteredVocab: { kyoto: [], tokyo: [], osaka: [], train: [], shopping: [], okinawa: [], takayama: [], sendai: [], hiroshima: [], takamatsu: [], matsuyama: [], nagasaki: [], fukuoka: [], mtfuji: [], yokohama: [] },
           vocabStats: {},
           highScores: {},
-          unlockedDestinations: { kyoto: true, tokyo: false, osaka: false, train: false, okinawa: false, takayama: false },
+          unlockedDestinations: { kyoto: true, tokyo: false, osaka: false, train: false, shopping: false, okinawa: false, takayama: false, sendai: false, hiroshima: false, takamatsu: false, matsuyama: false, nagasaki: false, fukuoka: false, mtfuji: false, yokohama: false },
           completedChallenges: [], unlockedFacts: [], unlockedStickers: [],
           dailyQuests: DEFAULT_QUESTS("james"),
           parentMessages: [{
@@ -288,10 +288,10 @@ export const AdminPanel: React.FC<AdminPanelProps> = ({ onClose }) => {
           spendableXP: 150,
           streak: 0,
           lastPlayedDate: null,
-          masteredVocab: { kyoto: [], tokyo: [], osaka: [], train: [], okinawa: [], takayama: [] },
+          masteredVocab: { kyoto: [], tokyo: [], osaka: [], train: [], shopping: [], okinawa: [], takayama: [], sendai: [], hiroshima: [], takamatsu: [], matsuyama: [], nagasaki: [], fukuoka: [], mtfuji: [], yokohama: [] },
           vocabStats: {},
           highScores: {},
-          unlockedDestinations: { kyoto: true, tokyo: false, osaka: false, train: false, okinawa: false, takayama: false },
+          unlockedDestinations: { kyoto: true, tokyo: false, osaka: false, train: false, shopping: false, okinawa: false, takayama: false, sendai: false, hiroshima: false, takamatsu: false, matsuyama: false, nagasaki: false, fukuoka: false, mtfuji: false, yokohama: false },
           completedChallenges: [], unlockedFacts: [], unlockedStickers: [],
           dailyQuests: DEFAULT_QUESTS("james").map(q => ({ ...q, id: q.id + "_merche" })),
           parentMessages: [{
@@ -609,7 +609,7 @@ export const AdminPanel: React.FC<AdminPanelProps> = ({ onClose }) => {
     updateAppStateDirect((prev) => {
       const updated = { ...prev };
       const profile = { ...updated.profiles[selectedProfileKey] };
-      const destOrder = ["kyoto", "tokyo", "osaka", "train", "okinawa", "takayama"];
+      const destOrder = ["kyoto", "tokyo", "osaka", "train", "shopping", "okinawa", "takayama", "sendai", "hiroshima", "takamatsu", "matsuyama", "nagasaki", "fukuoka", "mtfuji", "yokohama"];
       destOrder.forEach(id => {
         profile.unlockedDestinations[id] = true;
       });
@@ -755,7 +755,7 @@ export const AdminPanel: React.FC<AdminPanelProps> = ({ onClose }) => {
       const updated = { ...prev };
       (['james', 'lily', 'merche'] as const).forEach(key => {
         const p = updated.profiles[key];
-        const destOrder = ["kyoto", "tokyo", "osaka", "train", "okinawa", "takayama"];
+        const destOrder = ["kyoto", "tokyo", "osaka", "train", "shopping", "okinawa", "takayama", "sendai", "hiroshima", "takamatsu", "matsuyama", "nagasaki", "fukuoka", "mtfuji", "yokohama"];
         destOrder.forEach(destId => {
           p.unlockedDestinations[destId] = true;
           const destInfo = DESTINATIONS_DATA.find(d => d.id === destId);
@@ -778,8 +778,8 @@ export const AdminPanel: React.FC<AdminPanelProps> = ({ onClose }) => {
         p.level = 1;
         p.totalXP = 0;
         p.spendableXP = 150;
-        p.masteredVocab = { kyoto: [], tokyo: [], osaka: [], train: [], okinawa: [], takayama: [] };
-        p.unlockedDestinations = { kyoto: true, tokyo: false, osaka: false, train: false, okinawa: false, takayama: false };
+        p.masteredVocab = { kyoto: [], tokyo: [], osaka: [], train: [], shopping: [], okinawa: [], takayama: [], sendai: [], hiroshima: [], takamatsu: [], matsuyama: [], nagasaki: [], fukuoka: [], mtfuji: [], yokohama: [] };
+        p.unlockedDestinations = { kyoto: true, tokyo: false, osaka: false, train: false, shopping: false, okinawa: false, takayama: false, sendai: false, hiroshima: false, takamatsu: false, matsuyama: false, nagasaki: false, fukuoka: false, mtfuji: false, yokohama: false };
       });
       return updated;
     });
