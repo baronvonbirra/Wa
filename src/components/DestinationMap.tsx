@@ -242,7 +242,23 @@ export const DestinationMap: React.FC<DestinationMapProps> = ({ onSelectDestinat
 
         <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8">
           {DESTINATIONS_DATA.map((dest, idx) => {
-            const isUnlocked = profile.unlockedDestinations[dest.id];
+            const destOrder = ["kyoto", "tokyo", "osaka", "train", "shopping", "okinawa", "takayama", "sendai", "hiroshima", "takamatsu", "matsuyama", "nagasaki", "fukuoka", "mtfuji", "yokohama"];
+            const currentIdx = destOrder.indexOf(dest.id);
+            let isUnlocked = profile.unlockedDestinations[dest.id];
+
+            // Dynamic fallback unlock check to prevent any stuck state
+            if (!isUnlocked && currentIdx > 0) {
+              const prevDestId = destOrder[currentIdx - 1];
+              const prevDest = DESTINATIONS_DATA.find(d => d.id === prevDestId);
+              if (prevDest) {
+                const prevMasteredCount = profile.masteredVocab[prevDestId]?.length || 0;
+                const prevTotalCount = prevDest.vocabList.length;
+                if (prevTotalCount > 0 && (prevMasteredCount / prevTotalCount) >= 0.50) {
+                  isUnlocked = true;
+                }
+              }
+            }
+
             const masteredCount = profile.masteredVocab[dest.id]?.length || 0;
             const totalCount = dest.vocabList.length;
             const percentage = Math.round((masteredCount / totalCount) * 100);

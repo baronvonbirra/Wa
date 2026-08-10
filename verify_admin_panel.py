@@ -45,9 +45,9 @@ def run():
         page.screenshot(path="verification_screenshots/04_admin_login_gate.png")
 
         # 5. Type Password & Unlock
-        print("Entering password 'Japanese'...")
+        print("Entering password 'Japonés'...")
         password_input = page.locator("input[type='password']")
-        password_input.fill("Japanese")
+        password_input.fill("Japonés")
         page.screenshot(path="verification_screenshots/05_password_filled.png")
 
         print("Clicking Unlock Access...")

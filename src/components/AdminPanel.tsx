@@ -630,7 +630,7 @@ export const AdminPanel: React.FC<AdminPanelProps> = ({ onClose }) => {
   };
 
   const handleAdminPasswordChange = () => {
-    const newPass = window.prompt("Enter new administrator password:", "Japanese");
+    const newPass = window.prompt("Enter new administrator password:", "Japonés");
     if (!newPass || !newPass.trim()) return;
     sha256(newPass).then(hash => {
       updateAppStateDirect((prev) => ({
@@ -852,11 +852,7 @@ export const AdminPanel: React.FC<AdminPanelProps> = ({ onClose }) => {
           </button>
         </form>
 
-        <div className="mt-6 text-center border-t border-slate-100 pt-4">
-          <span className="text-[10px] font-extrabold text-slate-400">
-            Password: "Japanese" (Case-sensitive)
-          </span>
-        </div>
+
       </div>
     );
   }
