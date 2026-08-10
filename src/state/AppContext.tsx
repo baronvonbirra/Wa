@@ -309,20 +309,16 @@ export const AppProvider: React.FC<{ children: React.ReactNode }> = ({ children 
 
       // Check progression lock: "Complete 50% of lessons in a destination -> unlock next"
       const destOrder = ["kyoto", "tokyo", "osaka", "train", "shopping", "okinawa", "takayama", "sendai", "hiroshima", "takamatsu", "matsuyama", "nagasaki", "fukuoka", "mtfuji", "yokohama"];
-      const currentDestIdx = destOrder.indexOf(destId);
-      const currentDest = DESTINATIONS_DATA.find(d => d.id === destId);
-
-      if (currentDest) {
-        const totalWords = currentDest.vocabList.length;
-        const masteredWordsCount = destMastered.length;
-        const masteredPercentage = masteredWordsCount / totalWords;
-
-        if (masteredPercentage >= 0.50 && currentDestIdx !== -1 && currentDestIdx < destOrder.length - 1) {
-          const nextDestId = destOrder[currentDestIdx + 1];
-          profile.unlockedDestinations = {
-            ...profile.unlockedDestinations,
-            [nextDestId]: true
-          };
+      for (let i = 0; i < destOrder.length - 1; i++) {
+        const currentId = destOrder[i];
+        const nextId = destOrder[i + 1];
+        const currentDestInfo = DESTINATIONS_DATA.find(d => d.id === currentId);
+        if (currentDestInfo) {
+          const totalWords = currentDestInfo.vocabList.length;
+          const masteredCount = (currentId === destId ? destMastered : (profile.masteredVocab[currentId] || [])).length;
+          if (totalWords > 0 && (masteredCount / totalWords) >= 0.50) {
+            profile.unlockedDestinations[nextId] = true;
+          }
         }
       }
 

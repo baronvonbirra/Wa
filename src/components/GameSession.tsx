@@ -2,6 +2,7 @@ import React, { useState, useEffect } from 'react';
 import { useAppState } from '../state/AppContext';
 import { Destination, VocabularyWord } from '../data/destinations';
 import { speakJapanese, playVictorySound } from '../utils/audio';
+import { customizeScenario } from '../utils/conversationCustomizer';
 
 interface GameSessionProps {
   destination: Destination;
@@ -13,6 +14,12 @@ export const GameSession: React.FC<GameSessionProps> = ({ destination, onClose }
   const activeKid = state.activePlayer === 'parent' ? 'james' : state.activePlayer;
   const profile = state.profiles[activeKid];
 
+  // Dynamically customize the conversations to avoid duplications and match titles perfectly!
+  const customizedConversations = React.useMemo(() => {
+    return destination.conversations?.map(scen => customizeScenario(scen, destination.name)) || [];
+  }, [destination]);
+
+  const [sessionWords, setSessionWords] = useState<VocabularyWord[]>([]);
   const [gameType, setGameType] = useState<'match' | 'listen' | 'read' | 'dialogue' | 'pronounce' | 'emojiMatch' | 'dragDrop' | 'conversation' | 'grammar' | 'listeningEx' | 'readingEx' | 'writingEx' | null>(null);
   const [currentStep, setCurrentStep] = useState(0);
   const [score, setScore] = useState(0);
@@ -90,19 +97,23 @@ export const GameSession: React.FC<GameSessionProps> = ({ destination, onClose }
     setHasUsedHint(false);
     setViewVocabularyTranslation(false);
 
+    // Randomize 5 words for this game session
+    const randomized = [...destination.vocabList].sort(() => 0.5 - Math.random()).slice(0, 5);
+    setSessionWords(randomized);
+
     if (type === 'match') {
       initMatchGame();
     } else if (type === 'listen' || type === 'read') {
-      initQuizStep(0, type);
+      initQuizStep(0, type, randomized);
     } else if (type === 'dialogue') {
       setDialogueIndex(0);
     } else if (type === 'pronounce') {
       setPronounceWordIndex(0);
       setPronounceAttempted(false);
     } else if (type === 'emojiMatch') {
-      initEmojiMatchStep(0);
+      initEmojiMatchStep(0, randomized);
     } else if (type === 'dragDrop') {
-      initDragDropStep(0);
+      initDragDropStep(0, randomized);
     } else if (type === 'conversation') {
       initConversationGame();
     } else if (type === 'grammar') {
@@ -129,7 +140,7 @@ export const GameSession: React.FC<GameSessionProps> = ({ destination, onClose }
     setConvScenarioIdx(idx);
     setSelectedScenarioIdx(idx);
     setConvTurnIdx(0);
-    const scen = destination.conversations?.[idx];
+    const scen = customizedConversations?.[idx];
     if (scen && scen.turns[0]) {
       // Auto-play speech for the opening turn
       playAudio(scen.turns[0].japanese);
@@ -225,13 +236,14 @@ export const GameSession: React.FC<GameSessionProps> = ({ destination, onClose }
   };
 
   // --- QUIZ (LISTEN & CLICK / READ & UNDERSTAND) LOGIC ---
-  const initQuizStep = (stepIdx: number, type: 'listen' | 'read') => {
+  const initQuizStep = (stepIdx: number, type: 'listen' | 'read', wordsList = sessionWords) => {
     if (stepIdx >= 5) {
       setIsGameOver(true);
       return;
     }
 
-    const correctWord = destination.vocabList[stepIdx % destination.vocabList.length];
+    const words = wordsList.length > 0 ? wordsList : destination.vocabList;
+    const correctWord = words[stepIdx % words.length];
     setQuizWord(correctWord);
     setHasUsedHint(false);
     setFeedback(null);
@@ -279,13 +291,14 @@ export const GameSession: React.FC<GameSessionProps> = ({ destination, onClose }
   };
 
   // --- AUDIO + EMOJI MATCH LOGIC ---
-  const initEmojiMatchStep = (stepIdx: number) => {
+  const initEmojiMatchStep = (stepIdx: number, wordsList = sessionWords) => {
     if (stepIdx >= 5) {
       setIsGameOver(true);
       return;
     }
 
-    const correctWord = destination.vocabList[stepIdx % destination.vocabList.length];
+    const words = wordsList.length > 0 ? wordsList : destination.vocabList;
+    const correctWord = words[stepIdx % words.length];
     setEmojiMatchWord(correctWord);
     setEmojiMatchHintText(null);
     setFeedback(null);
@@ -364,13 +377,14 @@ export const GameSession: React.FC<GameSessionProps> = ({ destination, onClose }
   };
 
   // --- AUDIO + DRAG & DROP LOGIC ---
-  const initDragDropStep = (stepIdx: number) => {
+  const initDragDropStep = (stepIdx: number, wordsList = sessionWords) => {
     if (stepIdx >= 5) {
       setIsGameOver(true);
       return;
     }
 
-    const correctWord = destination.vocabList[stepIdx % destination.vocabList.length];
+    const words = wordsList.length > 0 ? wordsList : destination.vocabList;
+    const correctWord = words[stepIdx % words.length];
     setDragDropWord(correctWord);
     setSelectedEmojiId(null);
     setFeedback(null);
@@ -591,7 +605,7 @@ export const GameSession: React.FC<GameSessionProps> = ({ destination, onClose }
 
   const handleNextConversationTurn = () => {
     setFeedback(null);
-    const scen = destination.conversations?.[convScenarioIdx];
+    const scen = customizedConversations?.[convScenarioIdx];
     if (!scen) return;
 
     const nextTurnIdx = convTurnIdx + 2; // skip player select turn to next system turn
@@ -622,7 +636,8 @@ export const GameSession: React.FC<GameSessionProps> = ({ destination, onClose }
       setPronounceScore(randomScore);
       setScore(prev => prev + 20);
       updateXP(activeKid, 10);
-      playAudio(destination.vocabList[pronounceWordIndex].japanese);
+      const words = sessionWords.length > 0 ? sessionWords : destination.vocabList;
+      playAudio(words[pronounceWordIndex % words.length].japanese);
     }, 1500);
   };
 
@@ -642,9 +657,9 @@ export const GameSession: React.FC<GameSessionProps> = ({ destination, onClose }
       updateHighScore(activeKid, key, score);
 
       if (gameType === 'conversation') {
-        const scen = destination.conversations?.[convScenarioIdx];
+        const scen = customizedConversations?.[convScenarioIdx];
         if (scen) {
-          const numPlayerTurns = scen.turns.filter(t => t.options).length;
+          const numPlayerTurns = scen.turns.filter((t: any) => t.options).length;
           const maxPoints = numPlayerTurns * 10;
           setConvMaxPoints(maxPoints);
 
@@ -759,7 +774,7 @@ export const GameSession: React.FC<GameSessionProps> = ({ destination, onClose }
                 <>
                   <button
                     onClick={() => startGame('conversation')}
-                    disabled={!destination.conversations || destination.conversations.length === 0}
+                    disabled={!customizedConversations || customizedConversations.length === 0}
                     className="p-5 bg-indigo-50 border-4 border-indigo-200 hover:border-indigo-400 rounded-3xl text-left transition-all hover:shadow-lg active:scale-95 group flex items-start gap-4"
                   >
                     <span className="text-5xl bg-white p-3 rounded-2xl border-2 border-indigo-100 group-hover:scale-110 transition-transform shadow-sm">💬</span>
@@ -888,7 +903,7 @@ export const GameSession: React.FC<GameSessionProps> = ({ destination, onClose }
 
                       <button
                         onClick={() => startGame('conversation')}
-                        disabled={!destination.conversations || destination.conversations.length === 0}
+                        disabled={!customizedConversations || customizedConversations.length === 0}
                         className="p-5 bg-indigo-50 border-4 border-indigo-200 hover:border-indigo-400 rounded-3xl text-left transition-all hover:shadow-lg active:scale-95 group flex items-start gap-4"
                       >
                         <span className="text-5xl bg-white p-3 rounded-2xl border-2 border-indigo-100 group-hover:scale-110 transition-transform shadow-sm">💬</span>
@@ -1740,7 +1755,7 @@ export const GameSession: React.FC<GameSessionProps> = ({ destination, onClose }
 
                 {/* Scenario Cards Grid */}
                 <div className="grid grid-cols-1 sm:grid-cols-2 gap-4 max-h-[400px] overflow-y-auto pr-1">
-                  {destination.conversations?.map((scen, idx) => {
+                  {customizedConversations?.map((scen, idx) => {
                     const minLvl = scen.minLevel || 11;
                     const isElementary = minLvl <= 25;
                     const isIntermediate = minLvl > 25 && minLvl <= 45;
@@ -1803,7 +1818,7 @@ export const GameSession: React.FC<GameSessionProps> = ({ destination, onClose }
                       </button>
                     );
                   })}
-                  {(!destination.conversations || destination.conversations.length === 0) && (
+                  {(!customizedConversations || customizedConversations.length === 0) && (
                     <p className="text-center text-slate-400 font-bold py-8 col-span-2">No conversations available for this destination.</p>
                   )}
                 </div>
@@ -1811,7 +1826,7 @@ export const GameSession: React.FC<GameSessionProps> = ({ destination, onClose }
             );
           }
 
-          const scen = destination.conversations?.[selectedScenarioIdx];
+          const scen = customizedConversations?.[selectedScenarioIdx];
           if (!scen) return null;
           const currentTurn = scen.turns[convTurnIdx];
           const nextTurn = scen.turns[convTurnIdx + 1]; // This is the user choose turn
@@ -1876,7 +1891,7 @@ export const GameSession: React.FC<GameSessionProps> = ({ destination, onClose }
               {isUserChoosing && !feedback && (
                 <div className="space-y-3">
                   <span className="text-xs font-black text-slate-400 uppercase tracking-widest block text-center mb-1">What do you say next?</span>
-                  {nextTurn.options?.map((opt, oIdx) => (
+                  {nextTurn.options?.map((opt: any, oIdx: number) => (
                     <button
                       key={oIdx}
                       onClick={() => handleConversationOption(opt)}
@@ -1925,7 +1940,8 @@ export const GameSession: React.FC<GameSessionProps> = ({ destination, onClose }
 
             {/* Focus word cards */}
             {(() => {
-              const word = destination.vocabList[pronounceWordIndex % destination.vocabList.length];
+              const words = sessionWords.length > 0 ? sessionWords : destination.vocabList;
+              const word = words[pronounceWordIndex % words.length];
               return (
                 <div className="text-center">
                   <div className="bg-[#F3E8FF] border-4 border-[#C084FC] rounded-[32px] p-8 mb-6 shadow-md">
@@ -2046,7 +2062,7 @@ export const GameSession: React.FC<GameSessionProps> = ({ destination, onClose }
                   <div className="text-xs font-black text-slate-600 bg-slate-50 border p-2.5 rounded-xl border-rose-100 space-y-1">
                     <div className="flex justify-between">
                       <span>Base XP (with difficulty scale):</span>
-                      <span className="text-indigo-600">+{Math.round(convBaseXP * (convScenarioIdx !== null && (destination.conversations?.[convScenarioIdx]?.minLevel || 0) > 45 ? 2.0 : (destination.conversations?.[convScenarioIdx]?.minLevel || 0) > 25 ? 1.5 : 1.0))} XP</span>
+                      <span className="text-indigo-600">+{Math.round(convBaseXP * (convScenarioIdx !== null && (customizedConversations?.[convScenarioIdx]?.minLevel || 0) > 45 ? 2.0 : (customizedConversations?.[convScenarioIdx]?.minLevel || 0) > 25 ? 1.5 : 1.0))} XP</span>
                     </div>
                     <div className="flex justify-between">
                       <span>Milestone Bonuses:</span>

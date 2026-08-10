@@ -524,7 +524,7 @@ export const INITIAL_STATE: AppState = {
   soundEnabled: true,
   activeChallengeId: "weekend-sync",
   tradingPostOffers: [],
-  adminPasswordHash: "be4ee906d3efecfc34a94a6cd378633a67f7f35d5abbc3f498715ac5dcbee54f",
+  adminPasswordHash: "f8006b9ef9a32465eb18ccf7651284775ff0e7ab1abc0295fd16073545797d81",
   adminLogs: [],
   debugMode: false,
   devConsoleEnabled: false,
