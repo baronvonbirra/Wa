@@ -9,6 +9,7 @@ import { ItineraryView } from './components/wa2/ItineraryView';
 import { SavedPlacesView } from './components/wa2/SavedPlacesView';
 import { WishlistView } from './components/wa2/WishlistView';
 import { ToolsView } from './components/wa2/ToolsView';
+import { TasksView } from './components/wa2/TasksView';
 import { SurvivalPhrasesView } from './components/wa2/SurvivalPhrasesView';
 
 // Wa 1.0 Components
@@ -219,6 +220,7 @@ function MainAppContent() {
         {wa2Tab === 'places' && <SavedPlacesView />}
         {wa2Tab === 'wishlist' && <WishlistView />}
         {wa2Tab === 'tools' && <ToolsView initialSubTab={toolsSubTab} />}
+        {wa2Tab === 'tasks' && <TasksView />}
         {wa2Tab === 'walearn' && (
           <SurvivalPhrasesView onOpenWaLearn={() => setShowWa1(true)} />
         )}

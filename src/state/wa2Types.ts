@@ -143,6 +143,16 @@ export interface PackingListItem {
   is_packed: boolean;
 }
 
+export interface TripTask {
+  id: string;
+  title: string;
+  due_date: string; // YYYY-MM-DD
+  due_time?: string; // HH:MM (e.g., 07:00 h)
+  category: 'Entradas' | 'Reservas' | 'Documentación' | 'Logística' | string;
+  is_completed: boolean;
+  details?: string;
+}
+
 export interface EmergencyContact {
   id: string;
   title: string;

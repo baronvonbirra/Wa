@@ -1,7 +1,7 @@
 import React from 'react';
 import { Calendar, MapPin, ShoppingBag, Calculator, GraduationCap } from 'lucide-react';
 
-export type Wa2Tab = 'itinerary' | 'places' | 'wishlist' | 'tools' | 'walearn';
+export type Wa2Tab = 'itinerary' | 'places' | 'wishlist' | 'tools' | 'tasks' | 'walearn';
 
 interface BottomNavProps {
   activeTab: Wa2Tab;

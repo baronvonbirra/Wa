@@ -200,6 +200,13 @@ export class SupabaseQueryBuilder {
         { id: "pli-7", item: "Abrigos de Invierno", quantity: 4, category: "Ropa", assigned_to: "Todos", is_packed: false },
         { id: "pli-8", item: "Adaptadores Enchufe Tipo A", quantity: 3, category: "Electrónica", assigned_to: "Todos", is_packed: true }
       ];
+    } else if (this.table === 'trip_tasks') {
+      items = rawState?.tripTasks || [
+        { id: 'tt-1', title: 'Comprar Entradas Disney Tokyo (Ghar)', due_date: '2026-10-20', due_time: '07:00 h', category: 'Entradas', is_completed: true, details: 'Comprar pases de 2 días a las 07:00 am hora japonesa en la web oficial.' },
+        { id: 'tt-2', title: 'ReservaShinkansen Tokio -> Kioto', due_date: '2026-11-20', due_time: '02:00 h', category: 'Reservas', is_completed: false, details: 'Reservar asientos con espacio para equipaje grande a través de SmartEX.' },
+        { id: 'tt-3', title: 'Tramitar Visit Japan Web (QR)', due_date: '2026-12-10', due_time: '12:00 h', category: 'Documentación', is_completed: false, details: 'Completar formularios de inmigración y aduanas para los 4 pasajeros.' },
+        { id: 'tt-4', title: 'Reservar eSIM Roaming Japón', due_date: '2026-12-15', due_time: '18:00 h', category: 'Logística', is_completed: true, details: 'Activar plan de datos ilimitados Ubigi o Holafly.' }
+      ];
     }
 
     if (this.updateValues) {
@@ -226,6 +233,12 @@ export class SupabaseQueryBuilder {
           if (rawState.packingListItems) {
             rawState.packingListItems = rawState.packingListItems.map((pli: any) =>
               pli?.id === eqFilter.val ? { ...pli, ...this.updateValues } : pli
+            );
+          }
+        } else if (this.table === 'trip_tasks') {
+          if (rawState.tripTasks) {
+            rawState.tripTasks = rawState.tripTasks.map((tt: any) =>
+              tt?.id === eqFilter.val ? { ...tt, ...this.updateValues } : tt
             );
           }
         }

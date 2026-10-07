@@ -397,7 +397,7 @@ export const ItineraryView: React.FC<ItineraryViewProps> = ({ onNavigateTab }) =
             📋 Checklist Equipaje
           </button>
           <button
-            onClick={() => onNavigateTab?.('tools', 'packing')}
+              onClick={() => onNavigateTab?.('tasks')}
             className="flex-1 py-2.5 px-3 bg-gradient-to-r from-indigo-500 to-indigo-600 hover:from-indigo-600 hover:to-indigo-700 text-white font-black text-xs rounded-xl flex items-center justify-center gap-1.5 shadow-sm transition-all active:scale-95 border-b-2 border-indigo-700"
           >
             ☑️ Tareas Pendientes
