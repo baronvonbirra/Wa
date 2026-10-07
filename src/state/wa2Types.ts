@@ -23,6 +23,19 @@ export interface Accommodation {
   notes: string;
 }
 
+export interface PlaceDetails {
+  id?: string;
+  nombre?: string;
+  name?: string;
+  descripcion?: string;
+  description?: string;
+  google_maps_url?: string;
+  categoria?: string;
+  category?: string;
+  direccion?: string;
+  [key: string]: any;
+}
+
 export interface ItineraryItem {
   id: string;
   external_id?: string; // Unique ID for Google My Maps sync
@@ -35,6 +48,10 @@ export interface ItineraryItem {
   status: ItineraryStatus;
   order_index: number;
   created_at: string;
+  // Supabase itinerario_dias join structure fields
+  orden?: number;
+  notas_dia?: string;
+  lugares?: PlaceDetails;
 }
 
 export type PlaceCategory =

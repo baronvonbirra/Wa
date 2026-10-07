@@ -3,7 +3,6 @@ import { useWa2 } from '../../state/Wa2Context';
 import {
   ItineraryItem,
   ItineraryCategory,
-  ItineraryStatus,
   Accommodation
 } from '../../state/wa2Types';
 import {
@@ -12,7 +11,6 @@ import {
   MapPin,
   CheckCircle2,
   XCircle,
-  AlertCircle,
   ExternalLink,
   Plus,
   Hotel,
@@ -22,7 +20,6 @@ import {
   Train,
   Compass,
   FileText,
-  ChevronRight,
   Sparkles
 } from 'lucide-react';
 
@@ -67,6 +64,7 @@ export const ItineraryView: React.FC = () => {
     let dayCount = 1;
 
     while (current <= end) {
+      // YYYY-MM-DD string
       const dateStr = current.toISOString().split('T')[0];
       const dayLabel = current.toLocaleDateString('es-ES', { weekday: 'short', month: 'short', day: 'numeric' });
       dates.push({ dateStr, dayLabel, dayNum: dayCount });
@@ -85,19 +83,28 @@ export const ItineraryView: React.FC = () => {
 
   const activeAccommodation = waState.accommodations.find(a => a.city_id === activeCity?.id);
 
-  // Itinerary items for current selected date sorted by time
+  // Itinerary items for current selected date sorted by time or order
   const currentItems = waState.itineraryItems
     .filter(item => item.date === waState.selectedDate)
-    .sort((a, b) => (a.time_start || '00:00').localeCompare(b.time_start || '00:00'));
+    .sort((a, b) => {
+      if (a.orden !== undefined && b.orden !== undefined) {
+        return a.orden - b.orden;
+      }
+      return (a.time_start || '00:00').localeCompare(b.time_start || '00:00');
+    });
 
   const handleOpenAddModal = (itemToEdit?: ItineraryItem) => {
     if (itemToEdit) {
+      const placeName = itemToEdit.lugares?.nombre || itemToEdit.lugares?.name || itemToEdit.title;
+      const placeDesc = itemToEdit.notas_dia || itemToEdit.lugares?.descripcion || itemToEdit.description || '';
+      const placeMaps = itemToEdit.lugares?.google_maps_url || itemToEdit.google_maps_url || '';
+
       setEditingItem(itemToEdit);
-      setTitle(itemToEdit.title);
+      setTitle(placeName);
       setCategory(itemToEdit.category);
       setTimeStart(itemToEdit.time_start || '09:00');
-      setDescription(itemToEdit.description || '');
-      setGoogleMapsUrl(itemToEdit.google_maps_url || '');
+      setDescription(placeDesc);
+      setGoogleMapsUrl(placeMaps);
     } else {
       setEditingItem(null);
       setTitle('');
@@ -119,7 +126,12 @@ export const ItineraryView: React.FC = () => {
         category,
         time_start: timeStart,
         description: description.trim(),
-        google_maps_url: googleMapsUrl.trim()
+        google_maps_url: googleMapsUrl.trim(),
+        lugares: {
+          ...editingItem.lugares,
+          nombre: title.trim(),
+          google_maps_url: googleMapsUrl.trim()
+        }
       });
     } else {
       addItineraryItem({
@@ -130,7 +142,11 @@ export const ItineraryView: React.FC = () => {
         google_maps_url: googleMapsUrl.trim() || `https://maps.google.com/?q=${encodeURIComponent(title.trim())}`,
         category,
         status: 'pending',
-        order_index: currentItems.length + 1
+        order_index: currentItems.length + 1,
+        lugares: {
+          nombre: title.trim(),
+          google_maps_url: googleMapsUrl.trim()
+        }
       });
     }
     setShowAddModal(false);
@@ -318,6 +334,11 @@ export const ItineraryView: React.FC = () => {
             const isDone = item.status === 'done';
             const isSkipped = item.status === 'skipped';
 
+            // Extract nested lugar properties or fall back to top-level item properties
+            const placeName = item.lugares?.nombre || item.lugares?.name || item.title;
+            const placeDescription = item.notas_dia || item.lugares?.descripcion || item.description;
+            const mapsUrl = item.lugares?.google_maps_url || item.google_maps_url;
+
             return (
               <div
                 key={item.id}
@@ -355,7 +376,7 @@ export const ItineraryView: React.FC = () => {
                     <div className="flex items-center gap-1.5">
                       <span className="text-xs font-extrabold text-rose-600 bg-rose-50 px-2 py-0.5 rounded-md border border-rose-100 flex items-center gap-1">
                         <Clock className="w-3 h-3 text-rose-500" />
-                        {item.time_start || 'Todo el día'}
+                        {item.orden ? `Orden #${item.orden}` : item.time_start || 'Todo el día'}
                       </span>
                       <span className={`text-[10px] font-black px-2 py-0.5 rounded-md border flex items-center gap-1 ${categoryInfo.bg}`}>
                         <CategoryIcon className="w-3 h-3" />
@@ -388,11 +409,11 @@ export const ItineraryView: React.FC = () => {
                   {/* Title & Description */}
                   <div className="mt-2">
                     <h3 className={`text-sm font-black text-slate-800 ${isDone ? 'line-through text-slate-400' : ''}`}>
-                      {item.title}
+                      {placeName}
                     </h3>
-                    {item.description && (
+                    {placeDescription && (
                       <p className={`text-xs mt-1 leading-relaxed ${isDone ? 'text-slate-400' : 'text-slate-600'}`}>
-                        {item.description}
+                        {placeDescription}
                       </p>
                     )}
                   </div>
@@ -434,9 +455,9 @@ export const ItineraryView: React.FC = () => {
                     </div>
 
                     {/* Google Maps Button */}
-                    {item.google_maps_url && (
+                    {mapsUrl && (
                       <a
-                        href={item.google_maps_url}
+                        href={mapsUrl}
                         target="_blank"
                         rel="noopener noreferrer"
                         className="bg-emerald-500 hover:bg-emerald-600 active:scale-95 text-white font-black text-[11px] px-3 py-1.5 rounded-xl border-b-2 border-emerald-700 transition-all flex items-center gap-1 shadow-xs ml-auto"
