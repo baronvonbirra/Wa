@@ -1,13 +1,25 @@
 <!doctype html>
-<html lang="en">
+<html lang="es">
   <head>
     <meta charset="UTF-8" />
     <link rel="icon" type="image/svg+xml" href="data:image/svg+xml,<svg xmlns=%22http://www.w3.org/2000/svg%22 viewBox=%220 0 100 100%22><text y=%22.9em%22 font-size=%2290%22>🏯</text></svg>" />
-    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-    <title>Japan Quest — Japanese Language Learning for Families</title>
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no" />
+    <meta name="theme-color" content="#DC2626" />
+    <meta name="description" content="Wa 2.0 — PWA para gestión y asistencia en tiempo real durante tu viaje a Japón." />
+    <link rel="manifest" href="./manifest.json" />
+    <title>Wa 2.0 — Asistente de Viaje a Japón</title>
   </head>
-  <body class="bg-japan-pastelBg text-gray-800 min-h-screen">
+  <body class="bg-slate-50 text-slate-800 min-h-screen selection:bg-rose-500 selection:text-white">
     <div id="root"></div>
     <script type="module" src="/src/main.tsx"></script>
+    <script>
+      if ('serviceWorker' in navigator) {
+        window.addEventListener('load', () => {
+          navigator.serviceWorker.register('./sw.js')
+            .then(reg => console.log('Service Worker registrado:', reg))
+            .catch(err => console.log('Error registrando Service Worker:', err));
+        });
+      }
+    </script>
   </body>
 </html>
