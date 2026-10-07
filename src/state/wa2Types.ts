@@ -133,6 +133,16 @@ export interface PackingItem {
   checked: boolean;
 }
 
+export interface PackingListItem {
+  id: string;
+  item: string;
+  item_name?: string;
+  quantity: number;
+  category: string;
+  assigned_to: 'Todos' | 'Papi' | 'Mami' | 'Lily' | 'James' | string;
+  is_packed: boolean;
+}
+
 export interface EmergencyContact {
   id: string;
   title: string;
@@ -160,6 +170,7 @@ export interface Wa2State {
   wishlist: WishlistItem[];
   travelDocs: TravelDoc[];
   packingChecklist: PackingItem[];
+  packingListItems?: PackingListItem[];
   emergencyContacts: EmergencyContact[];
   survivalPhrases: SurvivalPhrase[];
   eurJpyRate: number; // e.g. 160

@@ -162,7 +162,10 @@ export const Header: React.FC = () => {
 
             {/* Dark Mode Toggle */}
             <button
-              onClick={toggleDarkMode}
+              onClick={() => {
+                toggleDarkMode();
+                document.documentElement.classList.toggle('dark');
+              }}
               className="p-1.5 rounded-full bg-slate-100 dark:bg-slate-700 text-slate-600 dark:text-slate-200 hover:bg-slate-200 transition-colors"
               title="Cambiar Modo Oscuro"
             >

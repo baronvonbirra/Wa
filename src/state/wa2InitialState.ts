@@ -553,6 +553,17 @@ export const INITIAL_WA2_STATE: Wa2State = {
     { id: "pack-9", item_name: "Botiquín con analgésicos y tiritas", category: "Botiquín", checked: false }
   ],
 
+  packingListItems: [
+    { id: "pli-1", item: "Pasaportes vigentes", quantity: 4, category: "Documentación", assigned_to: "Todos", is_packed: true },
+    { id: "pli-2", item: "Tarjeta de Crédito sin comisiones", quantity: 2, category: "Documentación", assigned_to: "Papi", is_packed: true },
+    { id: "pli-3", item: "Cámara de Fotos + memorias", quantity: 1, category: "Electrónica", assigned_to: "Papi", is_packed: false },
+    { id: "pli-4", item: "Neceser & Maquillaje", quantity: 1, category: "Ropa", assigned_to: "Mami", is_packed: true },
+    { id: "pli-5", item: "Mochila escolar de viaje", quantity: 1, category: "General", assigned_to: "Lily", is_packed: false },
+    { id: "pli-6", item: "Nintendo Switch & juegos", quantity: 1, category: "Electrónica", assigned_to: "James", is_packed: true },
+    { id: "pli-7", item: "Abrigos de Invierno", quantity: 4, category: "Ropa", assigned_to: "Todos", is_packed: false },
+    { id: "pli-8", item: "Adaptadores Enchufe Tipo A", quantity: 3, category: "Electrónica", assigned_to: "Todos", is_packed: true }
+  ],
+
   emergencyContacts: [
     {
       id: "em-1",

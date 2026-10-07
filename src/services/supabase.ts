@@ -189,6 +189,17 @@ export class SupabaseQueryBuilder {
         is_visited: item?.is_visited !== undefined ? item.is_visited : (item?.status === 'done'),
         city: normalizeCityName(item?.city || '')
       })).concat(unassignedPlaces.filter((up: any) => !items.some((it: any) => Boolean(it?.id && up?.id && it.id === up.id))));
+    } else if (this.table === 'packing_list_items') {
+      items = rawState?.packingListItems || [
+        { id: "pli-1", item: "Pasaportes vigentes", quantity: 4, category: "Documentación", assigned_to: "Todos", is_packed: true },
+        { id: "pli-2", item: "Tarjeta de Crédito sin comisiones", quantity: 2, category: "Documentación", assigned_to: "Papi", is_packed: true },
+        { id: "pli-3", item: "Cámara de Fotos + memorias", quantity: 1, category: "Electrónica", assigned_to: "Papi", is_packed: false },
+        { id: "pli-4", item: "Neceser & Maquillaje", quantity: 1, category: "Ropa", assigned_to: "Mami", is_packed: true },
+        { id: "pli-5", item: "Mochila escolar de viaje", quantity: 1, category: "General", assigned_to: "Lily", is_packed: false },
+        { id: "pli-6", item: "Nintendo Switch & juegos", quantity: 1, category: "Electrónica", assigned_to: "James", is_packed: true },
+        { id: "pli-7", item: "Abrigos de Invierno", quantity: 4, category: "Ropa", assigned_to: "Todos", is_packed: false },
+        { id: "pli-8", item: "Adaptadores Enchufe Tipo A", quantity: 3, category: "Electrónica", assigned_to: "Todos", is_packed: true }
+      ];
     }
 
     if (this.updateValues) {
@@ -209,6 +220,12 @@ export class SupabaseQueryBuilder {
           if (rawState.accommodations) {
             rawState.accommodations = rawState.accommodations.map((a: any) =>
               a?.id === eqFilter.val ? { ...a, ...this.updateValues } : a
+            );
+          }
+        } else if (this.table === 'packing_list_items') {
+          if (rawState.packingListItems) {
+            rawState.packingListItems = rawState.packingListItems.map((pli: any) =>
+              pli?.id === eqFilter.val ? { ...pli, ...this.updateValues } : pli
             );
           }
         }

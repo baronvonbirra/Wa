@@ -31,7 +31,7 @@ import {
 } from 'lucide-react';
 
 interface ItineraryViewProps {
-  onNavigateTab?: (tab: Wa2Tab) => void;
+  onNavigateTab?: (tab: Wa2Tab, subTab?: string) => void;
 }
 
 export const ItineraryView: React.FC<ItineraryViewProps> = ({ onNavigateTab }) => {
@@ -391,13 +391,13 @@ export const ItineraryView: React.FC<ItineraryViewProps> = ({ onNavigateTab }) =
       {(waState.selectedDate === '2026-12-21' || waState.selectedDate === waState.tripStartDate) && (
         <div className="flex gap-2">
           <button
-            onClick={() => onNavigateTab?.('tools')}
+            onClick={() => onNavigateTab?.('tools', 'packing')}
             className="flex-1 py-2.5 px-3 bg-gradient-to-r from-amber-500 to-amber-600 hover:from-amber-600 hover:to-amber-700 text-white font-black text-xs rounded-xl flex items-center justify-center gap-1.5 shadow-sm transition-all active:scale-95 border-b-2 border-amber-700"
           >
             📋 Checklist Equipaje
           </button>
           <button
-            onClick={() => onNavigateTab?.('tools')}
+            onClick={() => onNavigateTab?.('tools', 'packing')}
             className="flex-1 py-2.5 px-3 bg-gradient-to-r from-indigo-500 to-indigo-600 hover:from-indigo-600 hover:to-indigo-700 text-white font-black text-xs rounded-xl flex items-center justify-center gap-1.5 shadow-sm transition-all active:scale-95 border-b-2 border-indigo-700"
           >
             ☑️ Tareas Pendientes
