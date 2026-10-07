@@ -1,6 +1,6 @@
 import React, { useState } from 'react';
 import { useWa2 } from '../../state/Wa2Context';
-import { TravelDoc } from '../../state/wa2Types';
+import { TravelDoc, PackingCategory } from '../../state/wa2Types';
 import {
   Calculator,
   QrCode,
@@ -10,16 +10,30 @@ import {
   Maximize2,
   Sparkles,
   ArrowRightLeft,
-  Check,
+  CheckSquare,
+  Square,
+  PhoneCall,
+  Luggage,
   ShieldAlert,
-  FileText,
-  Delete
+  Delete,
+  Building2,
+  Phone
 } from 'lucide-react';
 
 export const ToolsView: React.FC = () => {
-  const { waState, setEurJpyRate, addTravelDoc, deleteTravelDoc } = useWa2();
+  const {
+    waState,
+    setEurJpyRate,
+    addTravelDoc,
+    deleteTravelDoc,
+    togglePackingItem,
+    addPackingItem,
+    deletePackingItem,
+    addEmergencyContact,
+    deleteEmergencyContact
+  } = useWa2();
 
-  const [activeSubTab, setActiveSubTab] = useState<'converter' | 'docs'>('converter');
+  const [activeSubTab, setActiveSubTab] = useState<'converter' | 'packing' | 'docs' | 'emergency'>('converter');
 
   // Converter State
   const [conversionDirection, setConversionDirection] = useState<'jpyToEur' | 'eurToJpy'>('jpyToEur');
@@ -28,12 +42,25 @@ export const ToolsView: React.FC = () => {
   const [editingRate, setEditingRate] = useState<boolean>(false);
   const [customRate, setCustomRate] = useState<string>(waState.eurJpyRate.toString());
 
+  // Packing Checklist State
+  const [selectedPackingCategory, setSelectedPackingCategory] = useState<string>('all');
+  const [newPackingName, setNewPackingName] = useState('');
+  const [newPackingCategory, setNewPackingCategory] = useState<PackingCategory>('General');
+  const [showAddPackingModal, setShowAddPackingModal] = useState<boolean>(false);
+
   // Travel Docs State
   const [fullscreenDoc, setFullscreenDoc] = useState<TravelDoc | null>(null);
   const [showAddDocModal, setShowAddDocModal] = useState<boolean>(false);
   const [docTitle, setDocTitle] = useState('');
   const [docQrUrl, setDocQrUrl] = useState('');
   const [docNotes, setDocNotes] = useState('');
+
+  // Emergency Contacts State
+  const [showAddContactModal, setShowAddContactModal] = useState<boolean>(false);
+  const [contactTitle, setContactTitle] = useState('');
+  const [contactPhone, setContactPhone] = useState('');
+  const [contactAddress, setContactAddress] = useState('');
+  const [contactNotes, setContactNotes] = useState('');
 
   // Keypad Handlers for Converter
   const handleKeyPress = (val: string) => {
@@ -87,6 +114,20 @@ export const ToolsView: React.FC = () => {
     }
   };
 
+  const handleSavePackingItem = (e: React.FormEvent) => {
+    e.preventDefault();
+    if (!newPackingName.trim()) return;
+
+    addPackingItem({
+      item_name: newPackingName.trim(),
+      category: newPackingCategory,
+      checked: false
+    });
+
+    setNewPackingName('');
+    setShowAddPackingModal(false);
+  };
+
   const handleSaveDoc = (e: React.FormEvent) => {
     e.preventDefault();
     if (!docTitle.trim()) return;
@@ -106,32 +147,82 @@ export const ToolsView: React.FC = () => {
     setShowAddDocModal(false);
   };
 
+  const handleSaveContact = (e: React.FormEvent) => {
+    e.preventDefault();
+    if (!contactTitle.trim() || !contactPhone.trim()) return;
+
+    addEmergencyContact({
+      title: contactTitle.trim(),
+      phone: contactPhone.trim(),
+      address: contactAddress.trim(),
+      notes: contactNotes.trim()
+    });
+
+    setContactTitle('');
+    setContactPhone('');
+    setContactAddress('');
+    setContactNotes('');
+    setShowAddContactModal(false);
+  };
+
+  // Packing Checklist Filtering
+  const packingCategoriesList: PackingCategory[] = ['Documentación', 'Electrónica', 'Ropa', 'Botiquín', 'General'];
+  const filteredPackingItems = waState.packingChecklist.filter(item => {
+    return selectedPackingCategory === 'all' || item.category === selectedPackingCategory;
+  });
+
+  const checkedPackingCount = waState.packingChecklist.filter(i => i.checked).length;
+
   return (
     <div className="pb-24 pt-2 max-w-md mx-auto px-4 space-y-4">
-      {/* Sub-tab Switcher: Converter vs Docs & QRs */}
-      <div className="flex bg-slate-200/80 p-1 rounded-2xl border border-slate-300">
+      {/* 4-Tab Sub-navigation Bar */}
+      <div className="grid grid-cols-4 bg-slate-200/80 dark:bg-slate-800 p-1 rounded-2xl border border-slate-300 dark:border-slate-700 gap-1">
         <button
           onClick={() => setActiveSubTab('converter')}
-          className={`flex-1 py-2 text-xs font-black rounded-xl transition-all flex items-center justify-center gap-1.5 ${
+          className={`py-2 text-[11px] font-black rounded-xl transition-all flex flex-col items-center justify-center gap-0.5 ${
             activeSubTab === 'converter'
               ? 'bg-rose-500 text-white shadow-md'
-              : 'text-slate-700 hover:text-slate-900'
+              : 'text-slate-700 dark:text-slate-300 hover:text-slate-900'
           }`}
         >
           <Calculator className="w-4 h-4" />
-          <span>Conversor Moneda</span>
+          <span>Conversor</span>
+        </button>
+
+        <button
+          onClick={() => setActiveSubTab('packing')}
+          className={`py-2 text-[11px] font-black rounded-xl transition-all flex flex-col items-center justify-center gap-0.5 ${
+            activeSubTab === 'packing'
+              ? 'bg-rose-500 text-white shadow-md'
+              : 'text-slate-700 dark:text-slate-300 hover:text-slate-900'
+          }`}
+        >
+          <Luggage className="w-4 h-4" />
+          <span>Equipaje</span>
         </button>
 
         <button
           onClick={() => setActiveSubTab('docs')}
-          className={`flex-1 py-2 text-xs font-black rounded-xl transition-all flex items-center justify-center gap-1.5 ${
+          className={`py-2 text-[11px] font-black rounded-xl transition-all flex flex-col items-center justify-center gap-0.5 ${
             activeSubTab === 'docs'
               ? 'bg-rose-500 text-white shadow-md'
-              : 'text-slate-700 hover:text-slate-900'
+              : 'text-slate-700 dark:text-slate-300 hover:text-slate-900'
           }`}
         >
           <QrCode className="w-4 h-4" />
-          <span>Documentos & QRs</span>
+          <span>QRs & Docs</span>
+        </button>
+
+        <button
+          onClick={() => setActiveSubTab('emergency')}
+          className={`py-2 text-[11px] font-black rounded-xl transition-all flex flex-col items-center justify-center gap-0.5 ${
+            activeSubTab === 'emergency'
+              ? 'bg-rose-500 text-white shadow-md'
+              : 'text-slate-700 dark:text-slate-300 hover:text-slate-900'
+          }`}
+        >
+          <ShieldAlert className="w-4 h-4" />
+          <span>Emergencia</span>
         </button>
       </div>
 
@@ -217,7 +308,7 @@ export const ToolsView: React.FC = () => {
               </button>
             </div>
 
-            {/* Tax Savings Banner if Tax-Free Active */}
+            {/* Tax Savings Banner */}
             {applyTaxFree && (
               <div className="mt-3 bg-emerald-500/20 border border-emerald-500/50 rounded-2xl p-2 text-center text-xs text-emerald-200 font-bold">
                 🎉 ¡Ahorro Tax-Free del 10%: <strong>¥{Math.round(taxSavingsJpy).toLocaleString()} (≈ €{taxSavingsEur.toFixed(2)})</strong>!
@@ -225,30 +316,30 @@ export const ToolsView: React.FC = () => {
             )}
           </div>
 
-          {/* Keypad Preset Buttons (+1000, +5000, +10000) */}
+          {/* Keypad Preset Buttons */}
           <div className="grid grid-cols-3 gap-2">
             <button
               onClick={() => handleAddQuickAmount(1000)}
-              className="bg-rose-50 hover:bg-rose-100 text-rose-800 border border-rose-200 rounded-xl py-2 font-black text-xs active:scale-95 transition-all shadow-xs"
+              className="bg-rose-50 hover:bg-rose-100 dark:bg-slate-800 dark:hover:bg-slate-700 text-rose-800 dark:text-rose-300 border border-rose-200 dark:border-slate-700 rounded-xl py-2 font-black text-xs active:scale-95 transition-all shadow-xs"
             >
               +1.000 ¥
             </button>
             <button
               onClick={() => handleAddQuickAmount(5000)}
-              className="bg-rose-50 hover:bg-rose-100 text-rose-800 border border-rose-200 rounded-xl py-2 font-black text-xs active:scale-95 transition-all shadow-xs"
+              className="bg-rose-50 hover:bg-rose-100 dark:bg-slate-800 dark:hover:bg-slate-700 text-rose-800 dark:text-rose-300 border border-rose-200 dark:border-slate-700 rounded-xl py-2 font-black text-xs active:scale-95 transition-all shadow-xs"
             >
               +5.000 ¥
             </button>
             <button
               onClick={() => handleAddQuickAmount(10000)}
-              className="bg-rose-50 hover:bg-rose-100 text-rose-800 border border-rose-200 rounded-xl py-2 font-black text-xs active:scale-95 transition-all shadow-xs"
+              className="bg-rose-50 hover:bg-rose-100 dark:bg-slate-800 dark:hover:bg-slate-700 text-rose-800 dark:text-rose-300 border border-rose-200 dark:border-slate-700 rounded-xl py-2 font-black text-xs active:scale-95 transition-all shadow-xs"
             >
               +10.000 ¥
             </button>
           </div>
 
-          {/* Fast Mobile Keypad (0-9, Clear, Backspace) */}
-          <div className="bg-white rounded-3xl p-3 shadow-sm border border-slate-200 grid grid-cols-3 gap-2">
+          {/* Keypad */}
+          <div className="bg-white dark:bg-slate-800 rounded-3xl p-3 shadow-sm border border-slate-200 dark:border-slate-700 grid grid-cols-3 gap-2">
             {['7', '8', '9', '4', '5', '6', '1', '2', '3', 'C', '0', 'backspace'].map((key) => {
               const isClear = key === 'C';
               const isBack = key === 'backspace';
@@ -259,10 +350,10 @@ export const ToolsView: React.FC = () => {
                   onClick={() => handleKeyPress(key)}
                   className={`py-3.5 rounded-2xl text-lg font-black transition-all active:scale-95 shadow-xs flex items-center justify-center ${
                     isClear
-                      ? 'bg-amber-100 text-amber-800 border border-amber-200'
+                      ? 'bg-amber-100 dark:bg-amber-950/60 text-amber-800 dark:text-amber-300 border border-amber-200 dark:border-amber-800'
                       : isBack
-                      ? 'bg-rose-100 text-rose-800 border border-rose-200'
-                      : 'bg-slate-50 hover:bg-slate-100 text-slate-800 border border-slate-200'
+                      ? 'bg-rose-100 dark:bg-rose-950/60 text-rose-800 dark:text-rose-300 border border-rose-200 dark:border-rose-800'
+                      : 'bg-slate-50 dark:bg-slate-900 hover:bg-slate-100 dark:hover:bg-slate-700 text-slate-800 dark:text-white border border-slate-200 dark:border-slate-700'
                   }`}
                 >
                   {isBack ? <Delete className="w-5 h-5" /> : key}
@@ -273,13 +364,110 @@ export const ToolsView: React.FC = () => {
         </div>
       )}
 
+      {/* PACKING CHECKLIST SECTION */}
+      {activeSubTab === 'packing' && (
+        <div className="space-y-3">
+          {/* Header & Add Button */}
+          <div className="flex items-center justify-between">
+            <div>
+              <h2 className="text-base font-black text-slate-800 dark:text-white uppercase tracking-wide flex items-center gap-1.5">
+                <Luggage className="w-4 h-4 text-rose-500" />
+                Lista de Equipaje ({checkedPackingCount}/{waState.packingChecklist.length})
+              </h2>
+              <p className="text-[10px] text-slate-400 font-bold">Preparativos y maletas sincronizados</p>
+            </div>
+
+            <button
+              onClick={() => setShowAddPackingModal(true)}
+              className="bg-rose-500 hover:bg-rose-600 text-white font-black text-xs px-3 py-1.5 rounded-xl border-b-2 border-rose-700 active:translate-y-0.5 transition-all flex items-center gap-1 shadow-sm"
+            >
+              <Plus className="w-3.5 h-3.5" />
+              <span>Añadir Ítem</span>
+            </button>
+          </div>
+
+          {/* Category Filter Pills */}
+          <div className="flex gap-1.5 overflow-x-auto pb-1 scrollbar-thin scrollbar-thumb-rose-200">
+            <button
+              onClick={() => setSelectedPackingCategory('all')}
+              className={`px-3 py-1 text-xs font-black rounded-xl border flex-shrink-0 transition-all ${
+                selectedPackingCategory === 'all'
+                  ? 'bg-rose-500 text-white border-rose-600 shadow-xs'
+                  : 'bg-white dark:bg-slate-800 text-slate-600 dark:text-slate-300 border-slate-200 dark:border-slate-700 hover:bg-rose-50'
+              }`}
+            >
+              Todos ({waState.packingChecklist.length})
+            </button>
+            {packingCategoriesList.map(cat => (
+              <button
+                key={cat}
+                onClick={() => setSelectedPackingCategory(cat)}
+                className={`px-3 py-1 text-xs font-black rounded-xl border flex-shrink-0 transition-all ${
+                  selectedPackingCategory === cat
+                    ? 'bg-rose-500 text-white border-rose-600 shadow-xs'
+                    : 'bg-white dark:bg-slate-800 text-slate-600 dark:text-slate-300 border-slate-200 dark:border-slate-700 hover:bg-rose-50'
+                }`}
+              >
+                {cat}
+              </button>
+            ))}
+          </div>
+
+          {/* Packing Items List */}
+          <div className="space-y-2">
+            {filteredPackingItems.map(item => (
+              <div
+                key={item.id}
+                className={`bg-white dark:bg-slate-800 border-2 rounded-2xl p-3 shadow-xs flex items-center justify-between transition-all ${
+                  item.checked
+                    ? 'border-emerald-200 dark:border-emerald-800 bg-emerald-50/40 dark:bg-emerald-950/20'
+                    : 'border-slate-200 dark:border-slate-700'
+                }`}
+              >
+                <div
+                  onClick={() => togglePackingItem(item.id)}
+                  className="flex items-center gap-2.5 cursor-pointer flex-grow"
+                >
+                  {item.checked ? (
+                    <CheckSquare className="w-5 h-5 text-emerald-600 dark:text-emerald-400 flex-shrink-0" />
+                  ) : (
+                    <Square className="w-5 h-5 text-slate-300 dark:text-slate-600 flex-shrink-0" />
+                  )}
+                  <div>
+                    <span className={`text-xs font-black block ${
+                      item.checked ? 'line-through text-slate-400 dark:text-slate-500' : 'text-slate-800 dark:text-white'
+                    }`}>
+                      {item.item_name}
+                    </span>
+                    <span className="text-[9px] font-bold text-slate-400 uppercase bg-slate-100 dark:bg-slate-700 px-1.5 py-0.5 rounded inline-block mt-0.5">
+                      {item.category}
+                    </span>
+                  </div>
+                </div>
+
+                <button
+                  onClick={() => {
+                    if (confirm('¿Eliminar este ítem del equipaje?')) {
+                      deletePackingItem(item.id);
+                    }
+                  }}
+                  className="text-slate-300 hover:text-rose-600 p-1"
+                >
+                  <Trash2 className="w-3.5 h-3.5" />
+                </button>
+              </div>
+            ))}
+          </div>
+        </div>
+      )}
+
       {/* TRAVEL DOCUMENTS & QRS SECTION */}
       {activeSubTab === 'docs' && (
         <div className="space-y-3">
           {/* Header & Add Button */}
           <div className="flex items-center justify-between">
             <div>
-              <h2 className="text-base font-black text-slate-800 uppercase tracking-wide flex items-center gap-1.5">
+              <h2 className="text-base font-black text-slate-800 dark:text-white uppercase tracking-wide flex items-center gap-1.5">
                 <QrCode className="w-4 h-4 text-rose-500" />
                 Documentos & QRs
               </h2>
@@ -300,11 +488,11 @@ export const ToolsView: React.FC = () => {
             {waState.travelDocs.map((doc) => (
               <div
                 key={doc.id}
-                className="bg-white border-2 border-rose-100 hover:border-rose-300 rounded-2xl p-3.5 shadow-sm space-y-2 flex flex-col justify-between"
+                className="bg-white dark:bg-slate-800 border-2 border-rose-100 dark:border-slate-700 hover:border-rose-300 rounded-2xl p-3.5 shadow-sm space-y-2 flex flex-col justify-between"
               >
                 <div>
                   <div className="flex items-start justify-between gap-2">
-                    <h3 className="text-xs font-black text-slate-800 leading-tight">
+                    <h3 className="text-xs font-black text-slate-800 dark:text-white leading-tight">
                       {doc.title}
                     </h3>
 
@@ -321,23 +509,22 @@ export const ToolsView: React.FC = () => {
                   </div>
 
                   {doc.notes && (
-                    <p className="text-[10px] text-slate-500 mt-1 leading-snug">
+                    <p className="text-[10px] text-slate-500 dark:text-slate-400 mt-1 leading-snug">
                       {doc.notes}
                     </p>
                   )}
                 </div>
 
-                {/* QR Code Preview Thumbnail */}
                 <div
                   onClick={() => setFullscreenDoc(doc)}
-                  className="bg-slate-50 border border-slate-200 rounded-xl p-2.5 flex flex-col items-center justify-center cursor-pointer hover:bg-rose-50 hover:border-rose-200 transition-all group"
+                  className="bg-slate-50 dark:bg-slate-900 border border-slate-200 dark:border-slate-700 rounded-xl p-2.5 flex flex-col items-center justify-center cursor-pointer hover:bg-rose-50 dark:hover:bg-slate-700 transition-all group"
                 >
                   <img
                     src={doc.qr_code_url}
                     alt={doc.title}
                     className="w-28 h-28 object-contain rounded-lg"
                   />
-                  <span className="text-[10px] font-black text-rose-600 group-hover:scale-105 transition-transform mt-1.5 flex items-center gap-1">
+                  <span className="text-[10px] font-black text-rose-600 dark:text-rose-400 group-hover:scale-105 transition-transform mt-1.5 flex items-center gap-1">
                     <Maximize2 className="w-3 h-3" />
                     Ampliar para Escanear
                   </span>
@@ -348,21 +535,97 @@ export const ToolsView: React.FC = () => {
         </div>
       )}
 
+      {/* EMERGENCY CONTACTS SECTION */}
+      {activeSubTab === 'emergency' && (
+        <div className="space-y-3">
+          {/* Header & Add Button */}
+          <div className="flex items-center justify-between">
+            <div>
+              <h2 className="text-base font-black text-slate-800 dark:text-white uppercase tracking-wide flex items-center gap-1.5">
+                <ShieldAlert className="w-4 h-4 text-rose-500" />
+                Contactos de Emergencia
+              </h2>
+              <p className="text-[10px] text-slate-400 font-bold">Teléfonos offline y asistencia médica 24/7</p>
+            </div>
+
+            <button
+              onClick={() => setShowAddContactModal(true)}
+              className="bg-rose-500 hover:bg-rose-600 text-white font-black text-xs px-3 py-1.5 rounded-xl border-b-2 border-rose-700 active:translate-y-0.5 transition-all flex items-center gap-1 shadow-sm"
+            >
+              <Plus className="w-3.5 h-3.5" />
+              <span>Añadir Contacto</span>
+            </button>
+          </div>
+
+          {/* Emergency Cards Grid */}
+          <div className="space-y-2.5">
+            {waState.emergencyContacts.map((contact) => (
+              <div
+                key={contact.id}
+                className="bg-white dark:bg-slate-800 border-2 border-rose-100 dark:border-slate-700 rounded-2xl p-3.5 shadow-sm space-y-2"
+              >
+                <div className="flex items-start justify-between gap-2">
+                  <div>
+                    <h3 className="text-sm font-black text-slate-800 dark:text-white">
+                      {contact.title}
+                    </h3>
+                    {contact.address && (
+                      <p className="text-[11px] text-slate-500 dark:text-slate-400 flex items-center gap-1 mt-0.5">
+                        <Building2 className="w-3 h-3 text-amber-500" />
+                        <span>{contact.address}</span>
+                      </p>
+                    )}
+                  </div>
+
+                  <button
+                    onClick={() => {
+                      if (confirm('¿Eliminar este contacto de emergencia?')) {
+                        deleteEmergencyContact(contact.id);
+                      }
+                    }}
+                    className="text-slate-300 hover:text-rose-600 p-1"
+                  >
+                    <Trash2 className="w-3.5 h-3.5" />
+                  </button>
+                </div>
+
+                {contact.notes && (
+                  <p className="text-xs text-slate-600 dark:text-slate-300 bg-slate-50 dark:bg-slate-900 p-2 rounded-xl border border-slate-100 dark:border-slate-700 leading-snug">
+                    💡 {contact.notes}
+                  </p>
+                )}
+
+                {/* Direct Dial Link */}
+                <div className="pt-1 flex justify-end">
+                  <a
+                    href={`tel:${contact.phone.replace(/\s+/g, '')}`}
+                    className="bg-emerald-500 hover:bg-emerald-600 active:scale-95 text-white font-black text-xs px-3.5 py-1.5 rounded-xl border-b-2 border-emerald-700 transition-all flex items-center gap-1.5 shadow-xs"
+                  >
+                    <Phone className="w-3.5 h-3.5" />
+                    <span>Llamar: {contact.phone}</span>
+                  </a>
+                </div>
+              </div>
+            ))}
+          </div>
+        </div>
+      )}
+
       {/* Fullscreen QR Modal */}
       {fullscreenDoc && (
         <div className="fixed inset-0 bg-slate-900/90 backdrop-blur-md z-50 flex items-center justify-center p-4">
-          <div className="bg-white border-4 border-rose-400 rounded-3xl p-6 shadow-2xl max-w-sm w-full text-center relative space-y-4 animate-scaleUp">
+          <div className="bg-white dark:bg-slate-800 border-4 border-rose-400 rounded-3xl p-6 shadow-2xl max-w-sm w-full text-center relative space-y-4 animate-scaleUp">
             <button
               onClick={() => setFullscreenDoc(null)}
-              className="absolute top-4 right-4 bg-slate-100 hover:bg-slate-200 text-slate-600 font-extrabold p-2 rounded-full h-8 w-8 flex items-center justify-center text-sm"
+              className="absolute top-4 right-4 bg-slate-100 dark:bg-slate-700 hover:bg-slate-200 text-slate-600 dark:text-slate-200 font-extrabold p-2 rounded-full h-8 w-8 flex items-center justify-center text-sm"
             >
               ✕
             </button>
 
             <div>
               <span className="text-3xl block mb-1">📱</span>
-              <h3 className="text-base font-black text-slate-900 uppercase">{fullscreenDoc.title}</h3>
-              <p className="text-xs text-slate-500 font-bold mt-1">Muestra este código al personal o escáner</p>
+              <h3 className="text-base font-black text-slate-900 dark:text-white uppercase">{fullscreenDoc.title}</h3>
+              <p className="text-xs text-slate-500 dark:text-slate-400 font-bold mt-1">Muestra este código al personal o escáner</p>
             </div>
 
             <div className="bg-white p-4 border-4 border-slate-900 rounded-2xl shadow-inner inline-block mx-auto">
@@ -374,7 +637,7 @@ export const ToolsView: React.FC = () => {
             </div>
 
             {fullscreenDoc.notes && (
-              <p className="text-xs text-slate-600 bg-amber-50 border border-amber-200 p-2.5 rounded-xl text-left font-semibold">
+              <p className="text-xs text-slate-600 dark:text-slate-300 bg-amber-50 dark:bg-amber-950/40 border border-amber-200 dark:border-amber-800 p-2.5 rounded-xl text-left font-semibold">
                 💡 {fullscreenDoc.notes}
               </p>
             )}
@@ -389,57 +652,116 @@ export const ToolsView: React.FC = () => {
         </div>
       )}
 
-      {/* Add Document / QR Modal */}
-      {showAddDocModal && (
+      {/* Add Packing Modal */}
+      {showAddPackingModal && (
         <div className="fixed inset-0 bg-slate-900/60 backdrop-blur-sm z-50 flex items-center justify-center p-4">
-          <div className="bg-white border-4 border-rose-300 rounded-3xl p-5 shadow-2xl max-w-sm w-full relative">
+          <div className="bg-white dark:bg-slate-800 border-4 border-rose-300 rounded-3xl p-5 shadow-2xl max-w-sm w-full relative">
             <button
-              onClick={() => setShowAddDocModal(false)}
-              className="absolute top-4 right-4 text-slate-400 hover:text-slate-600 text-sm font-bold bg-slate-100 p-1 rounded-full h-7 w-7 flex items-center justify-center"
+              onClick={() => setShowAddPackingModal(false)}
+              className="absolute top-4 right-4 text-slate-400 hover:text-slate-600 text-sm font-bold bg-slate-100 dark:bg-slate-700 p-1 rounded-full h-7 w-7 flex items-center justify-center"
             >
               ✕
             </button>
 
-            <h3 className="text-base font-black text-slate-800 flex items-center gap-1.5 mb-3">
+            <h3 className="text-base font-black text-slate-800 dark:text-white flex items-center gap-1.5 mb-3">
+              <Luggage className="w-4 h-4 text-rose-500" />
+              Añadir Ítem al Equipaje
+            </h3>
+
+            <form onSubmit={handleSavePackingItem} className="space-y-3 text-xs">
+              <div>
+                <label className="block font-bold text-slate-700 dark:text-slate-300 mb-1">Nombre del Objeto *</label>
+                <input
+                  type="text"
+                  required
+                  placeholder="Ej: Pasaportes, Batería Externa..."
+                  value={newPackingName}
+                  onChange={e => setNewPackingName(e.target.value)}
+                  className="w-full px-3 py-2 border border-slate-200 dark:border-slate-700 dark:bg-slate-900 dark:text-white rounded-xl font-semibold focus:outline-none focus:border-rose-500"
+                />
+              </div>
+
+              <div>
+                <label className="block font-bold text-slate-700 dark:text-slate-300 mb-1">Categoría</label>
+                <select
+                  value={newPackingCategory}
+                  onChange={e => setNewPackingCategory(e.target.value as PackingCategory)}
+                  className="w-full px-3 py-2 border border-slate-200 dark:border-slate-700 dark:bg-slate-900 dark:text-white rounded-xl font-semibold focus:outline-none focus:border-rose-500"
+                >
+                  {packingCategoriesList.map(cat => (
+                    <option key={cat} value={cat}>{cat}</option>
+                  ))}
+                </select>
+              </div>
+
+              <div className="pt-2 flex gap-2">
+                <button
+                  type="button"
+                  onClick={() => setShowAddPackingModal(false)}
+                  className="w-1/2 py-2.5 rounded-xl border border-slate-200 dark:border-slate-700 text-slate-600 dark:text-slate-300 font-extrabold"
+                >
+                  Cancelar
+                </button>
+                <button
+                  type="submit"
+                  className="w-1/2 py-2.5 rounded-xl bg-rose-500 hover:bg-rose-600 text-white font-black shadow-sm"
+                >
+                  Añadir Ítem
+                </button>
+              </div>
+            </form>
+          </div>
+        </div>
+      )}
+
+      {/* Add Travel Doc Modal */}
+      {showAddDocModal && (
+        <div className="fixed inset-0 bg-slate-900/60 backdrop-blur-sm z-50 flex items-center justify-center p-4">
+          <div className="bg-white dark:bg-slate-800 border-4 border-rose-300 rounded-3xl p-5 shadow-2xl max-w-sm w-full relative">
+            <button
+              onClick={() => setShowAddDocModal(false)}
+              className="absolute top-4 right-4 text-slate-400 hover:text-slate-600 text-sm font-bold bg-slate-100 dark:bg-slate-700 p-1 rounded-full h-7 w-7 flex items-center justify-center"
+            >
+              ✕
+            </button>
+
+            <h3 className="text-base font-black text-slate-800 dark:text-white flex items-center gap-1.5 mb-3">
               <Sparkles className="w-4 h-4 text-rose-500" />
               Añadir Documento o QR
             </h3>
 
             <form onSubmit={handleSaveDoc} className="space-y-3 text-xs">
               <div>
-                <label className="block font-bold text-slate-700 mb-1">Título del Documento *</label>
+                <label className="block font-bold text-slate-700 dark:text-slate-300 mb-1">Título del Documento *</label>
                 <input
                   type="text"
                   required
-                  placeholder="Ej: Visit Japan Web QR o Seguro"
+                  placeholder="Ej: Visit Japan Web QR"
                   value={docTitle}
                   onChange={e => setDocTitle(e.target.value)}
-                  className="w-full px-3 py-2 border border-slate-200 rounded-xl font-semibold focus:outline-none focus:border-rose-500"
+                  className="w-full px-3 py-2 border border-slate-200 dark:border-slate-700 dark:bg-slate-900 dark:text-white rounded-xl font-semibold focus:outline-none focus:border-rose-500"
                 />
               </div>
 
               <div>
-                <label className="block font-bold text-slate-700 mb-1">URL del Código QR / Imagen</label>
+                <label className="block font-bold text-slate-700 dark:text-slate-300 mb-1">URL del Código QR / Imagen</label>
                 <input
                   type="url"
                   placeholder="https://..."
                   value={docQrUrl}
                   onChange={e => setDocQrUrl(e.target.value)}
-                  className="w-full px-3 py-2 border border-slate-200 rounded-xl font-semibold focus:outline-none focus:border-rose-500"
+                  className="w-full px-3 py-2 border border-slate-200 dark:border-slate-700 dark:bg-slate-900 dark:text-white rounded-xl font-semibold focus:outline-none focus:border-rose-500"
                 />
-                <span className="text-[10px] text-slate-400 font-bold block mt-0.5">
-                  Si se deja vacío, se generará un código QR automáticamente.
-                </span>
               </div>
 
               <div>
-                <label className="block font-bold text-slate-700 mb-1">Notas / Instrucciones</label>
+                <label className="block font-bold text-slate-700 dark:text-slate-300 mb-1">Notas / Instrucciones</label>
                 <textarea
                   rows={2}
-                  placeholder="Ej: Código de póliza, teléfono de emergencias..."
+                  placeholder="Instrucciones de uso..."
                   value={docNotes}
                   onChange={e => setDocNotes(e.target.value)}
-                  className="w-full px-3 py-2 border border-slate-200 rounded-xl font-semibold focus:outline-none focus:border-rose-500"
+                  className="w-full px-3 py-2 border border-slate-200 dark:border-slate-700 dark:bg-slate-900 dark:text-white rounded-xl font-semibold focus:outline-none focus:border-rose-500"
                 />
               </div>
 
@@ -447,15 +769,98 @@ export const ToolsView: React.FC = () => {
                 <button
                   type="button"
                   onClick={() => setShowAddDocModal(false)}
-                  className="w-1/2 py-2.5 rounded-xl border border-slate-200 text-slate-600 font-extrabold hover:bg-slate-50"
+                  className="w-1/2 py-2.5 rounded-xl border border-slate-200 dark:border-slate-700 text-slate-600 dark:text-slate-300 font-extrabold"
                 >
                   Cancelar
                 </button>
                 <button
                   type="submit"
-                  className="w-1/2 py-2.5 rounded-xl bg-rose-500 hover:bg-rose-600 text-white font-black border-b-2 border-rose-700 shadow-sm"
+                  className="w-1/2 py-2.5 rounded-xl bg-rose-500 hover:bg-rose-600 text-white font-black shadow-sm"
                 >
                   Guardar QR
+                </button>
+              </div>
+            </form>
+          </div>
+        </div>
+      )}
+
+      {/* Add Emergency Contact Modal */}
+      {showAddContactModal && (
+        <div className="fixed inset-0 bg-slate-900/60 backdrop-blur-sm z-50 flex items-center justify-center p-4">
+          <div className="bg-white dark:bg-slate-800 border-4 border-rose-300 rounded-3xl p-5 shadow-2xl max-w-sm w-full relative">
+            <button
+              onClick={() => setShowAddContactModal(false)}
+              className="absolute top-4 right-4 text-slate-400 hover:text-slate-600 text-sm font-bold bg-slate-100 dark:bg-slate-700 p-1 rounded-full h-7 w-7 flex items-center justify-center"
+            >
+              ✕
+            </button>
+
+            <h3 className="text-base font-black text-slate-800 dark:text-white flex items-center gap-1.5 mb-3">
+              <ShieldAlert className="w-4 h-4 text-rose-500" />
+              Añadir Contacto de Emergencia
+            </h3>
+
+            <form onSubmit={handleSaveContact} className="space-y-3 text-xs">
+              <div>
+                <label className="block font-bold text-slate-700 dark:text-slate-300 mb-1">Título / Nombre *</label>
+                <input
+                  type="text"
+                  required
+                  placeholder="Ej: Embajada de España"
+                  value={contactTitle}
+                  onChange={e => setContactTitle(e.target.value)}
+                  className="w-full px-3 py-2 border border-slate-200 dark:border-slate-700 dark:bg-slate-900 dark:text-white rounded-xl font-semibold focus:outline-none focus:border-rose-500"
+                />
+              </div>
+
+              <div>
+                <label className="block font-bold text-slate-700 dark:text-slate-300 mb-1">Teléfono *</label>
+                <input
+                  type="tel"
+                  required
+                  placeholder="+81 3-3583-8531"
+                  value={contactPhone}
+                  onChange={e => setContactPhone(e.target.value)}
+                  className="w-full px-3 py-2 border border-slate-200 dark:border-slate-700 dark:bg-slate-900 dark:text-white rounded-xl font-semibold focus:outline-none focus:border-rose-500"
+                />
+              </div>
+
+              <div>
+                <label className="block font-bold text-slate-700 dark:text-slate-300 mb-1">Dirección (Opcional)</label>
+                <input
+                  type="text"
+                  placeholder="Roppongi, Minato-ku..."
+                  value={contactAddress}
+                  onChange={e => setContactAddress(e.target.value)}
+                  className="w-full px-3 py-2 border border-slate-200 dark:border-slate-700 dark:bg-slate-900 dark:text-white rounded-xl font-semibold focus:outline-none focus:border-rose-500"
+                />
+              </div>
+
+              <div>
+                <label className="block font-bold text-slate-700 dark:text-slate-300 mb-1">Notas / Indicaciones</label>
+                <textarea
+                  rows={2}
+                  placeholder="Horarios, idioma..."
+                  value={contactNotes}
+                  onChange={e => setContactNotes(e.target.value)}
+                  className="w-full px-3 py-2 border border-slate-200 dark:border-slate-700 dark:bg-slate-900 dark:text-white rounded-xl font-semibold focus:outline-none focus:border-rose-500"
+                />
+              </div>
+
+              <div className="pt-2 flex gap-2">
+                <button
+                  type="button"
+                  onClick={() => setShowAddContactModal(false)}
+                  className="w-1/2 py-2.5 rounded-xl border border-slate-200 dark:border-slate-700 text-slate-600 dark:text-slate-300 font-extrabold"
+                >
+                  Cancelar
+                </button>
+                <button
+                  type="submit"
+                  className="w-1/2 py-2.5 rounded-xl bg-rose-500 hover:bg-rose-600 text-white font-black shadow-sm"
+                >
+                  Guardar Contacto
                 </button>
               </div>
             </form>

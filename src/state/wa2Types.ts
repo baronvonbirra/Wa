@@ -5,6 +5,8 @@ export type ItineraryCategory = 'attraction' | 'transport' | 'food' | 'note';
 export interface City {
   id: string;
   name: string;
+  lat?: number;
+  lng?: number;
   start_date: string; // YYYY-MM-DD
   end_date: string;   // YYYY-MM-DD
   order_index: number;
@@ -23,11 +25,12 @@ export interface Accommodation {
 
 export interface ItineraryItem {
   id: string;
+  external_id?: string; // Unique ID for Google My Maps sync
   date: string; // YYYY-MM-DD
   time_start?: string; // HH:MM
   title: string;
   description?: string;
-  google_maps_url?: string;
+  google_maps_url: string;
   category: ItineraryCategory;
   status: ItineraryStatus;
   order_index: number;
@@ -49,6 +52,7 @@ export type PlaceCategory =
 
 export interface SavedPlace {
   id: string;
+  external_id?: string; // Unique ID for Google My Maps sync
   city_id: string;
   name: string;
   category: PlaceCategory;
@@ -79,6 +83,23 @@ export interface TravelDoc {
   notes?: string;
 }
 
+export type PackingCategory = 'General' | 'Documentación' | 'Electrónica' | 'Ropa' | 'Botiquín';
+
+export interface PackingItem {
+  id: string;
+  item_name: string;
+  category: PackingCategory;
+  checked: boolean;
+}
+
+export interface EmergencyContact {
+  id: string;
+  title: string;
+  phone: string;
+  address?: string;
+  notes?: string;
+}
+
 export type SurvivalCategory = 'basic' | 'restaurant' | 'shopping' | 'transport' | 'emergency';
 
 export interface SurvivalPhrase {
@@ -97,9 +118,14 @@ export interface Wa2State {
   savedPlaces: SavedPlace[];
   wishlist: WishlistItem[];
   travelDocs: TravelDoc[];
+  packingChecklist: PackingItem[];
+  emergencyContacts: EmergencyContact[];
   survivalPhrases: SurvivalPhrase[];
   eurJpyRate: number; // e.g. 160
   tripStartDate: string; // Hardcoded "2026-12-20"
   tripEndDate: string; // "2027-01-05"
   selectedDate: string; // Current date in itinerary filter view
+  darkMode: boolean;
+  groupPinCode: string; // Default '2026'
+  isAuthenticated: boolean;
 }
