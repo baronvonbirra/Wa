@@ -2,7 +2,7 @@ import { Wa2State } from './wa2Types';
 
 export const INITIAL_WA2_STATE: Wa2State = {
   tripStartDate: "2026-12-20",
-  tripEndDate: "2027-01-05",
+  tripEndDate: "2027-01-14",
   selectedDate: "2026-12-20",
   eurJpyRate: 160.0,
   darkMode: false,
@@ -41,34 +41,108 @@ export const INITIAL_WA2_STATE: Wa2State = {
 
   accommodations: [
     {
-      id: "acc-1",
+      id: "acc-disney",
       city_id: "city-tokyo",
-      name: "Hotel Gracery Shinjuku",
-      address: "1-19-1 Kabukicho, Shinjuku-ku, Tokyo 160-8336",
+      segment: "Disney",
+      name: "Tokyo Disneyland Hotel",
+      address: "29-1 Maihama, Urayasu, Chiba 279-8505",
+      start_date: "2026-12-20",
+      end_date: "2026-12-21",
       check_in_time: "15:00",
       check_out_time: "11:00",
-      booking_code: "BK-TK-88291",
-      notes: "Cerca de la salida este de la estación de Shinjuku. Tiene la cabeza de Godzilla en la azotea."
+      booking_code: "BK-DISNEY-101",
+      notes: "Acceso directo a Disneyland Tokyo y DisneySea."
     },
     {
-      id: "acc-2",
+      id: "acc-tokyo1",
+      city_id: "city-tokyo",
+      segment: "Tokyo 1",
+      name: "Hotel Gracery Shinjuku",
+      address: "1-19-1 Kabukicho, Shinjuku-ku, Tokyo 160-8336",
+      start_date: "2026-12-22",
+      end_date: "2026-12-25",
+      check_in_time: "15:00",
+      check_out_time: "11:00",
+      booking_code: "BK-TK1-88291",
+      notes: "Cerca de la salida este de la estación de Shinjuku. Cabeza de Godzilla."
+    },
+    {
+      id: "acc-kawaguchiko",
+      city_id: "city-tokyo",
+      segment: "Kawaguchiko",
+      name: "Fuji Onsenji Yumedono Ryokan",
+      address: "6677 Funatsu, Fujikawaguchiko, Yamanashi",
+      start_date: "2026-12-26",
+      end_date: "2026-12-27",
+      check_in_time: "14:00",
+      check_out_time: "10:00",
+      booking_code: "BK-FUJI-303",
+      notes: "Ryokan tradicional con Onsen privado y vistas al Monte Fuji."
+    },
+    {
+      id: "acc-takayama",
       city_id: "city-kyoto",
+      segment: "Takayama",
+      name: "Takayama Ouan Ryokan",
+      address: "4-313 Hanasatomachi, Takayama, Gifu",
+      start_date: "2026-12-28",
+      end_date: "2026-12-29",
+      check_in_time: "15:00",
+      check_out_time: "10:00",
+      booking_code: "BK-TAK-404",
+      notes: "Suelo de tatami completo en todo el hotel y baños termales al aire libre."
+    },
+    {
+      id: "acc-kyoto",
+      city_id: "city-kyoto",
+      segment: "Kyoto",
       name: "Hotel Granvia Kyoto",
       address: "JR Kyoto Station Building, Karasuma St, Shimogyo Ward, Kyoto",
+      start_date: "2026-12-30",
+      end_date: "2027-01-02",
       check_in_time: "15:00",
       check_out_time: "11:00",
       booking_code: "BK-KY-77310",
       notes: "Ubicado directamente dentro del edificio de la Estación Central de Kioto."
     },
     {
-      id: "acc-3",
+      id: "acc-osaka",
       city_id: "city-osaka",
+      segment: "Osaka",
       name: "Cross Hotel Osaka",
       address: "2-2-18 Shinsaibashisuji, Chuo Ward, Osaka",
+      start_date: "2027-01-03",
+      end_date: "2027-01-07",
       check_in_time: "15:00",
       check_out_time: "11:00",
       booking_code: "BK-OS-99124",
       notes: "A solo 3 minutos a pie del famoso cartel de Glico en Dotonbori."
+    },
+    {
+      id: "acc-tokyo2",
+      city_id: "city-tokyo",
+      segment: "Tokyo 2",
+      name: "Park Hotel Tokyo (Shiodome)",
+      address: "Shiodome Media Tower 1-7-1 Higashi-Shinbashi, Minato-ku, Tokyo",
+      start_date: "2027-01-08",
+      end_date: "2027-01-13",
+      check_in_time: "15:00",
+      check_out_time: "11:00",
+      booking_code: "BK-TK2-55102",
+      notes: "Últimas compras y despedida de Tokio con vistas a la Torre de Tokio."
+    },
+    {
+      id: "acc-flight",
+      city_id: "city-tokyo",
+      segment: "Vuelo / Tránsito",
+      name: "Vuelo de Regreso a España (Llegada a Málaga)",
+      address: "Aeropuerto de Málaga-Costa del Sol (AGP)",
+      start_date: "2027-01-14",
+      end_date: "2027-01-14",
+      check_in_time: "08:00",
+      check_out_time: "18:00",
+      booking_code: "FLIGHT-AGP-2027",
+      notes: "Llegada el 14 de Enero a Málaga (Offset JST UTC+9)."
     }
   ],
 

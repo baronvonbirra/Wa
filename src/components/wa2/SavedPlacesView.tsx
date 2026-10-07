@@ -37,18 +37,26 @@ export const SavedPlacesView: React.FC = () => {
   const [googleMapsUrl, setGoogleMapsUrl] = useState('');
   const [notes, setNotes] = useState('');
 
-  // Categories definition
+  // Main Categorical Layers Filter List (Sitio, Restaurante, Tienda, Estación)
+  const categoryLayers = [
+    { id: 'all', label: 'Todas las Capas', icon: Filter },
+    { id: 'sightseeing', label: 'Sitio / Turismo', icon: Compass },
+    { id: 'ramen', label: 'Restaurante / Comida', icon: Utensils },
+    { id: 'shopping', label: 'Tienda / Compras', icon: ShoppingBag },
+    { id: 'konbini', label: 'Estación / Konbini', icon: Sparkles },
+  ];
+
   const categoriesList: { id: PlaceCategory; label: string; icon: any; color: string }[] = [
-    { id: 'ramen', label: 'Ramen', icon: Utensils, color: 'bg-amber-100 text-amber-800 border-amber-200' },
+    { id: 'ramen', label: 'Restaurantes', icon: Utensils, color: 'bg-amber-100 text-amber-800 border-amber-200' },
     { id: 'sushi', label: 'Sushi', icon: Utensils, color: 'bg-rose-100 text-rose-800 border-rose-200' },
-    { id: 'izakaya', label: 'Izakaya / Bar', icon: Utensils, color: 'bg-orange-100 text-orange-800 border-orange-200' },
-    { id: 'konbini', label: 'Konbini', icon: ShoppingBag, color: 'bg-blue-100 text-blue-800 border-blue-200' },
-    { id: 'anime', label: 'Anime / Manga', icon: Tv, color: 'bg-purple-100 text-purple-800 border-purple-200' },
+    { id: 'izakaya', label: 'Izakaya', icon: Utensils, color: 'bg-orange-100 text-orange-800 border-orange-200' },
+    { id: 'konbini', label: 'Estación / Konbini', icon: ShoppingBag, color: 'bg-blue-100 text-blue-800 border-blue-200' },
+    { id: 'anime', label: 'Anime / Tienda', icon: Tv, color: 'bg-purple-100 text-purple-800 border-purple-200' },
     { id: 'retro_gaming', label: 'Retro Gaming', icon: Gamepad2, color: 'bg-indigo-100 text-indigo-800 border-indigo-200' },
     { id: 'gachapon', label: 'Gachapon', icon: Gamepad2, color: 'bg-pink-100 text-pink-800 border-pink-200' },
-    { id: 'cafe', label: 'Café / Postres', icon: Coffee, color: 'bg-emerald-100 text-emerald-800 border-emerald-200' },
-    { id: 'shopping', label: 'Compras', icon: ShoppingBag, color: 'bg-teal-100 text-teal-800 border-teal-200' },
-    { id: 'sightseeing', label: 'Turismo', icon: Compass, color: 'bg-sky-100 text-sky-800 border-sky-200' },
+    { id: 'cafe', label: 'Café', icon: Coffee, color: 'bg-emerald-100 text-emerald-800 border-emerald-200' },
+    { id: 'shopping', label: 'Tienda / Compras', icon: ShoppingBag, color: 'bg-teal-100 text-teal-800 border-teal-200' },
+    { id: 'sightseeing', label: 'Sitio / Atracción', icon: Compass, color: 'bg-sky-100 text-sky-800 border-sky-200' },
   ];
 
   // Filtering places
@@ -177,31 +185,26 @@ export const SavedPlacesView: React.FC = () => {
           ))}
         </div>
 
-        {/* Category Filter Horizontal Pills */}
+        {/* Layer Selector Bar: Sitio, Restaurante, Tienda, Estación */}
         <div className="flex gap-1.5 overflow-x-auto pb-1 scrollbar-thin scrollbar-thumb-rose-200 border-t border-slate-100 pt-2">
-          <button
-            onClick={() => setSelectedCategory('all')}
-            className={`px-2.5 py-1 text-[11px] font-bold rounded-lg border flex-shrink-0 transition-all ${
-              selectedCategory === 'all'
-                ? 'bg-slate-800 text-white border-slate-900'
-                : 'bg-slate-100 text-slate-600 border-slate-200 hover:bg-slate-200'
-            }`}
-          >
-            Todas Categorías
-          </button>
-          {categoriesList.map(cat => {
-            const isSel = selectedCategory === cat.id;
+          <span className="text-[10px] font-extrabold text-slate-400 uppercase flex items-center gap-1 my-auto pr-1">
+            <Filter className="w-3 h-3" /> Capas:
+          </span>
+          {categoryLayers.map(layer => {
+            const isSel = selectedCategory === layer.id || (layer.id === 'ramen' && ['ramen', 'sushi', 'izakaya'].includes(selectedCategory)) || (layer.id === 'shopping' && ['shopping', 'anime', 'retro_gaming', 'gachapon'].includes(selectedCategory));
+            const LayerIcon = layer.icon;
             return (
               <button
-                key={cat.id}
-                onClick={() => setSelectedCategory(cat.id)}
-                className={`px-2.5 py-1 text-[11px] font-bold rounded-lg border flex-shrink-0 transition-all ${
+                key={layer.id}
+                onClick={() => setSelectedCategory(layer.id)}
+                className={`px-2.5 py-1 text-[11px] font-bold rounded-lg border flex-shrink-0 transition-all flex items-center gap-1 ${
                   isSel
-                    ? 'bg-slate-800 text-white border-slate-900'
+                    ? 'bg-rose-600 text-white border-rose-700 shadow-xs'
                     : 'bg-slate-50 text-slate-600 border-slate-200 hover:bg-slate-100'
                 }`}
               >
-                {cat.label}
+                <LayerIcon className="w-3 h-3" />
+                <span>{layer.label}</span>
               </button>
             );
           })}
