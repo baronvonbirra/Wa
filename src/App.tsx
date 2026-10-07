@@ -9,6 +9,7 @@ import { ItineraryView } from './components/wa2/ItineraryView';
 import { SavedPlacesView } from './components/wa2/SavedPlacesView';
 import { WishlistView } from './components/wa2/WishlistView';
 import { ToolsView } from './components/wa2/ToolsView';
+import { TasksView } from './components/wa2/TasksView';
 import { SurvivalPhrasesView } from './components/wa2/SurvivalPhrasesView';
 
 // Wa 1.0 Components
@@ -173,6 +174,7 @@ function Wa1Content({
 
 function MainAppContent() {
   const [wa2Tab, setWa2Tab] = useState<Wa2Tab>('itinerary');
+  const [toolsSubTab, setToolsSubTab] = useState<'converter' | 'packing' | 'docs' | 'emergency'>('converter');
   const [showWa1, setShowWa1] = useState<boolean>(false);
 
   // Wa 1.0 specific navigation state
@@ -183,6 +185,13 @@ function MainAppContent() {
     const found = DESTINATIONS_DATA.find(d => d.id === destId);
     if (found) {
       setSelectedDestination(found);
+    }
+  };
+
+  const handleNavigateWa2 = (tab: Wa2Tab, subTab?: string) => {
+    setWa2Tab(tab);
+    if (subTab && (subTab === 'converter' || subTab === 'packing' || subTab === 'docs' || subTab === 'emergency')) {
+      setToolsSubTab(subTab as any);
     }
   };
 
@@ -207,10 +216,11 @@ function MainAppContent() {
 
       {/* Main View Module Content */}
       <main className="flex-grow">
-        {wa2Tab === 'itinerary' && <ItineraryView />}
+        {wa2Tab === 'itinerary' && <ItineraryView onNavigateTab={handleNavigateWa2} />}
         {wa2Tab === 'places' && <SavedPlacesView />}
         {wa2Tab === 'wishlist' && <WishlistView />}
-        {wa2Tab === 'tools' && <ToolsView />}
+        {wa2Tab === 'tools' && <ToolsView initialSubTab={toolsSubTab} />}
+        {wa2Tab === 'tasks' && <TasksView />}
         {wa2Tab === 'walearn' && (
           <SurvivalPhrasesView onOpenWaLearn={() => setShowWa1(true)} />
         )}

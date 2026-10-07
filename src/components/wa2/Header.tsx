@@ -162,26 +162,16 @@ export const Header: React.FC = () => {
 
             {/* Dark Mode Toggle */}
             <button
-              onClick={toggleDarkMode}
+              onClick={() => {
+                toggleDarkMode();
+                document.documentElement.classList.toggle('dark');
+              }}
               className="p-1.5 rounded-full bg-slate-100 dark:bg-slate-700 text-slate-600 dark:text-slate-200 hover:bg-slate-200 transition-colors"
               title="Cambiar Modo Oscuro"
             >
               <Moon className="w-3.5 h-3.5" />
             </button>
 
-            {/* PIN Access Indicator */}
-            <button
-              onClick={() => setShowPinModal(true)}
-              className={`flex items-center gap-1 text-[10px] font-black px-2 py-1 rounded-full border transition-all ${
-                waState.isAuthenticated
-                  ? 'bg-emerald-50 text-emerald-700 border-emerald-200 dark:bg-emerald-950/50 dark:text-emerald-300 dark:border-emerald-800'
-                  : 'bg-rose-50 text-rose-700 border-rose-200 dark:bg-rose-950/50 dark:text-rose-300 dark:border-rose-800'
-              }`}
-              title="Acceso Compartido por PIN"
-            >
-              {waState.isAuthenticated ? <Unlock className="w-3 h-3" /> : <Lock className="w-3 h-3" />}
-              <span>{waState.isAuthenticated ? 'Grupo' : 'PIN'}</span>
-            </button>
 
             {/* Online Status */}
             <div className={`flex items-center gap-1 text-[10px] font-black px-2 py-1 rounded-full border ${
@@ -229,25 +219,6 @@ export const Header: React.FC = () => {
           </div>
         </div>
 
-        {/* Quick Current Day Summary Sub-banner */}
-        <div className="mt-2 flex items-center justify-between text-xs bg-white dark:bg-slate-800 border border-rose-100 dark:border-slate-700 p-2 rounded-xl shadow-xs gap-2">
-          <div className="flex items-center gap-1.5 text-slate-700 dark:text-slate-200 truncate">
-            <MapPin className="w-3.5 h-3.5 text-rose-500 flex-shrink-0" />
-            <span className="font-bold truncate">{activeCity?.name || 'Tokio'}</span>
-          </div>
-
-          {activeAccommodation && (
-            <div className="flex items-center gap-1.5 text-slate-600 dark:text-slate-300 truncate border-l border-slate-100 dark:border-slate-700 pl-2">
-              <Hotel className="w-3.5 h-3.5 text-amber-500 flex-shrink-0" />
-              <span className="font-semibold text-[11px] truncate">{activeAccommodation.name}</span>
-            </div>
-          )}
-
-          <div className="flex items-center gap-1 text-[10px] text-rose-600 dark:text-rose-400 bg-rose-50 dark:bg-rose-950/50 font-black px-2 py-0.5 rounded-md flex-shrink-0 border border-rose-100 dark:border-rose-900">
-            <Calendar className="w-3 h-3" />
-            <span>{waState.selectedDate.split('-').slice(1).join('/')}</span>
-          </div>
-        </div>
       </div>
 
       {/* PIN Verification Modal */}

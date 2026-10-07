@@ -73,7 +73,7 @@ export const SavedPlacesView: React.FC = () => {
       setEditingPlace(placeToEdit);
       setName(placeToEdit.name);
       setCityId(placeToEdit.city_id);
-      setCategory(placeToEdit.category);
+      setCategory(placeToEdit.category as PlaceCategory);
       setGoogleMapsUrl(placeToEdit.google_maps_url);
       setNotes(placeToEdit.notes || '');
     } else {
@@ -114,7 +114,7 @@ export const SavedPlacesView: React.FC = () => {
     setShowModal(false);
   };
 
-  const getCategoryInfo = (catId: PlaceCategory) => {
+  const getCategoryInfo = (catId: PlaceCategory | string) => {
     return categoriesList.find(c => c.id === catId) || {
       id: catId,
       label: catId,

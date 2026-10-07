@@ -1,6 +1,7 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import { useWa2 } from '../../state/Wa2Context';
-import { TravelDoc, PackingCategory } from '../../state/wa2Types';
+import { supabase } from '../../services/supabase';
+import { TravelDoc, PackingCategory, PackingListItem } from '../../state/wa2Types';
 import {
   Calculator,
   QrCode,
@@ -12,7 +13,6 @@ import {
   ArrowRightLeft,
   CheckSquare,
   Square,
-  PhoneCall,
   Luggage,
   ShieldAlert,
   Delete,
@@ -20,20 +20,27 @@ import {
   Phone
 } from 'lucide-react';
 
-export const ToolsView: React.FC = () => {
+interface ToolsViewProps {
+  initialSubTab?: 'converter' | 'packing' | 'docs' | 'emergency';
+}
+
+export const ToolsView: React.FC<ToolsViewProps> = ({ initialSubTab = 'converter' }) => {
   const {
     waState,
     setEurJpyRate,
     addTravelDoc,
     deleteTravelDoc,
-    togglePackingItem,
-    addPackingItem,
-    deletePackingItem,
     addEmergencyContact,
     deleteEmergencyContact
   } = useWa2();
 
-  const [activeSubTab, setActiveSubTab] = useState<'converter' | 'packing' | 'docs' | 'emergency'>('converter');
+  const [activeSubTab, setActiveSubTab] = useState<'converter' | 'packing' | 'docs' | 'emergency'>(initialSubTab);
+
+  useEffect(() => {
+    if (initialSubTab) {
+      setActiveSubTab(initialSubTab);
+    }
+  }, [initialSubTab]);
 
   // Converter State
   const [conversionDirection, setConversionDirection] = useState<'jpyToEur' | 'eurToJpy'>('jpyToEur');
@@ -42,10 +49,13 @@ export const ToolsView: React.FC = () => {
   const [editingRate, setEditingRate] = useState<boolean>(false);
   const [customRate, setCustomRate] = useState<string>(waState.eurJpyRate.toString());
 
-  // Packing Checklist State
-  const [selectedPackingCategory, setSelectedPackingCategory] = useState<string>('all');
+  // Packing Checklist State connected to packing_list_items
+  const [packingItems, setPackingItems] = useState<PackingListItem[]>([]);
+  const [filterPerson, setFilterPerson] = useState<string>('Todos');
   const [newPackingName, setNewPackingName] = useState('');
+  const [newPackingQty, setNewPackingQty] = useState<number>(1);
   const [newPackingCategory, setNewPackingCategory] = useState<PackingCategory>('General');
+  const [newPackingAssigned, setNewPackingAssigned] = useState<string>('Todos');
   const [showAddPackingModal, setShowAddPackingModal] = useState<boolean>(false);
 
   // Travel Docs State
@@ -61,6 +71,37 @@ export const ToolsView: React.FC = () => {
   const [contactPhone, setContactPhone] = useState('');
   const [contactAddress, setContactAddress] = useState('');
   const [contactNotes, setContactNotes] = useState('');
+
+  // Fetch packing_list_items from Supabase or fallback
+  useEffect(() => {
+    fetchPackingItems();
+  }, [waState.packingListItems]);
+
+  const fetchPackingItems = async () => {
+    const { data } = await supabase
+      .from('packing_list_items')
+      .select('*')
+      .order('category', { ascending: true });
+    if (data && data.length > 0) {
+      setPackingItems(data);
+    } else if (waState.packingListItems) {
+      setPackingItems(waState.packingListItems);
+    }
+  };
+
+  const togglePacked = async (id: string, currentPacked?: boolean) => {
+    const newPacked = !currentPacked;
+    // Optimistic local update
+    setPackingItems(prev =>
+      prev.map(item => item.id === id ? { ...item, is_packed: newPacked } : item)
+    );
+
+    // Database / Supabase persistence
+    await supabase
+      .from('packing_list_items')
+      .update({ is_packed: newPacked })
+      .eq('id', id);
+  };
 
   // Keypad Handlers for Converter
   const handleKeyPress = (val: string) => {
@@ -94,7 +135,6 @@ export const ToolsView: React.FC = () => {
       taxSavingsEur = taxSavingsJpy / waState.eurJpyRate;
     }
   } else {
-    // EUR to JPY
     const eurAmount = rawNum;
     let jpyCalc = eurAmount * waState.eurJpyRate;
     if (applyTaxFree) {
@@ -118,13 +158,19 @@ export const ToolsView: React.FC = () => {
     e.preventDefault();
     if (!newPackingName.trim()) return;
 
-    addPackingItem({
+    const newItem: PackingListItem = {
+      id: 'pli-' + Date.now(),
+      item: newPackingName.trim(),
       item_name: newPackingName.trim(),
+      quantity: newPackingQty || 1,
       category: newPackingCategory,
-      checked: false
-    });
+      assigned_to: newPackingAssigned,
+      is_packed: false
+    };
 
+    setPackingItems(prev => [...prev, newItem]);
     setNewPackingName('');
+    setNewPackingQty(1);
     setShowAddPackingModal(false);
   };
 
@@ -165,13 +211,16 @@ export const ToolsView: React.FC = () => {
     setShowAddContactModal(false);
   };
 
-  // Packing Checklist Filtering
-  const packingCategoriesList: PackingCategory[] = ['Documentación', 'Electrónica', 'Ropa', 'Botiquín', 'General'];
-  const filteredPackingItems = waState.packingChecklist.filter(item => {
-    return selectedPackingCategory === 'all' || item.category === selectedPackingCategory;
-  });
+  // Packing Checklist Filtering by Person
+  const filteredPackingItems = packingItems.filter(item =>
+    filterPerson === 'Todos' || item.assigned_to === filterPerson || item.assigned_to === 'Todos'
+  );
 
-  const checkedPackingCount = waState.packingChecklist.filter(i => i.checked).length;
+  // Dynamic Progress Counter
+  const packedCount = filteredPackingItems.filter(i => i.is_packed).length;
+  const progressPercentage = filteredPackingItems.length ? Math.round((packedCount / filteredPackingItems.length) * 100) : 0;
+
+  const packingCategoriesList: PackingCategory[] = ['Documentación', 'Electrónica', 'Ropa', 'Botiquín', 'General'];
 
   return (
     <div className="pb-24 pt-2 max-w-md mx-auto px-4 space-y-4">
@@ -231,7 +280,6 @@ export const ToolsView: React.FC = () => {
         <div className="space-y-3">
           {/* Main Display Box */}
           <div className="bg-gradient-to-br from-slate-900 via-slate-800 to-rose-950 text-white rounded-3xl p-4 shadow-xl border-2 border-rose-500/30">
-            {/* Top Bar with Rate & Tax-Free Switch */}
             <div className="flex items-center justify-between border-b border-slate-700 pb-2.5 mb-3">
               <div className="flex items-center gap-1.5">
                 <span className="text-[10px] text-slate-400 font-bold uppercase">Tipo de cambio:</span>
@@ -260,7 +308,6 @@ export const ToolsView: React.FC = () => {
                 )}
               </div>
 
-              {/* Direction Toggle */}
               <button
                 onClick={() => {
                   setConversionDirection(prev => prev === 'jpyToEur' ? 'eurToJpy' : 'jpyToEur');
@@ -273,7 +320,6 @@ export const ToolsView: React.FC = () => {
               </button>
             </div>
 
-            {/* Input Value Display */}
             <div className="text-right py-1">
               <span className="text-[10px] text-slate-400 font-extrabold uppercase block">
                 {conversionDirection === 'jpyToEur' ? 'Importe en Yenes (JPY)' : 'Importe en Euros (EUR)'}
@@ -283,7 +329,6 @@ export const ToolsView: React.FC = () => {
               </strong>
             </div>
 
-            {/* Converted Output Display */}
             <div className="mt-2 pt-2 border-t border-slate-700/80 flex items-center justify-between">
               <div>
                 <span className="text-[10px] text-rose-300 font-extrabold uppercase block">
@@ -294,7 +339,6 @@ export const ToolsView: React.FC = () => {
                 </strong>
               </div>
 
-              {/* Tax-Free Toggle Button */}
               <button
                 onClick={() => setApplyTaxFree(!applyTaxFree)}
                 className={`px-3 py-1.5 rounded-2xl text-xs font-black border transition-all flex items-center gap-1.5 ${
@@ -308,7 +352,6 @@ export const ToolsView: React.FC = () => {
               </button>
             </div>
 
-            {/* Tax Savings Banner */}
             {applyTaxFree && (
               <div className="mt-3 bg-emerald-500/20 border border-emerald-500/50 rounded-2xl p-2 text-center text-xs text-emerald-200 font-bold">
                 🎉 ¡Ahorro Tax-Free del 10%: <strong>¥{Math.round(taxSavingsJpy).toLocaleString()} (≈ €{taxSavingsEur.toFixed(2)})</strong>!
@@ -316,7 +359,6 @@ export const ToolsView: React.FC = () => {
             )}
           </div>
 
-          {/* Keypad Preset Buttons */}
           <div className="grid grid-cols-3 gap-2">
             <button
               onClick={() => handleAddQuickAmount(1000)}
@@ -338,7 +380,6 @@ export const ToolsView: React.FC = () => {
             </button>
           </div>
 
-          {/* Keypad */}
           <div className="bg-white dark:bg-slate-800 rounded-3xl p-3 shadow-sm border border-slate-200 dark:border-slate-700 grid grid-cols-3 gap-2">
             {['7', '8', '9', '4', '5', '6', '1', '2', '3', 'C', '0', 'backspace'].map((key) => {
               const isClear = key === 'C';
@@ -366,16 +407,12 @@ export const ToolsView: React.FC = () => {
 
       {/* PACKING CHECKLIST SECTION */}
       {activeSubTab === 'packing' && (
-        <div className="space-y-3">
-          {/* Header & Add Button */}
+        <div className="space-y-4">
           <div className="flex items-center justify-between">
-            <div>
-              <h2 className="text-base font-black text-slate-800 dark:text-white uppercase tracking-wide flex items-center gap-1.5">
-                <Luggage className="w-4 h-4 text-rose-500" />
-                Lista de Equipaje ({checkedPackingCount}/{waState.packingChecklist.length})
-              </h2>
-              <p className="text-[10px] text-slate-400 font-bold">Preparativos y maletas sincronizados</p>
-            </div>
+            <h1 className="text-xl font-black text-slate-800 dark:text-white flex items-center gap-2">
+              <Luggage className="w-5 h-5 text-rose-500" />
+              <span>📋 Maleta & Equipaje</span>
+            </h1>
 
             <button
               onClick={() => setShowAddPackingModal(true)}
@@ -386,77 +423,80 @@ export const ToolsView: React.FC = () => {
             </button>
           </div>
 
-          {/* Category Filter Pills */}
-          <div className="flex gap-1.5 overflow-x-auto pb-1 scrollbar-thin scrollbar-thumb-rose-200">
-            <button
-              onClick={() => setSelectedPackingCategory('all')}
-              className={`px-3 py-1 text-xs font-black rounded-xl border flex-shrink-0 transition-all ${
-                selectedPackingCategory === 'all'
-                  ? 'bg-rose-500 text-white border-rose-600 shadow-xs'
-                  : 'bg-white dark:bg-slate-800 text-slate-600 dark:text-slate-300 border-slate-200 dark:border-slate-700 hover:bg-rose-50'
-              }`}
-            >
-              Todos ({waState.packingChecklist.length})
-            </button>
-            {packingCategoriesList.map(cat => (
+          {/* Person Filters (Papi, Mami, Lily, James, Todos) */}
+          <div className="flex gap-2 overflow-x-auto pb-1 scrollbar-thin">
+            {['Todos', 'Papi', 'Mami', 'Lily', 'James'].map(person => (
               <button
-                key={cat}
-                onClick={() => setSelectedPackingCategory(cat)}
-                className={`px-3 py-1 text-xs font-black rounded-xl border flex-shrink-0 transition-all ${
-                  selectedPackingCategory === cat
-                    ? 'bg-rose-500 text-white border-rose-600 shadow-xs'
-                    : 'bg-white dark:bg-slate-800 text-slate-600 dark:text-slate-300 border-slate-200 dark:border-slate-700 hover:bg-rose-50'
+                key={person}
+                onClick={() => setFilterPerson(person)}
+                className={`px-3.5 py-1.5 rounded-full text-xs font-black transition-all flex-shrink-0 ${
+                  filterPerson === person
+                    ? 'bg-rose-500 text-white shadow-xs scale-105'
+                    : 'bg-slate-200 dark:bg-slate-800 text-slate-700 dark:text-slate-300 hover:bg-slate-300 dark:hover:bg-slate-700'
                 }`}
               >
-                {cat}
+                {person}
               </button>
             ))}
           </div>
 
+          {/* Dynamic Progress Bar */}
+          <div className="bg-slate-900 text-white rounded-2xl p-3.5 border border-slate-800 shadow-sm">
+            <div className="flex justify-between text-xs font-bold mb-1.5">
+              <span>Progreso ({filterPerson})</span>
+              <span>{packedCount} / {filteredPackingItems.length} ({progressPercentage}%)</span>
+            </div>
+            <div className="w-full bg-slate-800 h-2.5 rounded-full overflow-hidden">
+              <div
+                className="bg-emerald-500 h-2.5 rounded-full transition-all duration-300"
+                style={{ width: `${progressPercentage}%` }}
+              ></div>
+            </div>
+          </div>
+
           {/* Packing Items List */}
           <div className="space-y-2">
-            {filteredPackingItems.map(item => (
-              <div
-                key={item.id}
-                className={`bg-white dark:bg-slate-800 border-2 rounded-2xl p-3 shadow-xs flex items-center justify-between transition-all ${
-                  item.checked
-                    ? 'border-emerald-200 dark:border-emerald-800 bg-emerald-50/40 dark:bg-emerald-950/20'
-                    : 'border-slate-200 dark:border-slate-700'
-                }`}
-              >
-                <div
-                  onClick={() => togglePackingItem(item.id)}
-                  className="flex items-center gap-2.5 cursor-pointer flex-grow"
+            {filteredPackingItems.length === 0 ? (
+              <p className="text-center text-xs text-slate-400 py-4 italic">
+                No hay ítems en la maleta para {filterPerson}.
+              </p>
+            ) : (
+              filteredPackingItems.map(item => (
+                <label
+                  key={item.id}
+                  className="flex items-center justify-between p-3 bg-white dark:bg-slate-800 border border-slate-200 dark:border-slate-700 rounded-xl cursor-pointer shadow-2xs hover:border-rose-300 transition-all"
                 >
-                  {item.checked ? (
-                    <CheckSquare className="w-5 h-5 text-emerald-600 dark:text-emerald-400 flex-shrink-0" />
-                  ) : (
-                    <Square className="w-5 h-5 text-slate-300 dark:text-slate-600 flex-shrink-0" />
-                  )}
-                  <div>
-                    <span className={`text-xs font-black block ${
-                      item.checked ? 'line-through text-slate-400 dark:text-slate-500' : 'text-slate-800 dark:text-white'
-                    }`}>
-                      {item.item_name}
-                    </span>
-                    <span className="text-[9px] font-bold text-slate-400 uppercase bg-slate-100 dark:bg-slate-700 px-1.5 py-0.5 rounded inline-block mt-0.5">
-                      {item.category}
+                  <div className="flex items-center gap-3">
+                    <input
+                      type="checkbox"
+                      checked={Boolean(item.is_packed)}
+                      onChange={() => togglePacked(item.id, item.is_packed)}
+                      className="w-5 h-5 accent-rose-500 rounded cursor-pointer"
+                    />
+                    <span className={`text-xs font-extrabold ${item.is_packed ? 'line-through text-slate-400 dark:text-slate-500' : 'text-slate-800 dark:text-white'}`}>
+                      {item.item || item.item_name} {item.quantity > 1 && <span className="text-xs text-rose-500 font-black ml-1">x{item.quantity}</span>}
                     </span>
                   </div>
-                </div>
 
-                <button
-                  onClick={() => {
-                    if (confirm('¿Eliminar este ítem del equipaje?')) {
-                      deletePackingItem(item.id);
-                    }
-                  }}
-                  className="text-slate-300 hover:text-rose-600 p-1"
-                >
-                  <Trash2 className="w-3.5 h-3.5" />
-                </button>
-              </div>
-            ))}
+                  <div className="flex items-center gap-2">
+                    <span className="text-[10px] font-black px-2 py-0.5 rounded bg-slate-100 dark:bg-slate-700 text-slate-600 dark:text-slate-300 uppercase">
+                      {item.assigned_to}
+                    </span>
+                    <button
+                      type="button"
+                      onClick={(e) => {
+                        e.preventDefault();
+                        e.stopPropagation();
+                        setPackingItems(prev => prev.filter(p => p.id !== item.id));
+                      }}
+                      className="text-slate-300 hover:text-rose-600 p-0.5"
+                    >
+                      <Trash2 className="w-3.5 h-3.5" />
+                    </button>
+                  </div>
+                </label>
+              ))
+            )}
           </div>
         </div>
       )}
@@ -464,7 +504,6 @@ export const ToolsView: React.FC = () => {
       {/* TRAVEL DOCUMENTS & QRS SECTION */}
       {activeSubTab === 'docs' && (
         <div className="space-y-3">
-          {/* Header & Add Button */}
           <div className="flex items-center justify-between">
             <div>
               <h2 className="text-base font-black text-slate-800 dark:text-white uppercase tracking-wide flex items-center gap-1.5">
@@ -483,7 +522,6 @@ export const ToolsView: React.FC = () => {
             </button>
           </div>
 
-          {/* QRs Gallery Grid */}
           <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
             {waState.travelDocs.map((doc) => (
               <div
@@ -538,7 +576,6 @@ export const ToolsView: React.FC = () => {
       {/* EMERGENCY CONTACTS SECTION */}
       {activeSubTab === 'emergency' && (
         <div className="space-y-3">
-          {/* Header & Add Button */}
           <div className="flex items-center justify-between">
             <div>
               <h2 className="text-base font-black text-slate-800 dark:text-white uppercase tracking-wide flex items-center gap-1.5">
@@ -557,7 +594,6 @@ export const ToolsView: React.FC = () => {
             </button>
           </div>
 
-          {/* Emergency Cards Grid */}
           <div className="space-y-2.5">
             {waState.emergencyContacts.map((contact) => (
               <div
@@ -595,7 +631,6 @@ export const ToolsView: React.FC = () => {
                   </p>
                 )}
 
-                {/* Direct Dial Link */}
                 <div className="pt-1 flex justify-end">
                   <a
                     href={`tel:${contact.phone.replace(/\s+/g, '')}`}
@@ -665,7 +700,7 @@ export const ToolsView: React.FC = () => {
 
             <h3 className="text-base font-black text-slate-800 dark:text-white flex items-center gap-1.5 mb-3">
               <Luggage className="w-4 h-4 text-rose-500" />
-              Añadir Ítem al Equipaje
+              Añadir Ítem a la Maleta
             </h3>
 
             <form onSubmit={handleSavePackingItem} className="space-y-3 text-xs">
@@ -674,11 +709,37 @@ export const ToolsView: React.FC = () => {
                 <input
                   type="text"
                   required
-                  placeholder="Ej: Pasaportes, Batería Externa..."
+                  placeholder="Ej: Pasaportes, Camisetas..."
                   value={newPackingName}
                   onChange={e => setNewPackingName(e.target.value)}
                   className="w-full px-3 py-2 border border-slate-200 dark:border-slate-700 dark:bg-slate-900 dark:text-white rounded-xl font-semibold focus:outline-none focus:border-rose-500"
                 />
+              </div>
+
+              <div className="grid grid-cols-2 gap-2">
+                <div>
+                  <label className="block font-bold text-slate-700 dark:text-slate-300 mb-1">Cantidad</label>
+                  <input
+                    type="number"
+                    min={1}
+                    value={newPackingQty}
+                    onChange={e => setNewPackingQty(Number(e.target.value))}
+                    className="w-full px-3 py-2 border border-slate-200 dark:border-slate-700 dark:bg-slate-900 dark:text-white rounded-xl font-semibold focus:outline-none focus:border-rose-500"
+                  />
+                </div>
+
+                <div>
+                  <label className="block font-bold text-slate-700 dark:text-slate-300 mb-1">Asignado A</label>
+                  <select
+                    value={newPackingAssigned}
+                    onChange={e => setNewPackingAssigned(e.target.value)}
+                    className="w-full px-3 py-2 border border-slate-200 dark:border-slate-700 dark:bg-slate-900 dark:text-white rounded-xl font-semibold focus:outline-none focus:border-rose-500"
+                  >
+                    {['Todos', 'Papi', 'Mami', 'Lily', 'James'].map(p => (
+                      <option key={p} value={p}>{p}</option>
+                    ))}
+                  </select>
+                </div>
               </div>
 
               <div>
