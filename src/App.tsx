@@ -207,7 +207,7 @@ function MainAppContent() {
 
       {/* Main View Module Content */}
       <main className="flex-grow">
-        {wa2Tab === 'itinerary' && <ItineraryView />}
+        {wa2Tab === 'itinerary' && <ItineraryView onNavigateTab={setWa2Tab} />}
         {wa2Tab === 'places' && <SavedPlacesView />}
         {wa2Tab === 'wishlist' && <WishlistView />}
         {wa2Tab === 'tools' && <ToolsView />}

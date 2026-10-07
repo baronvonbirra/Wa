@@ -11,6 +11,11 @@ body {
   overflow-x: hidden;
 }
 
+.dark body {
+  background-color: #0F172A;
+  color: #F8FAFC;
+}
+
 /* Playful kid-friendly custom styles */
 .bubbly-shadow {
   box-shadow: 0 8px 0px 0px rgba(0, 0, 0, 0.08);
