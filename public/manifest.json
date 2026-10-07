@@ -1,0 +1,17 @@
+{
+  "name": "Wa 2.0 — Asistente de Viaje a Japón",
+  "short_name": "Wa 2.0",
+  "description": "PWA para la gestión e itinerario en tiempo real durante un viaje a Japón.",
+  "start_url": "./",
+  "display": "standalone",
+  "orientation": "portrait",
+  "background_color": "#FFF5F5",
+  "theme_color": "#DC2626",
+  "icons": [
+    {
+      "src": "data:image/svg+xml,<svg xmlns=%22http://www.w3.org/2000/svg%22 viewBox=%220 0 100 100%22><text y=%22.9em%22 font-size=%2290%22>🏯</text></svg>",
+      "sizes": "192x192 512x512",
+      "type": "image/svg+xml"
+    }
+  ]
+}
