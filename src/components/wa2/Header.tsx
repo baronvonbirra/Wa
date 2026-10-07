@@ -60,12 +60,17 @@ export const Header: React.FC = () => {
     currentTripDay = Math.max(1, dayDiff + 1);
   }
 
-  // Active city & accommodation
+  // Active accommodation crossing selectedDate with stay segments (Disney, Tokyo 1, Kawaguchiko, Takayama, Kyoto, Osaka, Tokyo 2, Flight)
+  const activeAccommodation = waState.accommodations.find(a => {
+    if (a.start_date && a.end_date) {
+      return waState.selectedDate >= a.start_date && waState.selectedDate <= a.end_date;
+    }
+    return false;
+  }) || waState.accommodations[0];
+
   const activeCity = waState.cities.find(c => {
     return waState.selectedDate >= c.start_date && waState.selectedDate <= c.end_date;
   }) || waState.cities[0];
-
-  const activeAccommodation = waState.accommodations.find(a => a.city_id === activeCity?.id);
 
   // Today's activities
   const todayItems = waState.itineraryItems.filter(i => i.date === waState.selectedDate);
@@ -189,33 +194,36 @@ export const Header: React.FC = () => {
           </div>
         </div>
 
-        {/* Dynamic Trip Countdown Banner */}
+        {/* Dynamic Accommodation & Flight Timeline Banner */}
         <div className="mt-2.5 bg-gradient-to-r from-rose-500 via-red-500 to-rose-600 text-white rounded-2xl p-3 shadow-md border border-rose-400/50 relative overflow-hidden">
           <div className="absolute -right-4 -bottom-4 opacity-10 text-6xl font-black select-none pointer-events-none">
-            🇯🇵
+            🏯
           </div>
 
           <div className="relative z-10 flex items-center justify-between">
             <div>
-              <span className="text-[10px] font-extrabold uppercase tracking-wider bg-white/20 px-2 py-0.5 rounded-full inline-block mb-1">
-                {isTripActive ? '¡En Japón!' : 'Cuenta atrás para el Viaje'}
-              </span>
-              <h2 className="text-lg font-black tracking-tight flex items-center gap-1.5">
-                {isTripActive ? (
-                  <>⛩️ Día {currentTripDay} en Japón</>
-                ) : (
-                  <>✈️ {daysUntilDeparture > 0 ? `${daysUntilDeparture} días` : '¡Hoy salimos!'} para Japón</>
+              <div className="flex items-center gap-1.5 mb-1">
+                <span className="text-[10px] font-extrabold uppercase tracking-wider bg-white/20 px-2 py-0.5 rounded-full inline-block">
+                  {activeAccommodation?.segment ? `Tramo: ${activeAccommodation.segment}` : 'Viaje a Japón'}
+                </span>
+                {waState.selectedDate === "2027-01-14" && (
+                  <span className="text-[10px] font-extrabold uppercase bg-amber-400 text-amber-950 px-2 py-0.5 rounded-full">
+                    ✈️ Llegada Málaga 14 Ene
+                  </span>
                 )}
+              </div>
+              <h2 className="text-base font-black tracking-tight flex items-center gap-1.5">
+                🏨 {activeAccommodation?.name || 'Hotel Gracery Shinjuku'}
               </h2>
-              <p className="text-[11px] text-rose-100 font-medium">
-                Salida: 20 de Diciembre, 2026 • {activeCity ? activeCity.name : 'Tokio'}
+              <p className="text-[11px] text-rose-100 font-medium truncate max-w-[240px]">
+                {activeAccommodation?.address}
               </p>
             </div>
 
             <div className="text-right bg-white/10 backdrop-blur-sm p-2 rounded-xl border border-white/20 flex-shrink-0">
-              <span className="text-[9px] block text-rose-100 font-bold uppercase">Progreso Hoy</span>
-              <strong className="text-base font-black text-white">
-                {doneCount}/{todayItems.length}
+              <span className="text-[9px] block text-rose-100 font-bold uppercase">Check-in</span>
+              <strong className="text-sm font-black text-white">
+                {activeAccommodation?.check_in_time || '15:00'}
               </strong>
             </div>
           </div>

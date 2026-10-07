@@ -76,22 +76,33 @@ export const ItineraryView: React.FC = () => {
 
   const tripDates = generateTripDates();
 
-  // Active city & accommodation
+  const [activeTabMode, setActiveTabMode] = useState<'dated' | 'unassigned'>('dated');
+
+  // Active city & accommodation based on selectedDate or accommodation dates
+  const activeAccommodation = waState.accommodations.find(a => {
+    if (a.start_date && a.end_date) {
+      return waState.selectedDate >= a.start_date && waState.selectedDate <= a.end_date;
+    }
+    return false;
+  }) || waState.accommodations[0];
+
   const activeCity = waState.cities.find(c => {
     return waState.selectedDate >= c.start_date && waState.selectedDate <= c.end_date;
   }) || waState.cities[0];
 
-  const activeAccommodation = waState.accommodations.find(a => a.city_id === activeCity?.id);
-
   // Itinerary items for current selected date sorted by time or order
   const currentItems = waState.itineraryItems
-    .filter(item => item.date === waState.selectedDate)
+    .filter(item => !item.is_unassigned && (item.date === waState.selectedDate || item.visit_date === waState.selectedDate))
     .sort((a, b) => {
       if (a.orden !== undefined && b.orden !== undefined) {
         return a.orden - b.orden;
       }
       return (a.time_start || '00:00').localeCompare(b.time_start || '00:00');
     });
+
+  // Unassigned / Optional POIs (Tiendas, Restaurantes, etc. without specific date)
+  const unassignedItems = waState.itineraryItems.filter(item => item.is_unassigned || !item.date);
+  const unassignedSavedPlaces = waState.savedPlaces.filter(p => !p.visited);
 
   const handleOpenAddModal = (itemToEdit?: ItineraryItem) => {
     if (itemToEdit) {
@@ -214,92 +225,150 @@ export const ItineraryView: React.FC = () => {
 
   return (
     <div className="pb-24 pt-2 max-w-md mx-auto px-4 space-y-4">
-      {/* Horizontal Day & Date Filter Bar */}
-      <div className="bg-white rounded-2xl p-2.5 shadow-sm border border-rose-100">
-        <div className="flex items-center justify-between mb-2 px-1">
-          <span className="text-xs font-black text-slate-800 flex items-center gap-1">
-            <Calendar className="w-3.5 h-3.5 text-rose-500" />
-            Días del Viaje
-          </span>
-          <span className="text-[10px] text-slate-400 font-extrabold uppercase">
-            {activeCity?.name}
-          </span>
-        </div>
-
-        <div className="flex gap-2 overflow-x-auto pb-1 scrollbar-thin scrollbar-thumb-rose-200">
-          {tripDates.map(item => {
-            const isSelected = item.dateStr === waState.selectedDate;
-            return (
-              <button
-                key={item.dateStr}
-                onClick={() => setSelectedDate(item.dateStr)}
-                className={`flex-shrink-0 flex flex-col items-center justify-center px-3 py-2 rounded-xl transition-all duration-150 border ${
-                  isSelected
-                    ? 'bg-rose-500 text-white border-rose-600 shadow-md scale-105'
-                    : 'bg-slate-50 hover:bg-rose-50 text-slate-600 border-slate-200 hover:border-rose-200'
-                }`}
-              >
-                <span className={`text-[9px] font-black uppercase ${isSelected ? 'text-rose-100' : 'text-slate-400'}`}>
-                  Día {item.dayNum}
-                </span>
-                <strong className="text-xs font-black mt-0.5 whitespace-nowrap">
-                  {item.dayLabel}
-                </strong>
-              </button>
-            );
-          })}
-        </div>
+      {/* View Switch Tabs: Por Fecha Exacta vs Sin Fecha / Opcionales */}
+      <div className="grid grid-cols-2 bg-slate-200/80 dark:bg-slate-800 p-1 rounded-2xl border border-slate-300 dark:border-slate-700">
+        <button
+          onClick={() => setActiveTabMode('dated')}
+          className={`py-2 text-xs font-black rounded-xl transition-all flex items-center justify-center gap-1.5 ${
+            activeTabMode === 'dated'
+              ? 'bg-rose-500 text-white shadow-md'
+              : 'text-slate-700 dark:text-slate-300 hover:text-slate-900'
+          }`}
+        >
+          <Calendar className="w-4 h-4" />
+          <span>Fechas del Viaje</span>
+        </button>
+        <button
+          onClick={() => setActiveTabMode('unassigned')}
+          className={`py-2 text-xs font-black rounded-xl transition-all flex items-center justify-center gap-1.5 ${
+            activeTabMode === 'unassigned'
+              ? 'bg-rose-500 text-white shadow-md'
+              : 'text-slate-700 dark:text-slate-300 hover:text-slate-900'
+          }`}
+        >
+          <Sparkles className="w-4 h-4" />
+          <span>Sin fecha / Opcionales</span>
+        </button>
       </div>
+
+      {activeTabMode === 'dated' && (
+        /* Horizontal Day & Date Filter Bar */
+        <div className="bg-white dark:bg-slate-800 rounded-2xl p-2.5 shadow-sm border border-rose-100 dark:border-slate-700">
+          <div className="flex items-center justify-between mb-2 px-1">
+            <span className="text-xs font-black text-slate-800 dark:text-white flex items-center gap-1">
+              <Calendar className="w-3.5 h-3.5 text-rose-500" />
+              Filtrado por Fecha Exacta (visit_date)
+            </span>
+            <span className="text-[10px] text-slate-400 font-extrabold uppercase">
+              {activeAccommodation?.segment || activeCity?.name}
+            </span>
+          </div>
+
+          <div className="flex gap-2 overflow-x-auto pb-1 scrollbar-thin scrollbar-thumb-rose-200">
+            {tripDates.map(item => {
+              const isSelected = item.dateStr === waState.selectedDate;
+              return (
+                <button
+                  key={item.dateStr}
+                  onClick={() => setSelectedDate(item.dateStr)}
+                  className={`flex-shrink-0 flex flex-col items-center justify-center px-3 py-2 rounded-xl transition-all duration-150 border ${
+                    isSelected
+                      ? 'bg-rose-500 text-white border-rose-600 shadow-md scale-105'
+                      : 'bg-slate-50 dark:bg-slate-900 hover:bg-rose-50 text-slate-600 dark:text-slate-300 border-slate-200 dark:border-slate-700 hover:border-rose-200'
+                  }`}
+                >
+                  <span className={`text-[9px] font-black uppercase ${isSelected ? 'text-rose-100' : 'text-slate-400'}`}>
+                    Día {item.dayNum}
+                  </span>
+                  <strong className="text-xs font-black mt-0.5 whitespace-nowrap">
+                    {item.dayLabel}
+                  </strong>
+                </button>
+              );
+            })}
+          </div>
+        </div>
+      )}
 
       {/* Accommodation Card Pinned for Selected Day */}
-      <div className="bg-gradient-to-br from-amber-500/10 via-amber-50 to-white border-2 border-amber-300 rounded-2xl p-3.5 shadow-sm relative">
-        <div className="flex items-start justify-between gap-2">
-          <div className="flex items-center gap-2">
-            <div className="bg-amber-500 text-white p-2 rounded-xl shadow-sm">
-              <Hotel className="w-5 h-5" />
+      {activeTabMode === 'dated' && (
+        <div className="bg-gradient-to-br from-amber-500/10 via-amber-50 to-white dark:from-slate-900 dark:via-slate-800 dark:to-slate-800 border-2 border-amber-300 dark:border-amber-700 rounded-2xl p-3.5 shadow-sm relative">
+          <div className="flex items-start justify-between gap-2">
+            <div className="flex items-center gap-2">
+              <div className="bg-amber-500 text-white p-2 rounded-xl shadow-sm">
+                <Hotel className="w-5 h-5" />
+              </div>
+              <div>
+                <span className="text-[9px] font-black uppercase tracking-wider text-amber-700 bg-amber-100 dark:bg-amber-950/80 dark:text-amber-300 px-2 py-0.5 rounded-full inline-block">
+                  Tramo Estancia: {activeAccommodation?.segment || activeCity?.name || 'Japón'}
+                </span>
+                <h3 className="text-sm font-black text-slate-800 dark:text-white mt-0.5">
+                  {activeAccommodation?.name || 'Alojamiento no registrado'}
+                </h3>
+              </div>
             </div>
-            <div>
-              <span className="text-[9px] font-black uppercase tracking-wider text-amber-700 bg-amber-100 px-2 py-0.5 rounded-full inline-block">
-                Alojamiento en {activeCity?.name || 'Japón'}
-              </span>
-              <h3 className="text-sm font-black text-slate-800 mt-0.5">
-                {activeAccommodation?.name || 'Alojamiento no registrado'}
-              </h3>
-            </div>
+
+            <button
+              onClick={handleOpenAccModal}
+              className="text-amber-700 dark:text-amber-300 hover:text-amber-900 bg-amber-100 dark:bg-amber-950/60 p-1.5 rounded-lg transition-colors"
+              title="Editar Hotel"
+            >
+              <Edit2 className="w-3.5 h-3.5" />
+            </button>
           </div>
 
-          <button
-            onClick={handleOpenAccModal}
-            className="text-amber-700 hover:text-amber-900 bg-amber-100 hover:bg-amber-200 p-1.5 rounded-lg transition-colors"
-            title="Editar Hotel"
-          >
-            <Edit2 className="w-3.5 h-3.5" />
-          </button>
-        </div>
-
-        {activeAccommodation && (
-          <div className="mt-2.5 pt-2 border-t border-amber-200/60 text-xs text-slate-700 space-y-1">
-            <p className="flex items-center gap-1.5 text-[11px] text-slate-600">
-              <MapPin className="w-3.5 h-3.5 text-amber-600 flex-shrink-0" />
-              <span className="truncate">{activeAccommodation.address}</span>
-            </p>
-            <div className="flex items-center justify-between text-[11px] font-bold text-slate-700 pt-1">
-              <span>Check-in: <strong>{activeAccommodation.check_in_time}</strong></span>
-              <span>Check-out: <strong>{activeAccommodation.check_out_time}</strong></span>
-              {activeAccommodation.booking_code && (
-                <span className="bg-amber-200/80 text-amber-900 px-1.5 py-0.5 rounded font-mono text-[10px]">
-                  Reserva: {activeAccommodation.booking_code}
-                </span>
+          {activeAccommodation && (
+            <div className="mt-2.5 pt-2 border-t border-amber-200/60 dark:border-slate-700 text-xs text-slate-700 dark:text-slate-300 space-y-1">
+              <p className="flex items-center gap-1.5 text-[11px] text-slate-600 dark:text-slate-400">
+                <MapPin className="w-3.5 h-3.5 text-amber-600 flex-shrink-0" />
+                <span className="truncate">{activeAccommodation.address}</span>
+              </p>
+              <div className="flex items-center justify-between text-[11px] font-bold text-slate-700 dark:text-slate-300 pt-1">
+                <span>Check-in: <strong>{activeAccommodation.check_in_time}</strong></span>
+                <span>Check-out: <strong>{activeAccommodation.check_out_time}</strong></span>
+                {activeAccommodation.booking_code && (
+                  <span className="bg-amber-200/80 dark:bg-amber-950 text-amber-900 dark:text-amber-200 px-1.5 py-0.5 rounded font-mono text-[10px]">
+                    Reserva: {activeAccommodation.booking_code}
+                  </span>
+                )}
+              </div>
+              {activeAccommodation.notes && (
+                <p className="text-[10px] text-amber-800 dark:text-amber-300 italic mt-1 bg-amber-100/50 dark:bg-amber-950/30 p-1.5 rounded-lg border border-amber-200/50 dark:border-amber-900">
+                  💡 {activeAccommodation.notes}
+                </p>
               )}
             </div>
-            {activeAccommodation.notes && (
-              <p className="text-[10px] text-amber-800 italic mt-1 bg-amber-100/50 p-1.5 rounded-lg border border-amber-200/50">
-                💡 {activeAccommodation.notes}
-              </p>
-            )}
+          )}
+        </div>
+      )}
+
+      {activeTabMode === 'unassigned' && (
+        <div className="bg-gradient-to-br from-indigo-500/10 via-indigo-50 to-white dark:from-slate-900 dark:via-slate-800 dark:to-slate-800 border-2 border-indigo-300 dark:border-indigo-700 rounded-2xl p-4 shadow-sm space-y-3">
+          <div className="flex items-center gap-2">
+            <span className="text-2xl">🛍️</span>
+            <div>
+              <h3 className="text-sm font-black text-slate-800 dark:text-white uppercase">POIs Generales / Tiendas & Restaurantes</h3>
+              <p className="text-[11px] text-slate-500 dark:text-slate-400 font-semibold">Lugares opcionales para visitar libremente en cualquier momento del viaje.</p>
+            </div>
           </div>
-        )}
-      </div>
+
+          <div className="space-y-2 pt-2 border-t border-indigo-100 dark:border-slate-700">
+            <h4 className="text-xs font-black text-indigo-900 dark:text-indigo-300 uppercase">Lugares Guardados Pendientes ({unassignedSavedPlaces.length})</h4>
+            {unassignedSavedPlaces.map(place => (
+              <div key={place.id} className="bg-white dark:bg-slate-900 p-2.5 rounded-xl border border-slate-200 dark:border-slate-700 flex items-center justify-between gap-2">
+                <div>
+                  <h5 className="text-xs font-black text-slate-800 dark:text-white">{place.name}</h5>
+                  <span className="text-[9px] font-bold text-slate-400 uppercase bg-slate-100 dark:bg-slate-800 px-1.5 py-0.5 rounded">{place.category}</span>
+                </div>
+                <a href={place.google_maps_url} target="_blank" rel="noopener noreferrer" className="text-emerald-600 hover:text-emerald-700 bg-emerald-50 dark:bg-emerald-950 p-1.5 rounded-lg text-xs font-bold flex items-center gap-1">
+                  <MapPin className="w-3.5 h-3.5" />
+                  <span>Mapa</span>
+                </a>
+              </div>
+            ))}
+          </div>
+        </div>
+      )}
 
       {/* Itinerary Timeline Header & Add Button */}
       <div className="flex items-center justify-between">

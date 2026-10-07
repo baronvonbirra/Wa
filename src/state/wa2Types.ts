@@ -12,11 +12,24 @@ export interface City {
   order_index: number;
 }
 
+export type StaySegment =
+  | 'Disney'
+  | 'Tokyo 1'
+  | 'Kawaguchiko'
+  | 'Takayama'
+  | 'Kyoto'
+  | 'Osaka'
+  | 'Tokyo 2'
+  | 'Vuelo / Tránsito';
+
 export interface Accommodation {
   id: string;
   city_id: string;
+  segment?: StaySegment;
   name: string;
   address: string;
+  start_date?: string; // YYYY-MM-DD
+  end_date?: string;   // YYYY-MM-DD
   check_in_time: string;
   check_out_time: string;
   booking_code: string;
@@ -39,7 +52,9 @@ export interface PlaceDetails {
 export interface ItineraryItem {
   id: string;
   external_id?: string; // Unique ID for Google My Maps sync
-  date: string; // YYYY-MM-DD
+  date?: string; // YYYY-MM-DD (or visit_date)
+  visit_date?: string; // YYYY-MM-DD or undefined if unassigned/optional
+  is_unassigned?: boolean; // True for "Sin fecha / Opcionales" POIs
   time_start?: string; // HH:MM
   title: string;
   description?: string;
