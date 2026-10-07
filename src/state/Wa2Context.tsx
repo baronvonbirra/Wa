@@ -7,12 +7,31 @@ import {
   WishlistItem,
   TravelDoc,
   Accommodation,
+  PackingItem,
+  EmergencyContact,
   City
 } from './wa2Types';
 import { INITIAL_WA2_STATE } from './wa2InitialState';
 import { SupabaseService } from '../services/supabase';
 
 const WA2_LOCAL_STORAGE_KEY = 'WA_2_0_APP_STATE';
+
+export interface KmlSyncItem {
+  external_id: string;
+  name: string;
+  description?: string;
+  lat?: number;
+  lng?: number;
+  google_maps_url: string;
+  category: string;
+  cityName?: string;
+}
+
+export interface KmlDiffPreview {
+  newPlaces: KmlSyncItem[];
+  modifiedPlaces: KmlSyncItem[];
+  removedPlaces: SavedPlace[];
+}
 
 interface Wa2ContextType {
   waState: Wa2State;
@@ -38,6 +57,20 @@ interface Wa2ContextType {
   addAccommodation: (acc: Omit<Accommodation, 'id'>) => void;
   updateAccommodation: (id: string, updates: Partial<Accommodation>) => void;
 
+  togglePackingItem: (id: string) => void;
+  addPackingItem: (item: Omit<PackingItem, 'id'>) => void;
+  deletePackingItem: (id: string) => void;
+
+  addEmergencyContact: (contact: Omit<EmergencyContact, 'id'>) => void;
+  deleteEmergencyContact: (id: string) => void;
+
+  toggleDarkMode: () => void;
+  authenticatePin: (pin: string) => boolean;
+  setGroupPinCode: (pin: string) => void;
+
+  previewKmlSync: (kmlItems: KmlSyncItem[]) => KmlDiffPreview;
+  executeKmlUpsert: (kmlItems: KmlSyncItem[]) => void;
+
   setEurJpyRate: (rate: number) => void;
   resetWaState: () => void;
 }
@@ -50,7 +83,6 @@ export const Wa2Provider: React.FC<{ children: React.ReactNode }> = ({ children 
       const saved = localStorage.getItem(WA2_LOCAL_STORAGE_KEY);
       if (saved) {
         const parsed = JSON.parse(saved);
-        // Merge with initial state to ensure all arrays/fields exist
         return {
           ...INITIAL_WA2_STATE,
           ...parsed,
@@ -60,6 +92,8 @@ export const Wa2Provider: React.FC<{ children: React.ReactNode }> = ({ children 
           savedPlaces: parsed.savedPlaces?.length ? parsed.savedPlaces : INITIAL_WA2_STATE.savedPlaces,
           wishlist: parsed.wishlist?.length ? parsed.wishlist : INITIAL_WA2_STATE.wishlist,
           travelDocs: parsed.travelDocs?.length ? parsed.travelDocs : INITIAL_WA2_STATE.travelDocs,
+          packingChecklist: parsed.packingChecklist?.length ? parsed.packingChecklist : INITIAL_WA2_STATE.packingChecklist,
+          emergencyContacts: parsed.emergencyContacts?.length ? parsed.emergencyContacts : INITIAL_WA2_STATE.emergencyContacts,
           survivalPhrases: parsed.survivalPhrases?.length ? parsed.survivalPhrases : INITIAL_WA2_STATE.survivalPhrases,
         };
       }
@@ -69,12 +103,18 @@ export const Wa2Provider: React.FC<{ children: React.ReactNode }> = ({ children 
     return INITIAL_WA2_STATE;
   });
 
-  // Save to localStorage on state changes
+  // Save to localStorage and apply Dark Mode root class on state changes
   useEffect(() => {
     try {
       localStorage.setItem(WA2_LOCAL_STORAGE_KEY, JSON.stringify(waState));
     } catch (e) {
       console.error("Error saving Wa2 state to localStorage:", e);
+    }
+
+    if (waState.darkMode) {
+      document.documentElement.classList.add('dark');
+    } else {
+      document.documentElement.classList.remove('dark');
     }
   }, [waState]);
 
@@ -335,6 +375,150 @@ export const Wa2Provider: React.FC<{ children: React.ReactNode }> = ({ children 
     });
   };
 
+  const togglePackingItem = (id: string) => {
+    setWaState(prev => {
+      const updated = prev.packingChecklist.map(item =>
+        item.id === id ? { ...item, checked: !item.checked } : item
+      );
+      const target = updated.find(i => i.id === id);
+      if (target) {
+        SupabaseService.syncRecord({
+          table: 'packing_checklist',
+          action: 'update',
+          record: target
+        });
+      }
+      return { ...prev, packingChecklist: updated };
+    });
+  };
+
+  const addPackingItem = (item: Omit<PackingItem, 'id'>) => {
+    const newItem: PackingItem = {
+      ...item,
+      id: 'pack-' + Date.now() + '-' + Math.random().toString(36).substr(2, 4)
+    };
+    setWaState(prev => {
+      SupabaseService.syncRecord({
+        table: 'packing_checklist',
+        action: 'insert',
+        record: newItem
+      });
+      return { ...prev, packingChecklist: [...prev.packingChecklist, newItem] };
+    });
+  };
+
+  const deletePackingItem = (id: string) => {
+    setWaState(prev => {
+      SupabaseService.syncRecord({
+        table: 'packing_checklist',
+        action: 'delete',
+        record: { id }
+      });
+      return {
+        ...prev,
+        packingChecklist: prev.packingChecklist.filter(i => i.id !== id)
+      };
+    });
+  };
+
+  const addEmergencyContact = (contact: Omit<EmergencyContact, 'id'>) => {
+    const newContact: EmergencyContact = {
+      ...contact,
+      id: 'em-' + Date.now() + '-' + Math.random().toString(36).substr(2, 4)
+    };
+    setWaState(prev => {
+      SupabaseService.syncRecord({
+        table: 'emergency_contacts',
+        action: 'insert',
+        record: newContact
+      });
+      return { ...prev, emergencyContacts: [...prev.emergencyContacts, newContact] };
+    });
+  };
+
+  const deleteEmergencyContact = (id: string) => {
+    setWaState(prev => {
+      SupabaseService.syncRecord({
+        table: 'emergency_contacts',
+        action: 'delete',
+        record: { id }
+      });
+      return {
+        ...prev,
+        emergencyContacts: prev.emergencyContacts.filter(c => c.id !== id)
+      };
+    });
+  };
+
+  const toggleDarkMode = () => {
+    setWaState(prev => ({ ...prev, darkMode: !prev.darkMode }));
+  };
+
+  const authenticatePin = (pin: string): boolean => {
+    if (pin === waState.groupPinCode) {
+      setWaState(prev => ({ ...prev, isAuthenticated: true }));
+      return true;
+    }
+    return false;
+  };
+
+  const setGroupPinCode = (pin: string) => {
+    setWaState(prev => ({ ...prev, groupPinCode: pin }));
+  };
+
+  // Google My Maps KML Diff Preview
+  const previewKmlSync = (kmlItems: KmlSyncItem[]): KmlDiffPreview => {
+    const existingExtIds = new Set(waState.savedPlaces.map(p => p.external_id).filter(Boolean));
+    const kmlExtIds = new Set(kmlItems.map(i => i.external_id));
+
+    const newPlaces = kmlItems.filter(i => !existingExtIds.has(i.external_id));
+    const modifiedPlaces = kmlItems.filter(i => existingExtIds.has(i.external_id));
+    const removedPlaces = waState.savedPlaces.filter(p => p.external_id && !kmlExtIds.has(p.external_id));
+
+    return { newPlaces, modifiedPlaces, removedPlaces };
+  };
+
+  // Google My Maps KML UPSERT Execution preserving visited / progress status
+  const executeKmlUpsert = (kmlItems: KmlSyncItem[]) => {
+    setWaState(prev => {
+      const updatedPlaces = [...prev.savedPlaces];
+
+      kmlItems.forEach(item => {
+        const existingIdx = updatedPlaces.findIndex(p => p.external_id === item.external_id);
+        const cityObj = prev.cities.find(c => c.name.toLowerCase() === item.cityName?.toLowerCase()) || prev.cities[0];
+
+        if (existingIdx >= 0) {
+          // Preserve visited status rule
+          const existing = updatedPlaces[existingIdx];
+          updatedPlaces[existingIdx] = {
+            ...existing,
+            name: item.name,
+            notes: item.description || existing.notes,
+            google_maps_url: item.google_maps_url,
+            category: (item.category as any) || existing.category,
+            city_id: cityObj.id,
+            visited: existing.visited // NEVER overwrite visited flag
+          };
+        } else {
+          // Insert new place
+          updatedPlaces.push({
+            id: 'place-kml-' + Date.now() + '-' + Math.random().toString(36).substr(2, 4),
+            external_id: item.external_id,
+            city_id: cityObj.id,
+            name: item.name,
+            category: (item.category as any) || 'sightseeing',
+            google_maps_url: item.google_maps_url,
+            notes: item.description || '',
+            visited: false,
+            created_at: new Date().toISOString()
+          });
+        }
+      });
+
+      return { ...prev, savedPlaces: updatedPlaces };
+    });
+  };
+
   const setEurJpyRate = (rate: number) => {
     setWaState(prev => ({ ...prev, eurJpyRate: rate }));
   };
@@ -365,6 +549,16 @@ export const Wa2Provider: React.FC<{ children: React.ReactNode }> = ({ children 
         deleteTravelDoc,
         addAccommodation,
         updateAccommodation,
+        togglePackingItem,
+        addPackingItem,
+        deletePackingItem,
+        addEmergencyContact,
+        deleteEmergencyContact,
+        toggleDarkMode,
+        authenticatePin,
+        setGroupPinCode,
+        previewKmlSync,
+        executeKmlUpsert,
         setEurJpyRate,
         resetWaState
       }}

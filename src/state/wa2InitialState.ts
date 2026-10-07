@@ -5,11 +5,16 @@ export const INITIAL_WA2_STATE: Wa2State = {
   tripEndDate: "2027-01-05",
   selectedDate: "2026-12-20",
   eurJpyRate: 160.0,
+  darkMode: false,
+  groupPinCode: "2026",
+  isAuthenticated: false,
 
   cities: [
     {
       id: "city-tokyo",
       name: "Tokio",
+      lat: 35.6762,
+      lng: 139.6503,
       start_date: "2026-12-20",
       end_date: "2026-12-26",
       order_index: 1
@@ -17,6 +22,8 @@ export const INITIAL_WA2_STATE: Wa2State = {
     {
       id: "city-kyoto",
       name: "Kioto",
+      lat: 35.0116,
+      lng: 135.7681,
       start_date: "2026-12-27",
       end_date: "2026-12-31",
       order_index: 2
@@ -24,6 +31,8 @@ export const INITIAL_WA2_STATE: Wa2State = {
     {
       id: "city-osaka",
       name: "Osaka",
+      lat: 34.6937,
+      lng: 135.5023,
       start_date: "2027-01-01",
       end_date: "2027-01-05",
       order_index: 3
@@ -67,6 +76,7 @@ export const INITIAL_WA2_STATE: Wa2State = {
     // 2026-12-20 - Día 1: Llegada a Tokio
     {
       id: "itin-101",
+      external_id: "mymaps-itin-101",
       date: "2026-12-20",
       time_start: "15:30",
       title: "Llegada al Aeropuerto de Haneda / Narita",
@@ -79,6 +89,7 @@ export const INITIAL_WA2_STATE: Wa2State = {
     },
     {
       id: "itin-102",
+      external_id: "mymaps-itin-102",
       date: "2026-12-20",
       time_start: "18:00",
       title: "Check-in en Hotel Gracery Shinjuku",
@@ -91,6 +102,7 @@ export const INITIAL_WA2_STATE: Wa2State = {
     },
     {
       id: "itin-103",
+      external_id: "mymaps-itin-103",
       date: "2026-12-20",
       time_start: "20:00",
       title: "Cena de Bienvenida: Omoide Yokocho (Shinjuku)",
@@ -105,6 +117,7 @@ export const INITIAL_WA2_STATE: Wa2State = {
     // 2026-12-21 - Día 2: Asakusa & Akihabara
     {
       id: "itin-201",
+      external_id: "mymaps-itin-201",
       date: "2026-12-21",
       time_start: "09:00",
       title: "Templo Senso-ji y calle Nakamise",
@@ -117,6 +130,7 @@ export const INITIAL_WA2_STATE: Wa2State = {
     },
     {
       id: "itin-202",
+      external_id: "mymaps-itin-202",
       date: "2026-12-21",
       time_start: "14:00",
       title: "Ruta de Compras por Akihabara Electric Town",
@@ -129,6 +143,7 @@ export const INITIAL_WA2_STATE: Wa2State = {
     },
     {
       id: "itin-203",
+      external_id: "mymaps-itin-203",
       date: "2026-12-21",
       time_start: "19:30",
       title: "Cena en Ichiran Ramen Akihabara",
@@ -143,6 +158,7 @@ export const INITIAL_WA2_STATE: Wa2State = {
     // 2026-12-22 - Día 3: Shibuya & Harajuku
     {
       id: "itin-301",
+      external_id: "mymaps-itin-301",
       date: "2026-12-22",
       time_start: "10:00",
       title: "Santuario Meiji Jingu y Parque Yoyogi",
@@ -155,6 +171,7 @@ export const INITIAL_WA2_STATE: Wa2State = {
     },
     {
       id: "itin-302",
+      external_id: "mymaps-itin-302",
       date: "2026-12-22",
       time_start: "12:30",
       title: "Calle Takeshita en Harajuku",
@@ -167,6 +184,7 @@ export const INITIAL_WA2_STATE: Wa2State = {
     },
     {
       id: "itin-303",
+      external_id: "mymaps-itin-303",
       date: "2026-12-22",
       time_start: "16:00",
       title: "Cruce de Shibuya & Mirador Shibuya Sky",
@@ -181,6 +199,7 @@ export const INITIAL_WA2_STATE: Wa2State = {
     // 2026-12-27 - Traslado a Kioto
     {
       id: "itin-401",
+      external_id: "mymaps-itin-401",
       date: "2026-12-27",
       time_start: "08:30",
       title: "Tren Shinkansen Tokio -> Kioto",
@@ -193,6 +212,7 @@ export const INITIAL_WA2_STATE: Wa2State = {
     },
     {
       id: "itin-402",
+      external_id: "mymaps-itin-402",
       date: "2026-12-27",
       time_start: "12:00",
       title: "Santuario Fushimi Inari Taisha",
@@ -207,6 +227,7 @@ export const INITIAL_WA2_STATE: Wa2State = {
     // 2027-01-01 - Año Nuevo en Osaka
     {
       id: "itin-501",
+      external_id: "mymaps-itin-501",
       date: "2027-01-01",
       time_start: "11:00",
       title: "Castillo de Osaka & Parque Central",
@@ -219,6 +240,7 @@ export const INITIAL_WA2_STATE: Wa2State = {
     },
     {
       id: "itin-502",
+      external_id: "mymaps-itin-502",
       date: "2027-01-01",
       time_start: "17:00",
       title: "Dotonbori & Comida Callejera",
@@ -234,6 +256,7 @@ export const INITIAL_WA2_STATE: Wa2State = {
   savedPlaces: [
     {
       id: "place-1",
+      external_id: "mymaps-place-1",
       city_id: "city-tokyo",
       name: "Super Potato Akihabara",
       category: "retro_gaming",
@@ -244,6 +267,7 @@ export const INITIAL_WA2_STATE: Wa2State = {
     },
     {
       id: "place-2",
+      external_id: "mymaps-place-2",
       city_id: "city-tokyo",
       name: "Ichiran Ramen Shinjuku",
       category: "ramen",
@@ -254,6 +278,7 @@ export const INITIAL_WA2_STATE: Wa2State = {
     },
     {
       id: "place-3",
+      external_id: "mymaps-place-3",
       city_id: "city-tokyo",
       name: "Gachapon Department Store Ikebukuro",
       category: "gachapon",
@@ -264,6 +289,7 @@ export const INITIAL_WA2_STATE: Wa2State = {
     },
     {
       id: "place-4",
+      external_id: "mymaps-place-4",
       city_id: "city-kyoto",
       name: "Gion Duck Noodles",
       category: "ramen",
@@ -274,6 +300,7 @@ export const INITIAL_WA2_STATE: Wa2State = {
     },
     {
       id: "place-5",
+      external_id: "mymaps-place-5",
       city_id: "city-osaka",
       name: "Kukuru Takoyaki Dotonbori",
       category: "izakaya",
@@ -351,6 +378,46 @@ export const INITIAL_WA2_STATE: Wa2State = {
       title: "JR Rail Pass / Canje Exchange Order",
       qr_code_url: "https://api.qrserver.com/v1/create-qr-code/?size=250x250&data=JR-PASS-ORDINARY-7DAYS-2026",
       notes: "Bono para canjear en la oficina JR del aeropuerto."
+    }
+  ],
+
+  packingChecklist: [
+    { id: "pack-1", item_name: "Pasaportes vigentes", category: "Documentación", checked: true },
+    { id: "pack-2", item_name: "Código QR Visit Japan Web", category: "Documentación", checked: true },
+    { id: "pack-3", item_name: "Póliza del Seguro de Viaje", category: "Documentación", checked: true },
+    { id: "pack-4", item_name: "Adaptador de enchufe tipo A (Japón)", category: "Electrónica", checked: false },
+    { id: "pack-5", item_name: "Powerbank batería externa 20000mAh", category: "Electrónica", checked: true },
+    { id: "pack-6", item_name: "Cargadores de móvil y cámara", category: "Electrónica", checked: false },
+    { id: "pack-7", item_name: "Ropa térmica / abrigo de invierno", category: "Ropa", checked: false },
+    { id: "pack-8", item_name: "Calzado cómodo para caminar 20k pasos", category: "Ropa", checked: true },
+    { id: "pack-9", item_name: "Botiquín con analgésicos y tiritas", category: "Botiquín", checked: false }
+  ],
+
+  emergencyContacts: [
+    {
+      id: "em-1",
+      title: "Policía (Emergencias)",
+      phone: "110",
+      notes: "Teléfono gratuito directo de la policía en Japón."
+    },
+    {
+      id: "em-2",
+      title: "Ambulancia & Bomberos",
+      phone: "119",
+      notes: "Servicios médicos de urgencia en Japón."
+    },
+    {
+      id: "em-3",
+      title: "Embajada de España en Tokio",
+      phone: "+81 3-3583-8531",
+      address: "1-3-29 Roppongi, Minato-ku, Tokio",
+      notes: "Atención consular a ciudadanos españoles."
+    },
+    {
+      id: "em-4",
+      title: "Asistencia Médica Seguro de Viaje",
+      phone: "+81 3-1234-5678",
+      notes: "Atención 24/7 en español para autorizaciones médicas."
     }
   ],
 
