@@ -73,6 +73,7 @@ interface Wa2ContextType {
 
   setEurJpyRate: (rate: number) => void;
   resetWaState: () => void;
+  fetchSupabaseItineraryForDate: (fechaStr: string) => Promise<void>;
 }
 
 const Wa2Context = createContext<Wa2ContextType | undefined>(undefined);
@@ -102,6 +103,54 @@ export const Wa2Provider: React.FC<{ children: React.ReactNode }> = ({ children 
     }
     return INITIAL_WA2_STATE;
   });
+
+  // Fetch Supabase data for selected date on mount or when selectedDate changes
+  useEffect(() => {
+    if (waState.selectedDate) {
+      fetchSupabaseItineraryForDate(waState.selectedDate);
+    }
+  }, [waState.selectedDate]);
+
+  const fetchSupabaseItineraryForDate = async (fechaStr: string) => {
+    try {
+      const remoteData = await SupabaseService.fetchItinerarioPorFecha(fechaStr);
+      if (remoteData && remoteData.length > 0) {
+        // Map Supabase itinerario_dias with lugares into ItineraryItem objects
+        const fetchedItems: ItineraryItem[] = remoteData.map((row, index) => {
+          const lugar = Array.isArray(row.lugares) ? row.lugares[0] : row.lugares;
+          const placeName = lugar?.nombre || lugar?.name || `Lugar #${row.orden || index + 1}`;
+          const mapUrl = lugar?.google_maps_url || `https://maps.google.com/?q=${encodeURIComponent(placeName)}`;
+
+          return {
+            id: row.id || `sb-itin-${fechaStr}-${index}`,
+            date: fechaStr,
+            time_start: row.time_start || '10:00',
+            title: placeName,
+            description: row.notas_dia || lugar?.descripcion || lugar?.notes || '',
+            google_maps_url: mapUrl,
+            category: (lugar?.categoria as any) || 'attraction',
+            status: 'pending',
+            order_index: row.orden || index + 1,
+            created_at: new Date().toISOString(),
+            orden: row.orden,
+            notas_dia: row.notas_dia,
+            lugares: lugar
+          };
+        });
+
+        setWaState(prev => {
+          // Merge fetched items with existing items for other dates
+          const otherDateItems = prev.itineraryItems.filter(item => item.date !== fechaStr);
+          return {
+            ...prev,
+            itineraryItems: [...otherDateItems, ...fetchedItems]
+          };
+        });
+      }
+    } catch (err) {
+      console.warn("Could not fetch remote itinerary, using local state:", err);
+    }
+  };
 
   // Save to localStorage and apply Dark Mode root class on state changes
   useEffect(() => {
@@ -560,7 +609,8 @@ export const Wa2Provider: React.FC<{ children: React.ReactNode }> = ({ children 
         previewKmlSync,
         executeKmlUpsert,
         setEurJpyRate,
-        resetWaState
+        resetWaState,
+        fetchSupabaseItineraryForDate
       }}
     >
       {children}

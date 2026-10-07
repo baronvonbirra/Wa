@@ -17,10 +17,67 @@ export interface SyncPayload {
   record: any;
 }
 
+export interface LugarSupabase {
+  id?: string;
+  nombre?: string;
+  name?: string;
+  descripcion?: string;
+  direccion?: string;
+  google_maps_url?: string;
+  categoria?: string;
+  [key: string]: any;
+}
+
+export interface ItinerarioDiaSupabase {
+  id?: string;
+  orden?: number;
+  notas_dia?: string;
+  fecha?: string;
+  lugares?: LugarSupabase | LugarSupabase[];
+  [key: string]: any;
+}
+
 /**
  * Mock/Safe Supabase Service Sync layer
  */
 export class SupabaseService {
+  /**
+   * Fetches itinerary days filtered by date (fecha) and joined with places (lugares), ordered by orden.
+   * Query structure:
+   * supabase.from('itinerario_dias').select('orden, notas_dia, lugares(*)').eq('fecha', fechaSeleccionada).order('orden')
+   */
+  static async fetchItinerarioPorFecha(fecha: string): Promise<ItinerarioDiaSupabase[] | null> {
+    if (!isSupabaseConfigured()) {
+      return null;
+    }
+
+    try {
+      // Direct REST call to Supabase for itinerario_dias with join on lugares
+      const selectParam = encodeURIComponent('orden,notas_dia,fecha,lugares(*)');
+      const endpoint = `${SUPABASE_URL}/rest/v1/itinerario_dias?select=${selectParam}&fecha=eq.${fecha}&order=orden.asc`;
+
+      const response = await fetch(endpoint, {
+        method: 'GET',
+        headers: {
+          'apikey': SUPABASE_ANON_KEY,
+          'Authorization': `Bearer ${SUPABASE_ANON_KEY}`,
+          'Content-Type': 'application/json'
+        }
+      });
+
+      if (!response.ok) {
+        console.warn(`Supabase fetchItinerarioPorFecha warning: ${response.statusText}`);
+        return null;
+      }
+
+      const data: ItinerarioDiaSupabase[] = await response.json();
+      return data;
+    } catch (err) {
+      console.warn("Supabase Service fetchItinerarioPorFecha fallback activated:", err);
+      return null;
+    }
+  }
+
   static async syncRecord(payload: SyncPayload): Promise<{ success: boolean; error?: string }> {
     if (!isSupabaseConfigured()) {
       // Offline mode: simulated successful persistence locally
@@ -28,7 +85,7 @@ export class SupabaseService {
     }
 
     try {
-      // If Supabase URL & Key are available in environment, we could perform fetch/REST calls directly
+      // If Supabase URL & Key are available in environment, perform REST calls
       const endpoint = `${SUPABASE_URL}/rest/v1/${payload.table}`;
       const headers = {
         'apikey': SUPABASE_ANON_KEY,
