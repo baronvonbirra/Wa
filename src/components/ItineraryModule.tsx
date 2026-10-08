@@ -1,10 +1,14 @@
 import React, { useState, useMemo } from 'react';
 import { TRIP_DATA, ACCOMMODATIONS_MAP } from '../data/tripData';
 import { useTripState } from '../hooks/useTripState';
+import { useGoshuinPassport } from '../hooks/useGoshuinPassport';
 import { JapaneseAddressModal } from './JapaneseAddressModal';
 import { CountdownWidget } from './CountdownWidget';
 import { WeatherWidget } from './WeatherWidget';
 import { AprenderModal } from './AprenderModal';
+import { MascotsWidget } from './MascotsWidget';
+import { SakuraConfetti } from './SakuraConfetti';
+import { GoshuinPassportModal } from './GoshuinPassportModal';
 import { Accommodation, DayItinerary, Activity, LearnInfo } from '../types/itinerary';
 import {
   Search,
@@ -21,7 +25,8 @@ import {
   UtensilsCrossed,
   ChevronDown,
   ChevronUp,
-  Lightbulb
+  Lightbulb,
+  Award
 } from 'lucide-react';
 
 function getActivityLearnInfo(act: Activity, dayTitle: string): LearnInfo {
@@ -73,11 +78,33 @@ export const ItineraryModule: React.FC = () => {
   // Modal Learn state
   const [selectedLearnInfo, setSelectedLearnInfo] = useState<LearnInfo | null>(null);
 
+  // Goshuin Passport hook & modal state
+  const { stamps, addStamp } = useGoshuinPassport();
+  const [isGoshuinModalOpen, setIsGoshuinModalOpen] = useState<boolean>(false);
+
+  // Sakura confetti trigger state
+  const [showConfetti, setShowConfetti] = useState<boolean>(false);
+
   // Expandable cards state for Shops and Restaurants
   const [showShops, setShowShops] = useState<boolean>(true);
   const [showRestaurants, setShowRestaurants] = useState<boolean>(true);
 
   const { completed, toggleActivity, isActivityCompleted } = useTripState();
+
+  const handleToggleActivity = (actId: string) => {
+    const wasCompleted = isActivityCompleted(actId);
+    toggleActivity(actId);
+    if (!wasCompleted) {
+      // Trigger sakura confetti!
+      setShowConfetti(true);
+    }
+  };
+
+  const handleOpenLearnModal = (info: LearnInfo, stageName?: string) => {
+    setSelectedLearnInfo(info);
+    // Stamp Goshuin seal automatically!
+    addStamp(info.title, info.subtitle, '💮', stageName || 'Japón 2026-2027');
+  };
 
   const currentStage = useMemo(() => {
     return TRIP_DATA.stages.find((s) => s.stage_id === activeStageId) || TRIP_DATA.stages[0];
@@ -195,8 +222,14 @@ export const ItineraryModule: React.FC = () => {
 
   return (
     <div className="max-w-3xl mx-auto px-4 pt-4 pb-28 font-sans text-slate-800 dark:text-slate-100">
+      {/* Sakura Petals Confetti Effect */}
+      <SakuraConfetti trigger={showConfetti} onComplete={() => setShowConfetti(false)} />
+
       {/* Countdown Timer Widget with Learn trigger */}
-      <CountdownWidget onOpenLearnModal={(info) => setSelectedLearnInfo(info)} />
+      <CountdownWidget onOpenLearnModal={(info) => handleOpenLearnModal(info, 'Etapa 0')} />
+
+      {/* Travel Mascot Guides Widget */}
+      <MascotsWidget />
 
       {/* Top Trip Summary & Progress Header */}
       <section className="bg-slate-900 text-white p-5 rounded-3xl mb-6 shadow-xl border border-slate-800 relative overflow-hidden">
@@ -207,12 +240,24 @@ export const ItineraryModule: React.FC = () => {
               <h1 className="text-xl font-black text-rose-400 tracking-tight">{TRIP_DATA.title}</h1>
             </div>
             <p className="text-xs font-bold text-slate-400 mt-1">
-              21 Diciembre 2026 — 13 Enero 2027 • 24 Días en Japón
+              20 Diciembre 2026 — 13 Enero 2027 • 25 Días de Aventura
             </p>
           </div>
-          <div className="self-start sm:self-auto bg-slate-800 border border-slate-700 px-3 py-1.5 rounded-2xl flex items-center gap-2">
-            <Sparkles className="w-4 h-4 text-amber-400" />
-            <span className="text-xs font-black text-amber-300">{globalPercentage}% Completado</span>
+
+          <div className="flex flex-wrap items-center gap-2">
+            <button
+              onClick={() => setIsGoshuinModalOpen(true)}
+              className="bg-rose-500/20 hover:bg-rose-500/30 text-rose-300 border border-rose-500/40 px-3 py-1.5 rounded-2xl flex items-center gap-1.5 text-xs font-black transition-all active:scale-95"
+              title="Abrir Pasaporte Kawaii de Sellos Goshuin"
+            >
+              <Award className="w-4 h-4 text-rose-400" />
+              <span>Goshuin ({stamps.length}) 💮</span>
+            </button>
+
+            <div className="bg-slate-800 border border-slate-700 px-3 py-1.5 rounded-2xl flex items-center gap-2">
+              <Sparkles className="w-4 h-4 text-amber-400" />
+              <span className="text-xs font-black text-amber-300">{globalPercentage}% Completado</span>
+            </div>
           </div>
         </div>
 
@@ -225,7 +270,7 @@ export const ItineraryModule: React.FC = () => {
             </div>
             <div className="w-full bg-slate-800 h-2.5 rounded-full overflow-hidden">
               <div
-                className="bg-gradient-to-r from-rose-500 to-amber-400 h-full transition-all duration-300 rounded-full"
+                className="bg-gradient-to-r from-rose-500 via-amber-400 to-emerald-400 h-full transition-all duration-300 rounded-full"
                 style={{ width: `${globalPercentage}%` }}
               />
             </div>
@@ -307,7 +352,9 @@ export const ItineraryModule: React.FC = () => {
       </section>
 
       {/* Contextual Weather Widget */}
-      {!isSearching && <WeatherWidget locationKey={currentDay.location} />}
+      {!isSearching && currentDay.location && currentDay.location !== 'Málaga / Vuelo' && (
+        <WeatherWidget locationKey={currentDay.location} />
+      )}
 
       {/* Main Content Area: Search Mode vs. Normal Stage & Day View */}
       {isSearching ? (
@@ -369,7 +416,7 @@ export const ItineraryModule: React.FC = () => {
                         className="flex items-center justify-between gap-2 p-2 rounded-xl bg-slate-50 dark:bg-slate-900/60"
                       >
                         <button
-                          onClick={() => toggleActivity(act.id)}
+                          onClick={() => handleToggleActivity(act.id)}
                           className="flex items-center gap-3 text-left min-h-[44px] flex-grow active:scale-98 transition-all"
                         >
                           {isDone ? (
@@ -390,7 +437,7 @@ export const ItineraryModule: React.FC = () => {
 
                         <div className="flex items-center gap-1.5 shrink-0">
                           <button
-                            onClick={() => setSelectedLearnInfo(getActivityLearnInfo(act, day.title))}
+                            onClick={() => handleOpenLearnModal(getActivityLearnInfo(act, day.title), stageName)}
                             className="px-2.5 py-1.5 rounded-xl bg-amber-100 dark:bg-amber-950/80 text-amber-800 dark:text-amber-300 hover:bg-amber-200 font-extrabold text-[10px] flex items-center gap-1 border border-amber-200 dark:border-amber-900 active:scale-95 transition-all"
                           >
                             <Lightbulb className="w-3.5 h-3.5 text-amber-600 dark:text-amber-400" />
@@ -455,7 +502,9 @@ export const ItineraryModule: React.FC = () => {
                       : 'text-slate-600 dark:text-slate-400 hover:text-slate-900 dark:hover:text-white'
                   }`}
                 >
-                  <span className="text-[10px] opacity-70">Día {day.dayIndex}</span>
+                  <span className="text-[10px] opacity-70">
+                    {day.dayIndex === 0 ? 'Día 0' : `Día ${day.dayIndex}`}
+                  </span>
                   <span>{day.shortDate}</span>
                 </button>
               );
@@ -468,7 +517,7 @@ export const ItineraryModule: React.FC = () => {
             <div className="border-b border-slate-100 dark:border-slate-700 pb-4">
               <div className="flex items-center justify-between mb-1">
                 <span className="bg-rose-100 dark:bg-rose-950/80 text-rose-700 dark:text-rose-300 font-extrabold text-[10px] uppercase px-2.5 py-0.5 rounded-full border border-rose-200 dark:border-rose-900">
-                  Día {currentDay.dayIndex} de {TRIP_DATA.totalDays}
+                  {currentDay.dayIndex === 0 ? 'Etapa 0 • Día Especial' : `Día ${currentDay.dayIndex} de ${TRIP_DATA.totalDays - 1}`}
                 </span>
                 <span className="text-xs font-bold text-slate-500 dark:text-slate-400">
                   {currentDay.formattedDate}
@@ -533,7 +582,7 @@ export const ItineraryModule: React.FC = () => {
                       >
                         {/* Interactive Touch Target Checkbox */}
                         <button
-                          onClick={() => toggleActivity(act.id)}
+                          onClick={() => handleToggleActivity(act.id)}
                           className="flex items-center gap-3 text-left min-h-[48px] flex-grow active:scale-98 transition-all"
                         >
                           {isDone ? (
@@ -555,7 +604,7 @@ export const ItineraryModule: React.FC = () => {
                         {/* Actions: Learn Modal + Google Maps */}
                         <div className="flex items-center gap-1.5 shrink-0">
                           <button
-                            onClick={() => setSelectedLearnInfo(getActivityLearnInfo(act, currentDay.title))}
+                            onClick={() => handleOpenLearnModal(getActivityLearnInfo(act, currentDay.title), currentStage.name)}
                             className="min-h-[44px] px-2.5 py-1.5 rounded-xl bg-amber-50 dark:bg-amber-950/80 hover:bg-amber-100 text-amber-800 dark:text-amber-300 font-black text-xs flex items-center gap-1 border border-amber-200 dark:border-amber-900 active:scale-95 transition-all"
                             title={`Aprender sobre ${act.title}`}
                           >
@@ -749,7 +798,7 @@ export const ItineraryModule: React.FC = () => {
               Navegación
             </span>
             <span className="text-xs font-black text-rose-600 dark:text-rose-400">
-              Día {currentDay.dayIndex} / {TRIP_DATA.totalDays} ({currentDay.shortDate})
+              {currentDay.dayIndex === 0 ? 'Etapa 0' : `Día ${currentDay.dayIndex} / ${TRIP_DATA.totalDays - 1}`} ({currentDay.shortDate})
             </span>
           </div>
 
@@ -769,6 +818,13 @@ export const ItineraryModule: React.FC = () => {
         isOpen={Boolean(selectedLearnInfo)}
         onClose={() => setSelectedLearnInfo(null)}
         learnInfo={selectedLearnInfo}
+      />
+
+      {/* Goshuin Passport Digital Seal Booklet Modal */}
+      <GoshuinPassportModal
+        isOpen={isGoshuinModalOpen}
+        onClose={() => setIsGoshuinModalOpen(false)}
+        stamps={stamps}
       />
 
       {/* Japanese Address Modal */}
