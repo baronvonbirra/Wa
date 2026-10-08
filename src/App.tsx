@@ -3,6 +3,7 @@ import { MainNavigation, MainTab } from './components/MainNavigation';
 import { ItineraryModule } from './components/ItineraryModule';
 import { TodoModule } from './components/TodoModule';
 import { PackingModule } from './components/PackingModule';
+import { ToolsModule } from './components/ToolsModule';
 import { GuideModule } from './components/GuideModule';
 
 export function App() {
@@ -18,6 +19,7 @@ export function App() {
         {activeTab === 'itinerary' && <ItineraryModule />}
         {activeTab === 'todo' && <TodoModule />}
         {activeTab === 'packing' && <PackingModule />}
+        {activeTab === 'tools' && <ToolsModule />}
         {activeTab === 'guide' && <GuideModule />}
       </main>
     </div>

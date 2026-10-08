@@ -2,6 +2,8 @@ import React, { useState, useMemo } from 'react';
 import { TRIP_DATA, ACCOMMODATIONS_MAP } from '../data/tripData';
 import { useTripState } from '../hooks/useTripState';
 import { JapaneseAddressModal } from './JapaneseAddressModal';
+import { CountdownWidget } from './CountdownWidget';
+import { WeatherWidget } from './WeatherWidget';
 import { Accommodation, DayItinerary } from '../types/itinerary';
 import {
   Search,
@@ -13,7 +15,11 @@ import {
   ChevronRight,
   Sparkles,
   ExternalLink,
-  Filter
+  Filter,
+  ShoppingBag,
+  UtensilsCrossed,
+  ChevronDown,
+  ChevronUp
 } from 'lucide-react';
 
 export const ItineraryModule: React.FC = () => {
@@ -22,6 +28,10 @@ export const ItineraryModule: React.FC = () => {
   const [searchQuery, setSearchQuery] = useState<string>('');
   const [filterState, setFilterState] = useState<'all' | 'pending' | 'completed'>('all');
   const [selectedAccommodation, setSelectedAccommodation] = useState<Accommodation | null>(null);
+
+  // Expandable cards state for Shops and Restaurants
+  const [showShops, setShowShops] = useState<boolean>(true);
+  const [showRestaurants, setShowRestaurants] = useState<boolean>(true);
 
   const { completed, toggleActivity, isActivityCompleted } = useTripState();
 
@@ -141,6 +151,9 @@ export const ItineraryModule: React.FC = () => {
 
   return (
     <div className="max-w-3xl mx-auto px-4 pt-4 pb-28 font-sans text-slate-800 dark:text-slate-100">
+      {/* Countdown Timer Widget */}
+      <CountdownWidget />
+
       {/* Top Trip Summary & Progress Header */}
       <section className="bg-slate-900 text-white p-5 rounded-3xl mb-6 shadow-xl border border-slate-800 relative overflow-hidden">
         <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-3 mb-4">
@@ -248,6 +261,9 @@ export const ItineraryModule: React.FC = () => {
           </button>
         </div>
       </section>
+
+      {/* Contextual Weather Widget */}
+      {!isSearching && <WeatherWidget locationKey={currentDay.location} />}
 
       {/* Main Content Area: Search Mode vs. Normal Stage & Day View */}
       {isSearching ? (
@@ -381,7 +397,7 @@ export const ItineraryModule: React.FC = () => {
                   onClick={() => setActiveDayDate(day.date)}
                   className={`px-3 py-2 rounded-xl text-xs font-black whitespace-nowrap shrink-0 min-h-[44px] transition-all flex items-center gap-1.5 ${
                     isSelectedDay
-                      ? 'bg-white dark:bg-slate-900 text-rose-600 dark:text-rose-400 shadow-sm border border-slate-200 dark:border-slate-700'
+                      ? 'bg-white dark:bg-slate-900 text-rose-600 dark:text-rose-400 shadow-xs border border-slate-200 dark:border-slate-700'
                       : 'text-slate-600 dark:text-slate-400 hover:text-slate-900 dark:hover:text-white'
                   }`}
                 >
@@ -393,7 +409,7 @@ export const ItineraryModule: React.FC = () => {
           </div>
 
           {/* Day Card Header & Accommodation */}
-          <article className="bg-white dark:bg-slate-800 border-2 border-slate-200 dark:border-slate-700 rounded-3xl p-5 shadow-sm space-y-4">
+          <article className="bg-white dark:bg-slate-800 border-2 border-slate-200 dark:border-slate-700 rounded-3xl p-5 shadow-xs space-y-4">
             {/* Cabecera del Día */}
             <div className="border-b border-slate-100 dark:border-slate-700 pb-4">
               <div className="flex items-center justify-between mb-1">
@@ -427,7 +443,7 @@ export const ItineraryModule: React.FC = () => {
 
                 <button
                   onClick={() => setSelectedAccommodation(currentAccommodation)}
-                  className="min-h-[48px] px-4 py-2 bg-amber-500 hover:bg-amber-600 active:scale-95 text-white font-black text-xs rounded-xl flex items-center justify-center gap-1.5 shadow-sm transition-all shrink-0"
+                  className="min-h-[48px] px-4 py-2 bg-amber-500 hover:bg-amber-600 active:scale-95 text-white font-black text-xs rounded-xl flex items-center justify-center gap-1.5 shadow-xs transition-all shrink-0"
                 >
                   <MapPin className="w-4 h-4" />
                   <span>Ver dirección en japonés</span>
@@ -438,7 +454,7 @@ export const ItineraryModule: React.FC = () => {
             {/* Listado de Actividades / Puntos de Interés */}
             <div>
               <h3 className="text-xs uppercase font-black tracking-wider text-slate-400 mb-3 flex items-center justify-between">
-                <span>Actividades Programadas ({currentDayFilteredActivities.length})</span>
+                <span>Ruta y Paradas ({currentDayFilteredActivities.length})</span>
                 <span className="text-[10px] font-normal lowercase">Toque para marcar</span>
               </h3>
 
@@ -500,6 +516,154 @@ export const ItineraryModule: React.FC = () => {
               )}
             </div>
           </article>
+
+          {/* Integrated Daily Block: Shops & Recommended Commercial Places */}
+          {currentDay.shops && currentDay.shops.length > 0 && (
+            <section className="bg-white dark:bg-slate-800 border-2 border-slate-200 dark:border-slate-700 rounded-3xl p-5 shadow-xs space-y-3">
+              <button
+                onClick={() => setShowShops((prev) => !prev)}
+                className="w-full flex items-center justify-between text-left min-h-[44px]"
+              >
+                <div className="flex items-center gap-2">
+                  <div className="w-8 h-8 rounded-xl bg-purple-100 dark:bg-purple-950 text-purple-600 dark:text-purple-300 flex items-center justify-center shrink-0 border border-purple-200 dark:border-purple-900">
+                    <ShoppingBag className="w-4 h-4" />
+                  </div>
+                  <div>
+                    <h3 className="text-sm font-black text-slate-900 dark:text-white">
+                      Tiendas Recomendadas del Día ({currentDay.shops.length})
+                    </h3>
+                    <p className="text-[11px] font-bold text-slate-400">
+                      Comercios y tiendas clave de la zona visitada hoy
+                    </p>
+                  </div>
+                </div>
+
+                {showShops ? (
+                  <ChevronUp className="w-5 h-5 text-slate-400" />
+                ) : (
+                  <ChevronDown className="w-5 h-5 text-slate-400" />
+                )}
+              </button>
+
+              {showShops && (
+                <div className="divide-y divide-slate-100 dark:divide-slate-700/60 pt-2 space-y-2">
+                  {currentDay.shops.map((shop) => {
+                    const shopMapsUrl = `https://www.google.com/maps/search/?api=1&query=${encodeURIComponent(
+                      shop.locationQuery
+                    )}`;
+
+                    return (
+                      <div
+                        key={shop.id}
+                        className="pt-2 flex items-start justify-between gap-3"
+                      >
+                        <div className="space-y-0.5">
+                          <div className="flex items-center gap-2">
+                            <span className="text-xs font-black text-slate-900 dark:text-white">
+                              {shop.name}
+                            </span>
+                            <span className="text-[10px] font-black uppercase bg-purple-50 dark:bg-purple-950 text-purple-700 dark:text-purple-300 px-2 py-0.5 rounded-full border border-purple-200 dark:border-purple-900">
+                              {shop.category}
+                            </span>
+                          </div>
+                          {shop.note && (
+                            <p className="text-xs text-slate-600 dark:text-slate-400 font-medium leading-relaxed">
+                              {shop.note}
+                            </p>
+                          )}
+                        </div>
+
+                        <a
+                          href={shopMapsUrl}
+                          target="_blank"
+                          rel="noopener noreferrer"
+                          className="w-10 h-10 flex items-center justify-center rounded-xl bg-purple-50 dark:bg-purple-950/80 text-purple-600 dark:text-purple-300 hover:bg-purple-600 hover:text-white transition-all shrink-0 border border-purple-200/60 dark:border-purple-900 active:scale-95"
+                          title="Abrir tienda en Google Maps"
+                          aria-label={`Abrir mapa de ${shop.name}`}
+                        >
+                          <MapPin className="w-4 h-4" />
+                        </a>
+                      </div>
+                    );
+                  })}
+                </div>
+              )}
+            </section>
+          )}
+
+          {/* Integrated Daily Block: Restaurants & Gastronomy Points */}
+          {currentDay.restaurants && currentDay.restaurants.length > 0 && (
+            <section className="bg-white dark:bg-slate-800 border-2 border-slate-200 dark:border-slate-700 rounded-3xl p-5 shadow-xs space-y-3">
+              <button
+                onClick={() => setShowRestaurants((prev) => !prev)}
+                className="w-full flex items-center justify-between text-left min-h-[44px]"
+              >
+                <div className="flex items-center gap-2">
+                  <div className="w-8 h-8 rounded-xl bg-amber-100 dark:bg-amber-950 text-amber-600 dark:text-amber-300 flex items-center justify-center shrink-0 border border-amber-200 dark:border-amber-900">
+                    <UtensilsCrossed className="w-4 h-4" />
+                  </div>
+                  <div>
+                    <h3 className="text-sm font-black text-slate-900 dark:text-white">
+                      Restaurantes & Gastronomía del Día ({currentDay.restaurants.length})
+                    </h3>
+                    <p className="text-[11px] font-bold text-slate-400">
+                      Especialidades gastronómicas y locales recomendados de la fecha
+                    </p>
+                  </div>
+                </div>
+
+                {showRestaurants ? (
+                  <ChevronUp className="w-5 h-5 text-slate-400" />
+                ) : (
+                  <ChevronDown className="w-5 h-5 text-slate-400" />
+                )}
+              </button>
+
+              {showRestaurants && (
+                <div className="divide-y divide-slate-100 dark:divide-slate-700/60 pt-2 space-y-2">
+                  {currentDay.restaurants.map((rest) => {
+                    const restMapsUrl = `https://www.google.com/maps/search/?api=1&query=${encodeURIComponent(
+                      rest.locationQuery
+                    )}`;
+
+                    return (
+                      <div
+                        key={rest.id}
+                        className="pt-2 flex items-start justify-between gap-3"
+                      >
+                        <div className="space-y-0.5">
+                          <div className="flex items-center gap-2">
+                            <span className="text-xs font-black text-slate-900 dark:text-white">
+                              {rest.name}
+                            </span>
+                            <span className="text-[10px] font-black uppercase bg-amber-50 dark:bg-amber-950 text-amber-700 dark:text-amber-300 px-2 py-0.5 rounded-full border border-amber-200 dark:border-amber-900">
+                              {rest.specialty}
+                            </span>
+                          </div>
+                          {rest.recommendation && (
+                            <p className="text-xs text-slate-600 dark:text-slate-400 font-medium leading-relaxed">
+                              💡 {rest.recommendation}
+                            </p>
+                          )}
+                        </div>
+
+                        <a
+                          href={restMapsUrl}
+                          target="_blank"
+                          rel="noopener noreferrer"
+                          className="w-10 h-10 flex items-center justify-center rounded-xl bg-amber-50 dark:bg-amber-950/80 text-amber-600 dark:text-amber-300 hover:bg-amber-600 hover:text-white transition-all shrink-0 border border-amber-200/60 dark:border-amber-900 active:scale-95"
+                          title="Abrir restaurante en Google Maps"
+                          aria-label={`Abrir mapa de ${rest.name}`}
+                        >
+                          <MapPin className="w-4 h-4" />
+                        </a>
+                      </div>
+                    );
+                  })}
+                </div>
+              )}
+            </section>
+          )}
         </main>
       )}
 

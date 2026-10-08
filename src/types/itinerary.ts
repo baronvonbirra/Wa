@@ -14,6 +14,24 @@ export interface Activity {
   id: string;
   title: string;
   locationQuery: string;
+  type?: 'transit' | 'hotel' | 'sights' | 'shopping' | 'food' | 'theme_park' | 'culture' | 'checkin' | 'tech_hub';
+  coordinates?: [number, number];
+}
+
+export interface ShopItem {
+  id: string;
+  name: string;
+  category: string;
+  note?: string;
+  locationQuery: string;
+}
+
+export interface RestaurantItem {
+  id: string;
+  name: string;
+  specialty: string;
+  recommendation?: string;
+  locationQuery: string;
 }
 
 export interface DayItinerary {
@@ -22,8 +40,19 @@ export interface DayItinerary {
   formattedDate: string; // e.g., "Lunes, 21 de Diciembre de 2026"
   shortDate: string; // e.g., "21 Dic"
   title: string;
+  location: string;
   accommodationId: string;
   activities: Activity[];
+  shops?: ShopItem[];
+  restaurants?: RestaurantItem[];
+}
+
+export interface WeatherLocationInfo {
+  location: string;
+  temp: string;
+  condition: string;
+  clothingRecommendation: string;
+  iconName: string;
 }
 
 export interface Stage {
