@@ -4,7 +4,8 @@ import { useTripState } from '../hooks/useTripState';
 import { JapaneseAddressModal } from './JapaneseAddressModal';
 import { CountdownWidget } from './CountdownWidget';
 import { WeatherWidget } from './WeatherWidget';
-import { Accommodation, DayItinerary } from '../types/itinerary';
+import { AprenderModal } from './AprenderModal';
+import { Accommodation, DayItinerary, Activity, LearnInfo } from '../types/itinerary';
 import {
   Search,
   CheckCircle2,
@@ -19,8 +20,48 @@ import {
   ShoppingBag,
   UtensilsCrossed,
   ChevronDown,
-  ChevronUp
+  ChevronUp,
+  Lightbulb
 } from 'lucide-react';
+
+function getActivityLearnInfo(act: Activity, dayTitle: string): LearnInfo {
+  if (act.learnInfo) return act.learnInfo;
+
+  const typeLabels: Record<string, string> = {
+    transit: 'Transporte y Traslado',
+    sights: 'Hito Turístico y Cultural',
+    shopping: 'Zona Comercial y Compras',
+    food: 'Gastronomía Local',
+    theme_park: 'Parque Temático',
+    culture: 'Patrimonio e Historia',
+    hotel: 'Check-in & Alojamiento'
+  };
+
+  const catName = typeLabels[act.type || 'sights'] || 'Actividad Destacada';
+
+  return {
+    title: act.title,
+    subtitle: `${catName} • ${dayTitle}`,
+    summary: `Hito clave planificado en ${act.title}. Una parada especial para disfrutar en familia de la cultura, historia y ambiente de Japón.`,
+    pills: [
+      {
+        label: 'Dato Histórico / Contexto',
+        text: `Ubicado en el itinerario de ${dayTitle}. Este espacio refleja la armonía entre tradición y modernidad característica de las ciudades japonesas.`,
+        type: 'historical'
+      },
+      {
+        label: 'Curiosidad Cultural',
+        text: 'En espacios públicos de Japón se premia la tranquilidad y el orden. Recordad hablar en tono pausado y mantener limpias las áreas comunes.',
+        type: 'cultural'
+      },
+      {
+        label: 'Dato Práctico / Divertido',
+        text: `Podéis consultar la localización exacta en tiempo real usando el botón de Google Maps situado junto a esta tarjeta.`,
+        type: 'funFact'
+      }
+    ]
+  };
+}
 
 export const ItineraryModule: React.FC = () => {
   const [activeStageId, setActiveStageId] = useState<number>(0);
@@ -28,6 +69,9 @@ export const ItineraryModule: React.FC = () => {
   const [searchQuery, setSearchQuery] = useState<string>('');
   const [filterState, setFilterState] = useState<'all' | 'pending' | 'completed'>('all');
   const [selectedAccommodation, setSelectedAccommodation] = useState<Accommodation | null>(null);
+
+  // Modal Learn state
+  const [selectedLearnInfo, setSelectedLearnInfo] = useState<LearnInfo | null>(null);
 
   // Expandable cards state for Shops and Restaurants
   const [showShops, setShowShops] = useState<boolean>(true);
@@ -151,8 +195,8 @@ export const ItineraryModule: React.FC = () => {
 
   return (
     <div className="max-w-3xl mx-auto px-4 pt-4 pb-28 font-sans text-slate-800 dark:text-slate-100">
-      {/* Countdown Timer Widget */}
-      <CountdownWidget />
+      {/* Countdown Timer Widget with Learn trigger */}
+      <CountdownWidget onOpenLearnModal={(info) => setSelectedLearnInfo(info)} />
 
       {/* Top Trip Summary & Progress Header */}
       <section className="bg-slate-900 text-white p-5 rounded-3xl mb-6 shadow-xl border border-slate-800 relative overflow-hidden">
@@ -322,7 +366,7 @@ export const ItineraryModule: React.FC = () => {
                     return (
                       <div
                         key={act.id}
-                        className="flex items-center justify-between gap-3 p-2 rounded-xl bg-slate-50 dark:bg-slate-900/60"
+                        className="flex items-center justify-between gap-2 p-2 rounded-xl bg-slate-50 dark:bg-slate-900/60"
                       >
                         <button
                           onClick={() => toggleActivity(act.id)}
@@ -344,15 +388,25 @@ export const ItineraryModule: React.FC = () => {
                           </span>
                         </button>
 
-                        <a
-                          href={mapsUrl}
-                          target="_blank"
-                          rel="noopener noreferrer"
-                          className="w-10 h-10 flex items-center justify-center rounded-xl bg-rose-100 dark:bg-rose-950/80 text-rose-600 dark:text-rose-300 shrink-0 hover:scale-105 transition-all"
-                          title="Abrir en Google Maps"
-                        >
-                          <MapPin className="w-4 h-4" />
-                        </a>
+                        <div className="flex items-center gap-1.5 shrink-0">
+                          <button
+                            onClick={() => setSelectedLearnInfo(getActivityLearnInfo(act, day.title))}
+                            className="px-2.5 py-1.5 rounded-xl bg-amber-100 dark:bg-amber-950/80 text-amber-800 dark:text-amber-300 hover:bg-amber-200 font-extrabold text-[10px] flex items-center gap-1 border border-amber-200 dark:border-amber-900 active:scale-95 transition-all"
+                          >
+                            <Lightbulb className="w-3.5 h-3.5 text-amber-600 dark:text-amber-400" />
+                            <span>Aprender</span>
+                          </button>
+
+                          <a
+                            href={mapsUrl}
+                            target="_blank"
+                            rel="noopener noreferrer"
+                            className="w-8 h-8 flex items-center justify-center rounded-xl bg-rose-100 dark:bg-rose-950/80 text-rose-600 dark:text-rose-300 hover:scale-105 transition-all"
+                            title="Abrir en Google Maps"
+                          >
+                            <MapPin className="w-4 h-4" />
+                          </a>
+                        </div>
                       </div>
                     );
                   })}
@@ -455,7 +509,7 @@ export const ItineraryModule: React.FC = () => {
             <div>
               <h3 className="text-xs uppercase font-black tracking-wider text-slate-400 mb-3 flex items-center justify-between">
                 <span>Ruta y Paradas ({currentDayFilteredActivities.length})</span>
-                <span className="text-[10px] font-normal lowercase">Toque para marcar</span>
+                <span className="text-[10px] font-normal lowercase">Toque para marcar o aprender</span>
               </h3>
 
               {currentDayFilteredActivities.length === 0 ? (
@@ -475,9 +529,9 @@ export const ItineraryModule: React.FC = () => {
                     return (
                       <div
                         key={act.id}
-                        className="py-3 flex items-center justify-between gap-3 group hover:bg-slate-50/80 dark:hover:bg-slate-700/30 px-2 rounded-xl transition-all"
+                        className="py-3 flex items-center justify-between gap-2 group hover:bg-slate-50/80 dark:hover:bg-slate-700/30 px-2 rounded-xl transition-all"
                       >
-                        {/* Interactive Touch Target Checkbox (min 48px area) */}
+                        {/* Interactive Touch Target Checkbox */}
                         <button
                           onClick={() => toggleActivity(act.id)}
                           className="flex items-center gap-3 text-left min-h-[48px] flex-grow active:scale-98 transition-all"
@@ -498,17 +552,28 @@ export const ItineraryModule: React.FC = () => {
                           </span>
                         </button>
 
-                        {/* Quick Action Google Maps (min 48px touch target) */}
-                        <a
-                          href={mapsUrl}
-                          target="_blank"
-                          rel="noopener noreferrer"
-                          className="w-12 h-12 flex items-center justify-center rounded-2xl bg-rose-50 dark:bg-rose-950/80 text-rose-600 dark:text-rose-300 hover:bg-rose-600 hover:text-white transition-all shrink-0 border border-rose-200/60 dark:border-rose-900 active:scale-95"
-                          title="Abrir mapa en Google Maps"
-                          aria-label={`Abrir mapa de ${act.title}`}
-                        >
-                          <ExternalLink className="w-5 h-5" />
-                        </a>
+                        {/* Actions: Learn Modal + Google Maps */}
+                        <div className="flex items-center gap-1.5 shrink-0">
+                          <button
+                            onClick={() => setSelectedLearnInfo(getActivityLearnInfo(act, currentDay.title))}
+                            className="min-h-[44px] px-2.5 py-1.5 rounded-xl bg-amber-50 dark:bg-amber-950/80 hover:bg-amber-100 text-amber-800 dark:text-amber-300 font-black text-xs flex items-center gap-1 border border-amber-200 dark:border-amber-900 active:scale-95 transition-all"
+                            title={`Aprender sobre ${act.title}`}
+                          >
+                            <Lightbulb className="w-3.5 h-3.5 text-amber-500 shrink-0" />
+                            <span className="hidden sm:inline">¡Aprender!</span>
+                          </button>
+
+                          <a
+                            href={mapsUrl}
+                            target="_blank"
+                            rel="noopener noreferrer"
+                            className="w-11 h-11 flex items-center justify-center rounded-2xl bg-rose-50 dark:bg-rose-950/80 text-rose-600 dark:text-rose-300 hover:bg-rose-600 hover:text-white transition-all shrink-0 border border-rose-200/60 dark:border-rose-900 active:scale-95"
+                            title="Abrir mapa en Google Maps"
+                            aria-label={`Abrir mapa de ${act.title}`}
+                          >
+                            <ExternalLink className="w-4 h-4" />
+                          </a>
+                        </div>
                       </div>
                     );
                   })}
@@ -698,6 +763,13 @@ export const ItineraryModule: React.FC = () => {
           </button>
         </div>
       </nav>
+
+      {/* Interactive Aprender Modal */}
+      <AprenderModal
+        isOpen={Boolean(selectedLearnInfo)}
+        onClose={() => setSelectedLearnInfo(null)}
+        learnInfo={selectedLearnInfo}
+      />
 
       {/* Japanese Address Modal */}
       <JapaneseAddressModal

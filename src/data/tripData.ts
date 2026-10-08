@@ -528,97 +528,140 @@ export const TRIP_DATA: TripItinerary = {
         "date": "2026-12-27",
         "formattedDate": "Domingo, 27 de Diciembre de 2026",
         "shortDate": "27 Dic",
-        "title": "Tokio (Shinjuku e Ikebukuro)",
+        "title": "Tokio Tradicional, Imperial y el Shinjuku Otaku/Cine",
         "location": "Tokyo",
         "accommodationId": "hotel-2",
         "activities": [
           {
             "id": "act-7-1",
-            "title": "Jardín Nacional Shinjuku Gyoen",
-            "locationQuery": "Shinjuku Gyoen National Garden",
-            "type": "sights"
+            "title": "Estación de Tokio",
+            "locationQuery": "Tokyo Station",
+            "type": "transit"
           },
           {
             "id": "act-7-2",
-            "title": "Callejón Omoide Yokocho",
-            "locationQuery": "Omoide Yokocho Shinjuku",
+            "title": "Puerta Ōte-mon (Jardines Orientales del Palacio Imperial)",
+            "locationQuery": "Otemon Gate Tokyo Imperial Palace",
             "type": "sights"
           },
           {
             "id": "act-7-3",
-            "title": "Distrito de Kabukicho",
-            "locationQuery": "Kabukicho Shinjuku",
+            "title": "Santuario Yasukuni",
+            "locationQuery": "Yasukuni Shrine Tokyo",
             "type": "sights"
           },
           {
             "id": "act-7-4",
-            "title": "Sunshine City Ikebukuro",
-            "locationQuery": "Sunshine City Ikebukuro",
+            "title": "Kanda Jinbocho (Librerías antiguas, cómics y vinilos)",
+            "locationQuery": "Kanda Jimbocho Tokyo",
             "type": "shopping"
           },
           {
             "id": "act-7-5",
-            "title": "Pokémon Center Mega Tokyo",
-            "locationQuery": "Pokémon Center Mega Tokyo",
-            "type": "shopping"
+            "title": "Shinjuku (Centro)",
+            "locationQuery": "Shinjuku Station Tokyo",
+            "type": "sights"
           },
           {
             "id": "act-7-6",
-            "title": "Mandarake Ikebukuro",
-            "locationQuery": "Mandarake Ikebukuro",
-            "type": "shopping"
+            "title": "Ayuntamiento de Tokio (Tokyo Metropolitan Government Building)",
+            "locationQuery": "Tokyo Metropolitan Government Building Observation Deck",
+            "type": "sights"
           },
           {
             "id": "act-7-7",
-            "title": "Animate Ikebukuro Main Store",
-            "locationQuery": "Animate Ikebukuro Main Store",
-            "type": "shopping"
+            "title": "YUNIKA VISION (Pantallas LED gigantes)",
+            "locationQuery": "YUNIKA VISION Shinjuku",
+            "type": "sights"
+          },
+          {
+            "id": "act-7-8",
+            "title": "Godzilla Head (Hotel Gracery Shinjuku)",
+            "locationQuery": "Godzilla Head Shinjuku Hotel Gracery",
+            "type": "sights"
+          },
+          {
+            "id": "act-7-9",
+            "title": "Callejón Omoide Yokochō",
+            "locationQuery": "Omoide Yokocho Shinjuku",
+            "type": "sights"
+          },
+          {
+            "id": "act-7-10",
+            "title": "Shinjuku Golden-Gai",
+            "locationQuery": "Shinjuku Golden Gai",
+            "type": "sights"
+          },
+          {
+            "id": "act-7-11",
+            "title": "Santuario Suga (Yotsuya)",
+            "locationQuery": "Suga Shrine Yotsuya Tokyo",
+            "type": "sights"
+          },
+          {
+            "id": "act-7-12",
+            "title": "Escaleras de \"Your Name\" (Your Name Stairs / Kimi no Na wa)",
+            "locationQuery": "Your Name Stairs Suga Shrine Yotsuya",
+            "type": "sights"
+          },
+          {
+            "id": "act-7-13",
+            "title": "Puente local del recorrido",
+            "locationQuery": "Yotsuya Bridge Tokyo",
+            "type": "sights"
           }
         ],
         "shops": [
           {
             "id": "shop-7-1",
-            "name": "Pokémon Center Mega Tokyo & Pikachu Sweets",
-            "category": "Tienda Oficial Pokémon",
-            "note": "Uno de los Pokémon Center más grandes de Japón en Sunshine City.",
-            "locationQuery": "Pokémon Center Mega Tokyo"
-          },
-          {
-            "id": "shop-7-2",
-            "name": "Animate Ikebukuro Main Store",
-            "category": "Manga & Anime",
-            "note": "La tienda de anime más grande del mundo (9 plantas).",
-            "locationQuery": "Animate Ikebukuro Main Store"
-          },
-          {
-            "id": "shop-7-3",
-            "name": "Mandarake Ikebukuro (Otome Road)",
-            "category": "Doujinshi & Coleccionismo",
-            "note": "Especializada en merchandising raro de anime e ilustración.",
-            "locationQuery": "Mandarake Ikebukuro"
+            "name": "Disk Union Jinbocho CD Record shop",
+            "category": "Música & Vinilos Vintage",
+            "note": "Paraíso para los amantes de la música, vinilos raros y CDs coleccionables.",
+            "locationQuery": "Disk Union Jinbocho CD Record shop"
           }
         ],
         "restaurants": [
           {
             "id": "rest-7-1",
-            "name": "Tsunahachi Shinjuku Honten",
-            "specialty": "Tempura Tradicional",
-            "recommendation": "Famoso restaurante de tempura crujiente desde 1924.",
-            "locationQuery": "Tempura Tsunahachi Shinjuku"
+            "name": "Curry Bondy Jinbocho",
+            "specialty": "Curry Japonés Tradicional",
+            "recommendation": "Famosísimo curry al estilo japonés servido con patatas cocidas con mantequilla.",
+            "locationQuery": "Curry Bondy Jinbocho"
           },
           {
             "id": "rest-7-2",
-            "name": "Mutekiya Ikebukuro",
-            "specialty": "Tonkotsu Ramen Denso",
-            "recommendation": "Legendarias colas para probar su sabroso caldo de cerdo cargado.",
-            "locationQuery": "Mutekiya Ramen Ikebukuro"
+            "name": "Udon Maruka",
+            "specialty": "Sanuki Udon",
+            "recommendation": "Considerado uno de los mejores restaurantes de udon artesanal de todo Tokio.",
+            "locationQuery": "Udon Maruka Jinbocho"
           },
           {
             "id": "rest-7-3",
-            "name": "Yakitori en Omoide Yokocho",
-            "specialty": "Izakaya / Brochetas",
-            "recommendation": "Cenar brochetas de pollo al carbón en el emblemático 'Callejón de los Recuerdos'.",
-            "locationQuery": "Omoide Yokocho Shinjuku"
+            "name": "Tempura Shinjuku Tsunahachi Souhonten",
+            "specialty": "Tempura Tradicional",
+            "recommendation": "Famoso restaurante de tempura crujiente artesanal desde 1924.",
+            "locationQuery": "Tempura Tsunahachi Shinjuku"
+          },
+          {
+            "id": "rest-7-4",
+            "name": "YAKITORI Torikizoku Shinjuku Yasukuni Dori",
+            "specialty": "Izakaya & Brochetas Yakitori",
+            "recommendation": "Taberna japonesa tradicional con brochetas de pollo al carbón.",
+            "locationQuery": "YAKITORI Torikizoku Shinjuku Yasukuni Dori"
+          },
+          {
+            "id": "rest-7-5",
+            "name": "Gyopao Gyoza Shinjuku",
+            "specialty": "Gyoza & Asian Craft Beer",
+            "recommendation": "Gyozas jugosas estilo xiao long bao muy populares en Shinjuku.",
+            "locationQuery": "Gyopao Gyoza Shinjuku"
+          },
+          {
+            "id": "rest-7-6",
+            "name": "Café La Bohème Shinjuku Gyoen",
+            "specialty": "Cafetería & Gastronomía",
+            "recommendation": "Escenario emblemático que inspiró la cafetería donde trabaja Taki en 'Your Name'.",
+            "locationQuery": "Cafe La Boheme Shinjuku Gyoen"
           }
         ]
       }
