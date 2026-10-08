@@ -1088,7 +1088,24 @@ export const TRIP_DATA: TripItinerary = {
               "id": "act-8-1",
               "title": "Santuario Kawaguchi Asama",
               "locationQuery": "Kawaguchi Asama Shrine",
-              "type": "sights"
+              "type": "sights",
+              "learnInfo": {
+                            "title": "Santuario Kawaguchi Asama y Mirador Tenku no Torii",
+                            "subtitle": "28 de Diciembre • Kawaguchiko ⛩️",
+                            "summary": "Un santuario milenario fundado en el año 865 para calmar las erupciones del Monte Fuji. Arriba en la colina se encuentra el 'Torii del Cielo', un marco rojo sagrado que encuadra el volcán.",
+                            "pills": [
+                                          {
+                                                        "label": "Dato Curioso / Histórico",
+                                                        "text": "Las puertas Torii marcan la frontera entre el mundo profano y el espacio sagrado de los kami (espíritus Shinto).",
+                                                        "type": "historical"
+                                          },
+                                          {
+                                                        "label": "Píldora Kawaii para Lily y James",
+                                                        "text": "¡Es uno de los miradores más fotogénicos del mundo! Si miráis con atención, el marco rojo hace que el volcán parezca una pintura gigante hecha por la naturaleza.",
+                                                        "type": "funFact"
+                                          }
+                            ]
+              }
             },
             {
               "id": "act-8-2",
@@ -1106,25 +1123,93 @@ export const TRIP_DATA: TripItinerary = {
               "id": "act-8-4",
               "title": "Mirador Tenku no Torii",
               "locationQuery": "Tenku no Torii Kawaguchiko",
-              "type": "sights"
+              "type": "sights",
+              "learnInfo": {
+                            "title": "Mirador Tenku no Torii",
+                            "subtitle": "28 de Diciembre • Kawaguchiko ⛩️",
+                            "summary": "El 'Torii del Cielo', un majestuoso marco rojo sagrado situado en la colina de Kawaguchi Asama que enmarca de forma inolvidable la silueta del Monte Fuji sobre el lago.",
+                            "pills": [
+                                          {
+                                                        "label": "Dato Histórico",
+                                                        "text": "Fue colocado en lo alto del monte para adorar reverentemente al sagrado Monte Fuji desde la lejanía.",
+                                                        "type": "historical"
+                                          },
+                                          {
+                                                        "label": "Píldora Kawaii",
+                                                        "text": "¡Parece un marco de fotos gigante donde el paisaje cambia de color según la hora del día!",
+                                                        "type": "funFact"
+                                          }
+                            ]
+              }
             },
             {
               "id": "act-8-5",
               "title": "Cascada Haha-no-Shirataki",
               "locationQuery": "Haha-no-Shirataki Waterfall",
-              "type": "sights"
+              "type": "sights",
+              "learnInfo": {
+                            "title": "Cascada Haha-no-Shirataki (Cascada de la Leche Materna)",
+                            "subtitle": "28 de Diciembre • Kawaguchiko",
+                            "summary": "Una hermosa cascada escondida en el bosque que históricamente usaban los peregrinos para purificarse con agua helada antes de subir al Fuji.",
+                            "pills": [
+                                          {
+                                                        "label": "Dato Curioso / Histórico",
+                                                        "text": "Los antiguos peregrinos realizaban el ritual Misogi bajo sus heladas aguas para limpiar su mente y espíritu antes de iniciar la ascensión al sagrado volcán.",
+                                                        "type": "cultural"
+                                          },
+                                          {
+                                                        "label": "Píldora Kawaii / Misión",
+                                                        "text": "Escuchad el murmullo del agua y buscad los pequeños carámbanos de hielo que se forman en las rocas en invierno como cristales Mágicos.",
+                                                        "type": "funFact"
+                                          }
+                            ]
+              }
             },
             {
               "id": "act-8-6",
               "title": "Parque Nagasaki",
               "locationQuery": "Nagasaki Park Kawaguchiko",
-              "type": "sights"
+              "type": "sights",
+              "learnInfo": {
+                            "title": "Parque Nagasaki",
+                            "subtitle": "28 de Diciembre • Kawaguchiko",
+                            "summary": "Parque a la orilla del lago Kawaguchiko con paseos llenos de vistas frontales y despejadas del volcán Fuji.",
+                            "pills": [
+                                          {
+                                                        "label": "Naturaleza e Historia",
+                                                        "text": "Uno de los salientes más tranquilos del lago Kawaguchiko para admirar la inmensidad del volcán en invierno.",
+                                                        "type": "geography"
+                                          },
+                                          {
+                                                        "label": "Píldora Kawaii",
+                                                        "text": "¡Buscad la forma perfecta del cono de nieve del Fuji reflejándose en el agua como un espejo!",
+                                                        "type": "funFact"
+                                          }
+                            ]
+              }
             },
             {
               "id": "act-8-7",
               "title": "Parque Oishi",
               "locationQuery": "Oishi Park Kawaguchiko",
-              "type": "sights"
+              "type": "sights",
+              "learnInfo": {
+                            "title": "Parque Oishi",
+                            "subtitle": "28 de Diciembre • Kawaguchiko",
+                            "summary": "Parques a la orilla del lago Kawaguchiko con paseos llenos de flores y vistas frontales del volcán.",
+                            "pills": [
+                                          {
+                                                        "label": "Dato Curioso",
+                                                        "text": "Famoso por su sendero panorámico de flores a lo largo de 350 metros bordeando las aguas cristalinas del lago.",
+                                                        "type": "geography"
+                                          },
+                                          {
+                                                        "label": "Píldora Kawaii",
+                                                        "text": "¡En el centro del parque podéis probar helados artesanales sabor lavanda y arándanos con vistas directas al Fuji!",
+                                                        "type": "funFact"
+                                          }
+                            ]
+              }
             }
           ],
           "shops": [
@@ -1190,13 +1275,47 @@ export const TRIP_DATA: TripItinerary = {
               "id": "act-9-5",
               "title": "Parque Arakurayama Sengen",
               "locationQuery": "Chureito Pagoda Arakurayama Sengen Park",
-              "type": "sights"
+              "type": "sights",
+              "learnInfo": {
+                            "title": "Parque Arakurayama Sengen (Pagoda Chureito)",
+                            "subtitle": "29 de Diciembre • Fujiyoshida ⛩️",
+                            "summary": "La postal más famosa de todo Japón: una pagoda roja de cinco pisos con el Monte Fuji de fondo.",
+                            "pills": [
+                                          {
+                                                        "label": "Dato Curioso",
+                                                        "text": "Para llegar arriba hay que subir 398 escalones (llamados la escalera Sakuya).",
+                                                        "type": "historical"
+                                          },
+                                          {
+                                                        "label": "Misión Kawaii para James",
+                                                        "text": "¡Contar los cinco tejados de la pagoda! Cada piso representa uno de los cinco elementos de la filosofía budista: Tierra, Agua, Fuego, Viento y Vacío.",
+                                                        "type": "funFact"
+                                          }
+                            ]
+              }
             },
             {
               "id": "act-9-6",
               "title": "Santuario Kitaguchi Hongu Fuji Sengen",
               "locationQuery": "Kitaguchi Hongu Fuji Sengen Shrine",
-              "type": "sights"
+              "type": "sights",
+              "learnInfo": {
+                            "title": "Santuario Kitaguchi Hongu Fuji Sengen",
+                            "subtitle": "29 de Diciembre • Fujiyoshida",
+                            "summary": "El punto de partida histórico donde los antiguos peregrinos iniciaban el ascenso a pie al monte sagrado.",
+                            "pills": [
+                                          {
+                                                        "label": "Dato Histórico",
+                                                        "text": "El bosque de entrada cuenta con cedros milenarios gigantes (Sugi) de más de 1.000 años de antigüedad que han visto pasar a generaciones de montañeros.",
+                                                        "type": "historical"
+                                          },
+                                          {
+                                                        "label": "Respeto y Etiqueta",
+                                                        "text": "Haced una reverencia respetuosa al cruzar el enorme Torii de madera roja que marca el inicio del camino sagrado.",
+                                                        "type": "etiquette"
+                                          }
+                            ]
+              }
             },
             {
               "id": "act-9-7",
@@ -1214,13 +1333,47 @@ export const TRIP_DATA: TripItinerary = {
               "id": "act-9-9",
               "title": "Manantiales de Oshino Hakkai",
               "locationQuery": "Oshino Hakkai Yamanashi",
-              "type": "sights"
+              "type": "sights",
+              "learnInfo": {
+                            "title": "Manantiales de Oshino Hakkai",
+                            "subtitle": "29 de Diciembre • Oshino",
+                            "summary": "Ocho estanques cristalinos alimentados por la nieve derretida del Monte Fuji, que se filtra a través de capas de lava durante más de 80 años.",
+                            "pills": [
+                                          {
+                                                        "label": "Dato Curioso",
+                                                        "text": "El agua es tan purísima y transparente que se pueden ver peces enormes nadando a varios metros de profundidad como si flotaran en el aire.",
+                                                        "type": "geography"
+                                          },
+                                          {
+                                                        "label": "Píldora Kawaii / Misión",
+                                                        "text": "¡Acercaos al estanque central Waku-ike para tocar el agua helada de la nieve derretida del Fuji!",
+                                                        "type": "funFact"
+                                          }
+                            ]
+              }
             },
             {
               "id": "act-9-10",
               "title": "Shinobi No Sato Ninja Village",
               "locationQuery": "Oshino Ninja Village Shinobi no Sato",
-              "type": "sights"
+              "type": "sights",
+              "learnInfo": {
+                            "title": "Shinobi No Sato Ninja Village",
+                            "subtitle": "29 de Diciembre • Oshino 🗡️",
+                            "summary": "Un parque temático cultural sobre los secretos y técnicas de los ninjas de la época feudal.",
+                            "pills": [
+                                          {
+                                                        "label": "Dato Histórico",
+                                                        "text": "Los ninjas (o shinobi) eran expertos en artes marciales, espionaje y camuflaje que servían a los señores feudales en el Japón antiguo.",
+                                                        "type": "cultural"
+                                          },
+                                          {
+                                                        "label": "Misión Ninja para Lily y James",
+                                                        "text": "Pasar por la 'Casa de los Trucos Ninja' atravesando paredes falsas, pasadizos secretos y lanzando estrellas shuriken.",
+                                                        "type": "funFact"
+                                          }
+                            ]
+              }
             }
           ],
           "shops": [
@@ -1269,7 +1422,24 @@ export const TRIP_DATA: TripItinerary = {
               "id": "act-10-1",
               "title": "Santuario Sakurayama Hachiman",
               "locationQuery": "Sakurayama Hachimangu Takayama",
-              "type": "sights"
+              "type": "sights",
+              "learnInfo": {
+                            "title": "Santuario Sakurayama Hachiman y Ruta Higashiyama",
+                            "subtitle": "30 de Diciembre • Takayama",
+                            "summary": "El santuario protector del norte de la ciudad y el tranquilo camino de templos de madera entre cedros gigantes.",
+                            "pills": [
+                                          {
+                                                        "label": "Dato Histórico",
+                                                        "text": "Custodia las majestuosas carrozas Yatai de más de 300 años utilizadas en el célebre Festival de Takayama.",
+                                                        "type": "historical"
+                                          },
+                                          {
+                                                        "label": "Píldora Kawaii / Misión",
+                                                        "text": "Pasear en silencio por la ruta Higashiyama escuchando el crujido de las botas en la nieve bajo los arboles centenarios.",
+                                                        "type": "funFact"
+                                          }
+                            ]
+              }
             },
             {
               "id": "act-10-2",
@@ -1323,7 +1493,24 @@ export const TRIP_DATA: TripItinerary = {
               "id": "act-10-10",
               "title": "Distrito histórico Sanmachi Suji",
               "locationQuery": "Sanmachi Suji Takayama",
-              "type": "sights"
+              "type": "sights",
+              "learnInfo": {
+                            "title": "Distrito Histórico Sanmachi Suji",
+                            "subtitle": "30 de Diciembre • Takayama",
+                            "summary": "Un conjunto de tres calles perfectamente conservadas de la época de Edo (siglos XVII-XIX) con casas de madera oscura, tiendas tradicionales y canales de agua limpia.",
+                            "pills": [
+                                          {
+                                                        "label": "Dato Curioso",
+                                                        "text": "Las grandes bolas de ramas de cedro (Sugidama) colgadas en las entradas indican que allí se elabora sake tradicional.",
+                                                        "type": "historical"
+                                          },
+                                          {
+                                                        "label": "Píldora Gastronómica",
+                                                        "text": "Aquí se prueba el famoso sushi de ternera de Hida servido sobre una galleta crujiente de arroz.",
+                                                        "type": "funFact"
+                                          }
+                            ]
+              }
             },
             {
               "id": "act-10-11",
@@ -1341,7 +1528,24 @@ export const TRIP_DATA: TripItinerary = {
               "id": "act-10-13",
               "title": "Puente Nakahashi",
               "locationQuery": "Nakahashi Bridge Takayama",
-              "type": "sights"
+              "type": "sights",
+              "learnInfo": {
+                            "title": "Puente Nakahashi",
+                            "subtitle": "30 de Diciembre • Takayama",
+                            "summary": "El icónico puente de madera lacada en rojo bermellón que cruza el río Miyagawa.",
+                            "pills": [
+                                          {
+                                                        "label": "Dato Histórico",
+                                                        "text": "El puente rojo de Nakahashi es el símbolo emblemático que conecta el centro antiguo de Takayama con las colinas de los templos.",
+                                                        "type": "cultural"
+                                          },
+                                          {
+                                                        "label": "Píldora Kawaii",
+                                                        "text": "¡Mirad hacia abajo al río helado para saludar a los patos e patitos que nadan alegremente entre la nieve!",
+                                                        "type": "funFact"
+                                          }
+                            ]
+              }
             }
           ],
           "shops": [
@@ -1415,19 +1619,70 @@ export const TRIP_DATA: TripItinerary = {
               "id": "act-11-4",
               "title": "Aldea Gassho Village (Shirakawa-go)",
               "locationQuery": "Shirakawago Gassho Village",
-              "type": "sights"
+              "type": "sights",
+              "learnInfo": {
+                            "title": "Aldea Histórica de Shirakawa-go (Ogimachi)",
+                            "subtitle": "31 de Diciembre • Shirakawa-go ❄️",
+                            "summary": "Una aldea de montaña declarada Patrimonio de la Humanidad, famosa por sus casas con tejados de paja empinados (Gassho-zukuri).",
+                            "pills": [
+                                          {
+                                                        "label": "Dato Curioso",
+                                                        "text": "Gassho-zukuri significa 'construido como manos en oración'. Los tejados tienen una inclinación de 60 grados para que las toneladas de nieve invernal resbalen y no colapsen las estructuras.",
+                                                        "type": "historical"
+                                          },
+                                          {
+                                                        "label": "Detalle de Ingeniería",
+                                                        "text": "¡Las casas se construyeron sin usar un solo clavo de metal! Toda la estructura de madera se amarra con cuerdas de paja de arroz.",
+                                                        "type": "cultural"
+                                          }
+                            ]
+              }
             },
             {
               "id": "act-11-5",
               "title": "Casa Wada (Shirakawa-go)",
               "locationQuery": "Wada House Shirakawago",
-              "type": "sights"
+              "type": "sights",
+              "learnInfo": {
+                            "title": "Casa Wada y Casa Nagase",
+                            "subtitle": "31 de Diciembre • Shirakawa-go ❄️",
+                            "summary": "Las residencias de madera más grandes de la aldea. En el último piso bajo el tejado se criaban históricamente gusanos de seda durante el invierno.",
+                            "pills": [
+                                          {
+                                                        "label": "Dato Histórico",
+                                                        "text": "En el desván superior bajo el tejado de paja se mantenían encendidos fogones tradicionales Irori para dar calor constante a los gusanos de seda en invierno.",
+                                                        "type": "historical"
+                                          },
+                                          {
+                                                        "label": "Píldora Kawaii / Misión",
+                                                        "text": "Subid por las inclinadas escaleras de madera sin zapatos para ver la estructura de troncos amarrados con cuerdas.",
+                                                        "type": "funFact"
+                                          }
+                            ]
+              }
             },
             {
               "id": "act-11-6",
               "title": "Casa Nagase (Shirakawa-go)",
               "locationQuery": "Nagase House Shirakawago",
-              "type": "sights"
+              "type": "sights",
+              "learnInfo": {
+                            "title": "Casa Nagase (Shirakawa-go)",
+                            "subtitle": "31 de Diciembre • Shirakawa-go ❄️",
+                            "summary": "Residencia histórica Gassho-zukuri de 5 plantas perteneciente a una antigua dinastía de médicos de la aldea.",
+                            "pills": [
+                                          {
+                                                        "label": "Historia y Medicina",
+                                                        "text": "Exhibe instrumentos médicos antiguos del período Edo y artefactos de la vida cotidiana en las montañas nevadas.",
+                                                        "type": "historical"
+                                          },
+                                          {
+                                                        "label": "Detalle Asombroso",
+                                                        "text": "¡Sus vigas de madera llevan en pie más de 250 años soportando nevadas récord año tras año!",
+                                                        "type": "cultural"
+                                          }
+                            ]
+              }
             },
             {
               "id": "act-11-7",
@@ -1541,13 +1796,47 @@ export const TRIP_DATA: TripItinerary = {
               "id": "act-12-7",
               "title": "Santuario Hie",
               "locationQuery": "Hie Shrine Takayama",
-              "type": "sights"
+              "type": "sights",
+              "learnInfo": {
+                            "title": "Santuario Hie y Templo Hida Kokubunji",
+                            "subtitle": "01 de Enero • Takayama (Hatsumode)",
+                            "summary": "Los lugares donde los habitantes de Takayama acuden el 1 de enero para hacer el Hatsumode (la primera visita del año al santuario para pedir buena suerte).",
+                            "pills": [
+                                          {
+                                                        "label": "Dato Curioso",
+                                                        "text": "En Hida Kokubunji hay un árbol Ginkgo gigante de más de 1.200 años. La leyenda dice que cuando caen todas sus hojas doradas, llega la gran nevada del invierno.",
+                                                        "type": "historical"
+                                          },
+                                          {
+                                                        "label": "Tradición de Año Nuevo",
+                                                        "text": "Hatsumode es la tradición japonesa de hacer la primera oración del año en el santuario para desear salud y prosperidad familiar.",
+                                                        "type": "cultural"
+                                          }
+                            ]
+              }
             },
             {
               "id": "act-12-8",
               "title": "Templo Hida Kokubunji",
               "locationQuery": "Hida Kokubunji Temple Takayama",
-              "type": "sights"
+              "type": "sights",
+              "learnInfo": {
+                            "title": "Templo Hida Kokubunji",
+                            "subtitle": "01 de Enero • Takayama (Hatsumode)",
+                            "summary": "El templo budista más antiguo de Takayama, custodia de la famosa pagoda de madera de tres pisos.",
+                            "pills": [
+                                          {
+                                                        "label": "Leyenda del Arbol Sagrado",
+                                                        "text": "El gran árbol Ginkgo milenario es considerado el espíritu guardián que protege a Takayama de los incendios y heladas.",
+                                                        "type": "cultural"
+                                          },
+                                          {
+                                                        "label": "Píldora Kawaii / Misión",
+                                                        "text": "Comprar un amuleto Omamori o escribir un deseo para el año 2027 en una tablilla de madera Ema.",
+                                                        "type": "funFact"
+                                          }
+                            ]
+              }
             }
           ],
           "shops": [
@@ -1611,13 +1900,47 @@ export const TRIP_DATA: TripItinerary = {
               "id": "act-13-1",
               "title": "Templo Tō-ji",
               "locationQuery": "Toji Temple Kyoto",
-              "type": "sights"
+              "type": "sights",
+              "learnInfo": {
+                            "title": "Templo Tō-ji y Torre de Kioto",
+                            "subtitle": "02 de Enero • Kioto Sur",
+                            "summary": "La pagoda de madera más alta de Japón (55 metros), construida en el siglo IX.",
+                            "pills": [
+                                          {
+                                                        "label": "Patrimonio de la Humanidad",
+                                                        "text": "Fundado en el año 796 al comienzo del período Heian, era la puerta de bienvenida este a la antigua capital imperial de Kioto.",
+                                                        "type": "historical"
+                                          },
+                                          {
+                                                        "label": "Contraste Único",
+                                                        "text": "Desde sus jardines podéis ver el contraste entre la pagoda clásica del siglo IX y la moderna Torre de Kioto recortada en el cielo.",
+                                                        "type": "cultural"
+                                          }
+                            ]
+              }
             },
             {
               "id": "act-13-2",
               "title": "Santuario Fushimi Inari-taisha",
               "locationQuery": "Fushimi Inari Taisha Kyoto",
-              "type": "sights"
+              "type": "sights",
+              "learnInfo": {
+                            "title": "Santuario Fushimi Inari-taisha",
+                            "subtitle": "02 de Enero • Kioto Sur 🦊",
+                            "summary": "El santuario dedicado a Inari, la deidad del arroz, la agricultura y los negocios, famoso por sus túneles de más de 10.000 puertas Torii rojas (Senbon Torii).",
+                            "pills": [
+                                          {
+                                                        "label": "Dato Curioso",
+                                                        "text": "Veréis cientos de estatuas de zorros (Kitsune), los mensajeros sagrados de Inari. Muchos llevan llaves o pergaminos en la boca.",
+                                                        "type": "historical"
+                                          },
+                                          {
+                                                        "label": "Misión Kawaii",
+                                                        "text": "Buscar las estatuas de zorritos que llevan baberos rojos tradicionales atados al cuello.",
+                                                        "type": "funFact"
+                                          }
+                            ]
+              }
             },
             {
               "id": "act-13-3",
@@ -1629,7 +1952,24 @@ export const TRIP_DATA: TripItinerary = {
               "id": "act-13-4",
               "title": "Sanjūsangen-dō (1001 estatuas)",
               "locationQuery": "Sanjusangendo Kyoto",
-              "type": "sights"
+              "type": "sights",
+              "learnInfo": {
+                            "title": "Templo Sanjūsangen-dō",
+                            "subtitle": "02 de Enero • Kioto Sur",
+                            "summary": "El edificio de madera más largo de Japón, que alberga en su interior 1.001 estatuas de tamaño real de Kannon (la diosa de la misericordia), talladas a mano en madera y cubiertas de pan de oro.",
+                            "pills": [
+                                          {
+                                                        "label": "Dato Sorprendente",
+                                                        "text": "¡No hay dos caras iguales! Se dice que si miras con atención, encontrarás una estatua que se parece a ti o a alguien que conoces.",
+                                                        "type": "historical"
+                                          },
+                                          {
+                                                        "label": "Arquitectura Mítica",
+                                                        "text": "Mide 120 metros de longitud y cuenta con 33 espacios entre columnas (Sanjūsangen) que representan las 33 manifestaciones de la diosa.",
+                                                        "type": "cultural"
+                                          }
+                            ]
+              }
             },
             {
               "id": "act-13-5",
@@ -1695,13 +2035,47 @@ export const TRIP_DATA: TripItinerary = {
               "id": "act-14-1",
               "title": "Pabellón Dorado (Kinkaku-ji)",
               "locationQuery": "Kinkaku-ji Kyoto",
-              "type": "sights"
+              "type": "sights",
+              "learnInfo": {
+                            "title": "Pabellón Dorado (Kinkaku-ji)",
+                            "subtitle": "03 de Enero • Arashiyama / Norte 🌟",
+                            "summary": "Un templo zen cuyas dos plantas superiores están totalmente cubiertas con hojas de oro puro, reflejándose sobre el estanque Espejo.",
+                            "pills": [
+                                          {
+                                                        "label": "Dato Histórico",
+                                                        "text": "Construido originalmente a finales del siglo XIV como villa de descanso del shōgun Ashikaga Yoshimitsu.",
+                                                        "type": "historical"
+                                          },
+                                          {
+                                                        "label": "Píldora Kawaii / Misión",
+                                                        "text": "¡Buscad la estatua del ave Fénix dorada de bronce colocada en lo alto del tejado superior que brilla con el sol!",
+                                                        "type": "funFact"
+                                          }
+                            ]
+              }
             },
             {
               "id": "act-14-2",
               "title": "Jardín zen de Ryōan-ji",
               "locationQuery": "Ryoan-ji Temple Kyoto",
-              "type": "sights"
+              "type": "sights",
+              "learnInfo": {
+                            "title": "Jardín Zen de Ryōan-ji",
+                            "subtitle": "03 de Enero • Arashiyama / Norte",
+                            "summary": "El jardín seco (Karesansui) más famoso del mundo, compuesto únicamente por grava blanca rastrillada y 15 piedras rodeadas de musgo.",
+                            "pills": [
+                                          {
+                                                        "label": "El Enigma de las Piedras",
+                                                        "text": "Desde cualquier punto del porche donde te sientes, solo podrás ver 14 piedras a la vez. Una piedra siempre queda oculta, simbolizando que la perfección humana es inalcanzable.",
+                                                        "type": "cultural"
+                                          },
+                                          {
+                                                        "label": "Misión de Meditación",
+                                                        "text": "Sentaos en el porche de madera en completo orden e intentad descubrir desde qué ángulo podéis adivinar dónde está oculta la piedra número 15.",
+                                                        "type": "funFact"
+                                          }
+                            ]
+              }
             },
             {
               "id": "act-14-3",
@@ -1713,7 +2087,24 @@ export const TRIP_DATA: TripItinerary = {
               "id": "act-14-4",
               "title": "Templo Tenryū-ji",
               "locationQuery": "Tenryu-ji Temple Arashiyama",
-              "type": "sights"
+              "type": "sights",
+              "learnInfo": {
+                            "title": "Bosque de Bambú de Arashiyama y Templo Tenryū-ji",
+                            "subtitle": "03 de Enero • Arashiyama",
+                            "summary": "Un sendero mágico flanqueado por miles de tallos gigantes de bambú verde que se mecen con el viento.",
+                            "pills": [
+                                          {
+                                                        "label": "Sonido Protegido",
+                                                        "text": "El susurro de los tallos de bambú al chocar suavemente con la brisa está catalogado entre los '100 sonidos a preservar en Japón'.",
+                                                        "type": "cultural"
+                                          },
+                                          {
+                                                        "label": "Misión Verde",
+                                                        "text": "Caminar despacio alzando la mirada hacia el dosel verde de bambú que filtra la luz del sol.",
+                                                        "type": "funFact"
+                                          }
+                            ]
+              }
             },
             {
               "id": "act-14-5",
@@ -1755,7 +2146,24 @@ export const TRIP_DATA: TripItinerary = {
               "id": "act-14-11",
               "title": "Templo Otagi Nenbutsu-ji",
               "locationQuery": "Otagi Nenbutsu-ji Temple",
-              "type": "sights"
+              "type": "sights",
+              "learnInfo": {
+                            "title": "Templo Otagi Nenbutsu-ji",
+                            "subtitle": "03 de Enero • Arashiyama",
+                            "summary": "Un templo escondido en la montaña con 1.200 estatuas de piedra de discípulos de Buda (Rakan).",
+                            "pills": [
+                                          {
+                                                        "label": "Dato Kawaii/Divertido",
+                                                        "text": "Las estatuas fueron esculpidas por ciudadanos normales en los años 80 y cada una tiene una expresión cómica o entrañable: una está bebiendo sake, otra sostiene una cámara de fotos y otra sonríe con un gato en brazos.",
+                                                        "type": "funFact"
+                                          },
+                                          {
+                                                        "label": "Misión para Lily y James",
+                                                        "text": "¡Buscad entre los musgos la figura esculpida del discípulo que sostiene felizmente a un gatito en brazos!",
+                                                        "type": "funFact"
+                                          }
+                            ]
+              }
             },
             {
               "id": "act-14-12",
@@ -1809,13 +2217,47 @@ export const TRIP_DATA: TripItinerary = {
               "id": "act-15-1",
               "title": "Pabellón de Plata (Ginkaku-ji)",
               "locationQuery": "Ginkaku-ji Kyoto",
-              "type": "sights"
+              "type": "sights",
+              "learnInfo": {
+                            "title": "Pabellón de Plata (Ginkaku-ji)",
+                            "subtitle": "04 de Enero • Higashiyama Norte",
+                            "summary": "El templo hermano del Pabellón Dorado. Aunque se proyectó para cubrirse de plata, nunca se llegó a recubrir, creando la estética japonesa del Wabi-sabi (encontrar la belleza en la simplicidad e imperfección).",
+                            "pills": [
+                                          {
+                                                        "label": "Filosofía Wabi-sabi",
+                                                        "text": "Representa la belleza de la sobriedad, la elegancia natural y el paso del tiempo expresados en sus jardines de arena y musgo.",
+                                                        "type": "cultural"
+                                          },
+                                          {
+                                                        "label": "Dato Asombroso",
+                                                        "text": "El cono de arena blanca rastrillada (Kōgetsudai) en el jardín está diseñado para reflejar la luz dorada de la luna llena.",
+                                                        "type": "historical"
+                                          }
+                            ]
+              }
             },
             {
               "id": "act-15-2",
               "title": "Paseo del Filósofo",
               "locationQuery": "Philosopher's Path Kyoto",
-              "type": "sights"
+              "type": "sights",
+              "learnInfo": {
+                            "title": "Paseo del Filósofo y Templo Eikan-dō",
+                            "subtitle": "04 de Enero • Higashiyama Norte",
+                            "summary": "Un tranquilo camino junto a un canal empedrado arbolado que usaba el filósofo Nishida Kitaro para meditar.",
+                            "pills": [
+                                          {
+                                                        "label": "Dato Histórico",
+                                                        "text": "Discurre a lo largo de 2 kilómetros al pie de las colinas de Higashiyama, conectando pintorescos templos bajo los árboles.",
+                                                        "type": "historical"
+                                          },
+                                          {
+                                                        "label": "Píldora Kawaii",
+                                                        "text": "A lo largo del canal podréis cruzar pequeños puentes de piedra y saludar a los simpáticos patos del canal.",
+                                                        "type": "funFact"
+                                          }
+                            ]
+              }
             },
             {
               "id": "act-15-3",
@@ -1851,7 +2293,24 @@ export const TRIP_DATA: TripItinerary = {
               "id": "act-15-8",
               "title": "Complejo Nanzen-ji",
               "locationQuery": "Nanzen-ji Temple Kyoto",
-              "type": "sights"
+              "type": "sights",
+              "learnInfo": {
+                            "title": "Complejo Nanzen-ji y el Acueducto de Ladrillo",
+                            "subtitle": "04 de Enero • Higashiyama Norte",
+                            "summary": "Un imponente templo zen que esconde en su jardín posterior un auténtico acueducto de ladrillo rojo de estilo romano (Suirokaku) construido en 1890.",
+                            "pills": [
+                                          {
+                                                        "label": "Dato Curioso",
+                                                        "text": "Fue construido en el período Meiji para canalizar agua potable desde el Lago Biwa hasta Kioto integrándose con la arquitectura del templo.",
+                                                        "type": "historical"
+                                          },
+                                          {
+                                                        "label": "Misión Fotográfica",
+                                                        "text": "Explorar los grandes arcos de ladrillo rojo y ver correr el agua clara por el canal superior.",
+                                                        "type": "funFact"
+                                          }
+                            ]
+              }
             },
             {
               "id": "act-15-9",
@@ -1929,19 +2388,70 @@ export const TRIP_DATA: TripItinerary = {
               "id": "act-16-6",
               "title": "Templo Tōdai-ji - Gran Buda (Nara)",
               "locationQuery": "Todai-ji Great Buddha Nara",
-              "type": "sights"
+              "type": "sights",
+              "learnInfo": {
+                            "title": "Gran Templo Tōdai-ji y el Gran Buda (Daibutsu)",
+                            "subtitle": "05 de Enero • Nara 🦌",
+                            "summary": "Una de las estructuras de madera más grandes del mundo, que custodia en su interior una colosal estatua de bronce de Buda de 15 metros de altura y 500 toneladas.",
+                            "pills": [
+                                          {
+                                                        "label": "Misión para Lily y James",
+                                                        "text": "En la parte trasera hay una columna de madera con un agujero en la base. Dice la leyenda que quien logre atravesar el agujero (que tiene el mismo tamaño que un orificio de la nariz del Gran Buda) obtendrá la iluminación y buena suerte eterna.",
+                                                        "type": "funFact"
+                                          },
+                                          {
+                                                        "label": "Dato Histórico",
+                                                        "text": "El edificio principal (Daibutsuden) se construyó originalmente en el año 752 y ha sido reconstruido tras superar terremotos e incendios.",
+                                                        "type": "historical"
+                                          }
+                            ]
+              }
             },
             {
               "id": "act-16-7",
               "title": "Parque de Nara",
               "locationQuery": "Nara Park",
-              "type": "sights"
+              "type": "sights",
+              "learnInfo": {
+                            "title": "Parque de Nara y sus Ciervos Sagrados (Sika)",
+                            "subtitle": "05 de Enero • Nara 🦌",
+                            "summary": "Un enorme parque donde conviven en libertad más de 1.200 ciervos sika.",
+                            "pills": [
+                                          {
+                                                        "label": "Dato de Etiqueta/Kawaii",
+                                                        "text": "Los ciervos son considerados mensajeros de los dioses shintoístas. ¡Han aprendido a inclinarse (hacer una reverencia) cuando les enseñas una galleta especial (Shika-senbei)!",
+                                                        "type": "etiquette"
+                                          },
+                                          {
+                                                        "label": "Misión Ciervo de Nara",
+                                                        "text": "Haced una leve inclinación con la cabeza ante un ciervo tranquilo para ver cómo responde con una reverencia educada.",
+                                                        "type": "funFact"
+                                          }
+                            ]
+              }
             },
             {
               "id": "act-16-8",
               "title": "Santuario Kasuga-taisha (Nara)",
               "locationQuery": "Kasuga Taisha Nara",
-              "type": "sights"
+              "type": "sights",
+              "learnInfo": {
+                            "title": "Santuario Kasuga-taisha y Naramachi",
+                            "subtitle": "05 de Enero • Nara 🦌",
+                            "summary": "El santuario del bosque famoso por sus más de 3.000 linternas de piedra y bronce, seguido del histórico barrio de casas de comerciantes Naramachi.",
+                            "pills": [
+                                          {
+                                                        "label": "Dato Curioso",
+                                                        "text": "Caminitos de musgo serpentean entre miles de linternas de piedra cubiertas de musgo donadas por devotos durante siglos.",
+                                                        "type": "cultural"
+                                          },
+                                          {
+                                                        "label": "Barrio Tradicional",
+                                                        "text": "En las calles de Naramachi podéis ver colgados de los tejados los amuletos rojos Migawari-zaru con forma de monitos.",
+                                                        "type": "funFact"
+                                          }
+                            ]
+              }
             },
             {
               "id": "act-16-9",
@@ -1977,7 +2487,24 @@ export const TRIP_DATA: TripItinerary = {
               "id": "act-16-14",
               "title": "Castillo Nijō (Kioto - Tarde)",
               "locationQuery": "Nijo Castle Kyoto",
-              "type": "sights"
+              "type": "sights",
+              "learnInfo": {
+                            "title": "Castillo Nijō (Kioto - Visita de Tarde)",
+                            "subtitle": "05 de Enero • Kioto 🗡️",
+                            "summary": "El palacio residencia de los shōgunes Tokugawa en Kioto.",
+                            "pills": [
+                                          {
+                                                        "label": "Dato de Seguridad Ninja",
+                                                        "text": "Los pasillos del palacio tienen 'Suelos de Ruiseñor' (Uguisubari). Las maderas están diseñadas con clavos metálicos especiales que gimen imitando el canto de un pájaro cuando alguien camina sobre ellas, alertando a los guardias ante la presencia de asesinos ninja.",
+                                                        "type": "historical"
+                                          },
+                                          {
+                                                        "label": "Misión Escucha Ninja",
+                                                        "text": "Caminar despacio sobre el suelo de madera de los pasillos del Palacio Ninomaru para escuchar los 'trinos' del ruiseñor.",
+                                                        "type": "funFact"
+                                          }
+                            ]
+              }
             }
           ],
           "shops": [
@@ -2026,7 +2553,24 @@ export const TRIP_DATA: TripItinerary = {
               "id": "act-17-1",
               "title": "Templo Kiyomizu-dera",
               "locationQuery": "Kiyomizu-dera Kyoto",
-              "type": "sights"
+              "type": "sights",
+              "learnInfo": {
+                            "title": "Templo Kiyomizu-dera",
+                            "subtitle": "06 de Enero • Higashiyama Sur",
+                            "summary": "Templo construido en el año 778 sobre un acantilado, famoso por su gran terraza sostenida por 139 columnas de madera ensambladas sin un solo clavo.",
+                            "pills": [
+                                          {
+                                                        "label": "Las Tres Caídas de Otowa",
+                                                        "text": "En la base del templo brotan tres chorros de agua sagrada. Beber de uno da salud, del otro éxito en los estudios y del tercero amor. ¡Pero solo puedes beber de uno! Si bebes de los tres, los dioses te castigarán por codicioso.",
+                                                        "type": "historical"
+                                          },
+                                          {
+                                                        "label": "Misión de Sabiduría",
+                                                        "text": "Elegid cuál de los tres chorros queréis probar usando los cazos de largo mango metálico desinfectados con UV.",
+                                                        "type": "funFact"
+                                          }
+                            ]
+              }
             },
             {
               "id": "act-17-2",
@@ -2038,13 +2582,47 @@ export const TRIP_DATA: TripItinerary = {
               "id": "act-17-3",
               "title": "Cuesta histórica Sannenzaka",
               "locationQuery": "Sannenzaka Kyoto",
-              "type": "sights"
+              "type": "sights",
+              "learnInfo": {
+                            "title": "Cuestas Históricas Sannenzaka y Ninenzaka",
+                            "subtitle": "06 de Enero • Higashiyama Sur",
+                            "summary": "Preciosas calles peatonales empedradas con casas tradicionales de madera, tiendas de té y artesanía.",
+                            "pills": [
+                                          {
+                                                        "label": "Superstición Divertida",
+                                                        "text": "La leyenda dice que si tropiezas en la cuesta Ninenzaka, tendrás dos años de mala suerte... ¡a menos que compres una calabaza de madera en las tiendas de la calle para anular el hechizo!",
+                                                        "type": "funFact"
+                                          },
+                                          {
+                                                        "label": "Tradición e Historias",
+                                                        "text": "Paseo flanqueado por casas Machiya tradicionales conservadas desde el período Edo.",
+                                                        "type": "cultural"
+                                          }
+                            ]
+              }
             },
             {
               "id": "act-17-4",
               "title": "Cuesta histórica Ninenzaka",
               "locationQuery": "Ninenzaka Kyoto",
-              "type": "sights"
+              "type": "sights",
+              "learnInfo": {
+                            "title": "Cuesta histórica Ninenzaka",
+                            "subtitle": "06 de Enero • Higashiyama Sur",
+                            "summary": "Calle empedrada histórica con tiendas de artesanía, té tradicional y casas de madera centenarias.",
+                            "pills": [
+                                          {
+                                                        "label": "Leyenda de la Calabaza",
+                                                        "text": "Si tropiezas en sus escalones, busca rápidamente una calabaza de madera Hyoutan en los escaparates para protegerte de la racha de mala suerte.",
+                                                        "type": "funFact"
+                                          },
+                                          {
+                                                        "label": "Pausa Kawaii",
+                                                        "text": "Aquí se encuentra el icónico Starbucks de Ninenzaka donde se toma el café en salones con tatami tradicional.",
+                                                        "type": "cultural"
+                                          }
+                            ]
+              }
             },
             {
               "id": "act-17-5",
@@ -2092,7 +2670,24 @@ export const TRIP_DATA: TripItinerary = {
               "id": "act-17-12",
               "title": "Calle Hanamikoji",
               "locationQuery": "Hanamikoji Street Gion Kyoto",
-              "type": "sights"
+              "type": "sights",
+              "learnInfo": {
+                            "title": "Barrio de Gion (Hanamikoji) y Callejón Pontocho",
+                            "subtitle": "06 de Enero • Gion",
+                            "summary": "El legendario barrio de las Geishas (Geiko) y aprendices (Maiko).",
+                            "pills": [
+                                          {
+                                                        "label": "Dato de Respeto",
+                                                        "text": "Las Geishas no son artistas de disfraz, sino maestras de las artes tradicionales japonesas. No se las debe tocar ni perseguir para fotos.",
+                                                        "type": "etiquette"
+                                          },
+                                          {
+                                                        "label": "Atmósfera Nocturna",
+                                                        "text": "En el callejón Pontocho podéis ver los farolillos de papel rojo encendidos reflejándose sobre los suelos de piedra junto al río Kamogawa.",
+                                                        "type": "cultural"
+                                          }
+                            ]
+              }
             },
             {
               "id": "act-17-13",
