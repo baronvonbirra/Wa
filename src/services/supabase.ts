@@ -25,7 +25,7 @@ export const normalizeCityName = (city?: string): string => {
 export class SupabaseQueryBuilder {
   private table: string;
   private selectCols: string = '*';
-  private filters: Array<{ type: 'eq' | 'is' | 'lte' | 'gte'; col: string; val: any }> = [];
+  private filters: Array<{ type: 'eq' | 'is' | 'not' | 'lte' | 'gte'; col: string; val: any }> = [];
   private orderOpts?: { col: string; ascending: boolean };
   private isMaybeSingle: boolean = false;
   private updateValues?: Record<string, any>;
@@ -46,6 +46,11 @@ export class SupabaseQueryBuilder {
 
   is(col: string, val: any) {
     this.filters.push({ type: 'is', col, val });
+    return this;
+  }
+
+  not(col: string, operator: string, val: any) {
+    this.filters.push({ type: 'not', col, val });
     return this;
   }
 
@@ -119,6 +124,7 @@ export class SupabaseQueryBuilder {
           for (const f of this.filters) {
             if (f.type === 'eq') queryParams.push(`${f.col}=eq.${encodeURIComponent(f.val)}`);
             if (f.type === 'is') queryParams.push(`${f.col}=is.${f.val === null ? 'null' : encodeURIComponent(f.val)}`);
+            if (f.type === 'not') queryParams.push(`${f.col}=not.is.${f.val === null ? 'null' : encodeURIComponent(f.val)}`);
             if (f.type === 'lte') queryParams.push(`${f.col}=lte.${encodeURIComponent(f.val)}`);
             if (f.type === 'gte') queryParams.push(`${f.col}=gte.${encodeURIComponent(f.val)}`);
           }
@@ -190,23 +196,9 @@ export class SupabaseQueryBuilder {
         city: normalizeCityName(item?.city || '')
       })).concat(unassignedPlaces.filter((up: any) => !items.some((it: any) => Boolean(it?.id && up?.id && it.id === up.id))));
     } else if (this.table === 'packing_list_items') {
-      items = rawState?.packingListItems || [
-        { id: "pli-1", item: "Pasaportes vigentes", quantity: 4, category: "Documentación", assigned_to: "Todos", is_packed: true },
-        { id: "pli-2", item: "Tarjeta de Crédito sin comisiones", quantity: 2, category: "Documentación", assigned_to: "Papi", is_packed: true },
-        { id: "pli-3", item: "Cámara de Fotos + memorias", quantity: 1, category: "Electrónica", assigned_to: "Papi", is_packed: false },
-        { id: "pli-4", item: "Neceser & Maquillaje", quantity: 1, category: "Ropa", assigned_to: "Mami", is_packed: true },
-        { id: "pli-5", item: "Mochila escolar de viaje", quantity: 1, category: "General", assigned_to: "Lily", is_packed: false },
-        { id: "pli-6", item: "Nintendo Switch & juegos", quantity: 1, category: "Electrónica", assigned_to: "James", is_packed: true },
-        { id: "pli-7", item: "Abrigos de Invierno", quantity: 4, category: "Ropa", assigned_to: "Todos", is_packed: false },
-        { id: "pli-8", item: "Adaptadores Enchufe Tipo A", quantity: 3, category: "Electrónica", assigned_to: "Todos", is_packed: true }
-      ];
+      items = rawState?.packingListItems || [];
     } else if (this.table === 'trip_tasks') {
-      items = rawState?.tripTasks || [
-        { id: 'tt-1', title: 'Comprar Entradas Disney Tokyo (Ghar)', due_date: '2026-10-20', due_time: '07:00 h', category: 'Entradas', is_completed: true, details: 'Comprar pases de 2 días a las 07:00 am hora japonesa en la web oficial.' },
-        { id: 'tt-2', title: 'ReservaShinkansen Tokio -> Kioto', due_date: '2026-11-20', due_time: '02:00 h', category: 'Reservas', is_completed: false, details: 'Reservar asientos con espacio para equipaje grande a través de SmartEX.' },
-        { id: 'tt-3', title: 'Tramitar Visit Japan Web (QR)', due_date: '2026-12-10', due_time: '12:00 h', category: 'Documentación', is_completed: false, details: 'Completar formularios de inmigración y aduanas para los 4 pasajeros.' },
-        { id: 'tt-4', title: 'Reservar eSIM Roaming Japón', due_date: '2026-12-15', due_time: '18:00 h', category: 'Logística', is_completed: true, details: 'Activar plan de datos ilimitados Ubigi o Holafly.' }
-      ];
+      items = rawState?.tripTasks || [];
     }
 
     if (this.updateValues) {
@@ -260,6 +252,9 @@ export class SupabaseQueryBuilder {
         } else if (f.type === 'is') {
           if (f.val === null && (item[f.col] !== null && item[f.col] !== undefined)) return false;
           if (f.val !== null && item[f.col] !== f.val) return false;
+        } else if (f.type === 'not') {
+          if (f.val === null && (item[f.col] === null || item[f.col] === undefined)) return false;
+          if (f.val !== null && item[f.col] === f.val) return false;
         } else if (f.type === 'lte') {
           if (!item[f.col] || item[f.col] > f.val) return false;
         } else if (f.type === 'gte') {

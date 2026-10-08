@@ -74,26 +74,53 @@ export const ItineraryView: React.FC<ItineraryViewProps> = ({ onNavigateTab }) =
   const [activeRecTab, setActiveTabRec] = useState<'food' | 'shopping'>('food');
   const [showRecs, setShowRecs] = useState<boolean>(true);
 
-  // Generate list of dates from tripStartDate to tripEndDate
-  const generateTripDates = () => {
-    const dates: { dateStr: string; dayLabel: string; dayNum: number }[] = [];
-    const start = new Date(`${waState.tripStartDate}T00:00:00`);
-    const end = new Date(`${waState.tripEndDate}T00:00:00`);
+  // Dynamic available dates state from Supabase
+  const [dbDates, setDbDates] = useState<string[]>([]);
 
-    let current = new Date(start);
-    let dayCount = 1;
+  // Fetch unique scheduled visit_date values from Supabase DB
+  useEffect(() => {
+    let isMounted = true;
+    const fetchAvailableDates = async () => {
+      const { data, error } = await supabase
+        .from('itinerary_places')
+        .select('visit_date')
+        .not('visit_date', 'is', null)
+        .order('visit_date', { ascending: true });
 
-    while (current <= end) {
-      const dateStr = current.toISOString().split('T')[0];
-      const dayLabel = current.toLocaleDateString('es-ES', { weekday: 'short', month: 'short', day: 'numeric' });
-      dates.push({ dateStr, dayLabel, dayNum: dayCount });
-      current.setDate(current.getDate() + 1);
-      dayCount++;
-    }
-    return dates;
-  };
+      if (error) {
+        console.error('Error cargando fechas de itinerario:', error);
+        return;
+      }
 
-  const tripDates = generateTripDates();
+      if (isMounted && data) {
+        const availableDates = [...new Set(data.map((item: any) => item.visit_date).filter(Boolean))];
+        setDbDates(availableDates as string[]);
+        if (availableDates.length > 0 && !availableDates.includes(waState.selectedDate)) {
+          setSelectedDate(availableDates[0] as string);
+        }
+      }
+    };
+
+    fetchAvailableDates();
+    return () => {
+      isMounted = false;
+    };
+  }, []);
+
+  // Format available dates for rendering tabs
+  const tripDates = (dbDates.length > 0 ? dbDates : [waState.selectedDate]).map((dateStr, index) => {
+    const d = new Date(`${dateStr}T00:00:00`);
+    const isInvalidDate = isNaN(d.getTime());
+    const dayLabel = isInvalidDate
+      ? dateStr
+      : d.toLocaleDateString('es-ES', { weekday: 'short', month: 'short', day: 'numeric' });
+
+    return {
+      dateStr,
+      dayLabel,
+      dayNum: index + 1
+    };
+  });
 
   const activeCity = waState.cities.find(c => {
     return waState.selectedDate >= c.start_date && waState.selectedDate <= c.end_date;
@@ -111,17 +138,7 @@ export const ItineraryView: React.FC<ItineraryViewProps> = ({ onNavigateTab }) =
         .maybeSingle();
 
       if (isMounted) {
-        if (data) {
-          setCurrentHotel(data);
-        } else {
-          // Fallback to local state accommodation
-          const fallbackAcc = waState.accommodations.find(a => {
-            const start = a.check_in || a.start_date || '';
-            const end = a.check_out || a.end_date || '';
-            return waState.selectedDate >= start && waState.selectedDate <= end;
-          }) || waState.accommodations[0];
-          setCurrentHotel(fallbackAcc || null);
-        }
+        setCurrentHotel(data || null);
       }
     };
 
@@ -129,28 +146,22 @@ export const ItineraryView: React.FC<ItineraryViewProps> = ({ onNavigateTab }) =
     return () => {
       isMounted = false;
     };
-  }, [waState.selectedDate, waState.accommodations]);
+  }, [waState.selectedDate]);
 
   // B. Fetch Dynamic Ordered Itinerary Places
   useEffect(() => {
     let isMounted = true;
     const fetchDayPlaces = async () => {
-      const { data } = await supabase
+      const { data, error } = await supabase
         .from('itinerary_places')
         .select('*')
         .eq('visit_date', waState.selectedDate)
         .order('order_index', { ascending: true });
 
-      if (isMounted) {
-        if (data && data.length > 0) {
-          setDayPlaces(data);
-        } else {
-          // Fallback to local state itinerary items for selectedDate
-          const fallbackItems = waState.itineraryItems
-            .filter(item => item.visit_date === waState.selectedDate || item.date === waState.selectedDate)
-            .sort((a, b) => (a.order_index ?? a.orden ?? 0) - (b.order_index ?? b.orden ?? 0));
-          setDayPlaces(fallbackItems);
-        }
+      if (error) {
+        console.error('Error cargando itinerario:', error);
+      } else if (isMounted) {
+        setDayPlaces(data || []);
       }
     };
 
@@ -158,7 +169,7 @@ export const ItineraryView: React.FC<ItineraryViewProps> = ({ onNavigateTab }) =
     return () => {
       isMounted = false;
     };
-  }, [waState.selectedDate, waState.itineraryItems]);
+  }, [waState.selectedDate]);
 
   // D. Fetch City Recommendations without fixed visit date
   useEffect(() => {
@@ -172,16 +183,7 @@ export const ItineraryView: React.FC<ItineraryViewProps> = ({ onNavigateTab }) =
         .is('visit_date', null);
 
       if (isMounted) {
-        if (data) {
-          setCityOptions(data);
-        } else {
-          // Local fallback
-          const localOpts = waState.savedPlaces.filter(p => {
-            const pCity = normalizeCityName(p.city || (p.city_id ? p.city_id.replace('city-', '') : ''));
-            return pCity === targetCity && !p.visit_date;
-          });
-          setCityOptions(localOpts);
-        }
+        setCityOptions(data || []);
       }
     };
 
@@ -189,7 +191,7 @@ export const ItineraryView: React.FC<ItineraryViewProps> = ({ onNavigateTab }) =
     return () => {
       isMounted = false;
     };
-  }, [waState.selectedDate, currentHotel, activeCity, waState.savedPlaces]);
+  }, [waState.selectedDate, currentHotel, activeCity]);
 
   // Toggle visited status for itinerary place
   const toggleVisited = async (id: string, currentStatus?: boolean) => {
@@ -477,7 +479,7 @@ export const ItineraryView: React.FC<ItineraryViewProps> = ({ onNavigateTab }) =
       {dayPlaces.length === 0 ? (
         <div className="bg-white dark:bg-slate-800 border-2 border-dashed border-rose-200 dark:border-slate-700 rounded-2xl p-6 text-center space-y-2">
           <span className="text-4xl block">🗾</span>
-          <p className="text-xs font-bold text-slate-600 dark:text-slate-300">No hay planes registrados para esta fecha.</p>
+          <p className="text-gray-400 text-sm font-semibold">No hay actividades programadas para este día.</p>
           <p className="text-[10px] text-slate-400">Pulsa "Añadir Plan" para agendar visitas, transporte o restaurantes.</p>
         </div>
       ) : (
