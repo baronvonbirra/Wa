@@ -9,9 +9,16 @@ export default {
     extend: {
       colors: {
         japan: {
-          red: '#E11D48', // rose-600 or bright Japanese red
-          gold: '#D97706', // amber-600
-          pastelBg: '#FFFDF9', // nice off-white warm pastel background
+          red: '#E11D48',
+          gold: '#D97706',
+          pastelBg: '#FFFDF9',
+        },
+        kawaii: {
+          sakura: '#FFB7B2',
+          peach: '#FFDAC1',
+          matcha: '#E2F0CB',
+          mint: '#B5EAD7',
+          lavender: '#C7CEEA',
         }
       }
     },

@@ -1,10 +1,415 @@
-import React, { useState } from 'react';
-import { Calculator, RefreshCw, ShoppingBag, Languages, Shirt, Train } from 'lucide-react';
+import React, { useState, useEffect } from 'react';
+import { Calculator, ShoppingBag, Languages, Shirt, Volume2, VolumeX, Sparkles, Search, Check } from 'lucide-react';
+
+export interface Phrase {
+  id: string;
+  category: 'greetings' | 'dining' | 'shopping' | 'orientation' | 'kawaii';
+  categoryName: string;
+  romaji: string;
+  phonetic: string;
+  kanji: string;
+  spanish: string;
+  note?: string;
+}
+
+export const JAPANESE_PHRASES: Phrase[] = [
+  // Categoría 1: Saludos y Cortesía
+  {
+    id: 'g-1',
+    category: 'greetings',
+    categoryName: '1. Saludos y Cortesía',
+    romaji: 'Ohayō gozaimasu',
+    phonetic: 'Ohayoo gozaimas',
+    kanji: 'おはようございます',
+    spanish: '¡Buenos días!',
+    note: 'Muy educado. Con familiares o amigos podéis decir sólo "Ohayō".'
+  },
+  {
+    id: 'g-2',
+    category: 'greetings',
+    categoryName: '1. Saludos y Cortesía',
+    romaji: 'Konnichiwa',
+    phonetic: 'Konnichiwa',
+    kanji: 'こんにちは',
+    spanish: 'Buenas tardes / Hola.',
+    note: 'Hola genérico para la mayor parte del día.'
+  },
+  {
+    id: 'g-3',
+    category: 'greetings',
+    categoryName: '1. Saludos y Cortesía',
+    romaji: 'Konbanwa',
+    phonetic: 'Kombanwa',
+    kanji: 'こんばんは',
+    spanish: 'Buenas noches (al llegar a un sitio).'
+  },
+  {
+    id: 'g-4',
+    category: 'greetings',
+    categoryName: '1. Saludos y Cortesía',
+    romaji: 'Oyasumi nasai',
+    phonetic: 'Oyasumi nasai',
+    kanji: 'おやすみなさい',
+    spanish: 'Buenas noches (al despedirse para dormir).'
+  },
+  {
+    id: 'g-5',
+    category: 'greetings',
+    categoryName: '1. Saludos y Cortesía',
+    romaji: 'Arigatō gozaimasu',
+    phonetic: 'Arigatoo gozaimas',
+    kanji: 'ありがとうございます',
+    spanish: 'Muchas gracias (muy educado).'
+  },
+  {
+    id: 'g-6',
+    category: 'greetings',
+    categoryName: '1. Saludos y Cortesía',
+    romaji: 'Dōmo arigatō',
+    phonetic: 'Doomoo arigatoo',
+    kanji: 'どうもありがとう',
+    spanish: 'Muchas gracias (informal).'
+  },
+  {
+    id: 'g-7',
+    category: 'greetings',
+    categoryName: '1. Saludos y Cortesía',
+    romaji: 'Dōitashimashite',
+    phonetic: 'Dooitashimashite',
+    kanji: 'どういたしまして',
+    spanish: 'De nada / No hay de qué.'
+  },
+  {
+    id: 'g-8',
+    category: 'greetings',
+    categoryName: '1. Saludos y Cortesía',
+    romaji: 'Sumimasen',
+    phonetic: 'Sumimasen',
+    kanji: 'すみません',
+    spanish: 'Disculpe / Perdón / ¡Oiga! (para llamar la atención).',
+    note: 'La palabra mágica multitarea en Japón.'
+  },
+  {
+    id: 'g-9',
+    category: 'greetings',
+    categoryName: '1. Saludos y Cortesía',
+    romaji: 'Gomen nasai',
+    phonetic: 'Gomen nasai',
+    kanji: 'ごめんなさい',
+    spanish: 'Lo siento mucho.'
+  },
+  {
+    id: 'g-10',
+    category: 'greetings',
+    categoryName: '1. Saludos y Cortesía',
+    romaji: 'Hai / Iie',
+    phonetic: 'Jai / Iie',
+    kanji: 'はい / いいえ',
+    spanish: 'Sí / No.'
+  },
+  {
+    id: 'g-11',
+    category: 'greetings',
+    categoryName: '1. Saludos y Cortesía',
+    romaji: 'Yoroshiku onegai shimasu',
+    phonetic: 'Yoroshku onegai shimas',
+    kanji: 'よろしくお願いします',
+    spanish: 'Encantado de conocerte / Por favor, cuida de mí.'
+  },
+
+  // Categoría 2: Restaurantes y Gastronomía
+  {
+    id: 'd-1',
+    category: 'dining',
+    categoryName: '2. Restaurantes y Gastronomía',
+    romaji: 'Irasshaimase!',
+    phonetic: 'Irashaimase!',
+    kanji: 'いらっしゃいませ！',
+    spanish: '¡Bienvenido! (escuchado al entrar).',
+    note: 'Saludo entusiasta del personal. No exige respuesta oral.'
+  },
+  {
+    id: 'd-2',
+    category: 'dining',
+    categoryName: '2. Restaurantes y Gastronomía',
+    romaji: 'Yonin desu',
+    phonetic: 'Yonin des',
+    kanji: '4人です',
+    spanish: 'Somos 4 personas.'
+  },
+  {
+    id: 'd-3',
+    category: 'dining',
+    categoryName: '2. Restaurantes y Gastronomía',
+    romaji: 'Kinen-seki o onegai shimasu',
+    phonetic: 'Kinenseki o onegai shimas',
+    kanji: '禁煙席をお願いします',
+    spanish: 'Mesa para no fumadores, por favor.'
+  },
+  {
+    id: 'd-4',
+    category: 'dining',
+    categoryName: '2. Restaurantes y Gastronomía',
+    romaji: 'Eigo no menyū wa arimasu ka?',
+    phonetic: 'Eigo no menyuu wa arimas ka?',
+    kanji: '英語のメニューはありますか？',
+    spanish: '¿Tienen menú en inglés?'
+  },
+  {
+    id: 'd-5',
+    category: 'dining',
+    categoryName: '2. Restaurantes y Gastronomía',
+    romaji: 'Kore o kudasai',
+    phonetic: 'Kore o kudasai',
+    kanji: 'これをください',
+    spanish: 'Quiero esto, por favor (señalando).'
+  },
+  {
+    id: 'd-6',
+    category: 'dining',
+    categoryName: '2. Restaurantes y Gastronomía',
+    romaji: 'Kore to kore o onegai shimasu',
+    phonetic: 'Kore to kore o onegai shimas',
+    kanji: 'これとこれをお願いします',
+    spanish: 'Esto y esto, por favor.'
+  },
+  {
+    id: 'd-7',
+    category: 'dining',
+    categoryName: '2. Restaurantes y Gastronomía',
+    romaji: 'Osusume wa nan desu ka?',
+    phonetic: 'Osusme wa nan des ka?',
+    kanji: 'おすすめは何ですか？',
+    spanish: '¿Qué nos recomienda?'
+  },
+  {
+    id: 'd-8',
+    category: 'dining',
+    categoryName: '2. Restaurantes y Gastronomía',
+    romaji: 'O-mizu o kudasai',
+    phonetic: 'Omizu o kudasai',
+    kanji: 'お水をください',
+    spanish: 'Agua fría por favor.'
+  },
+  {
+    id: 'd-9',
+    category: 'dining',
+    categoryName: '2. Restaurantes y Gastronomía',
+    romaji: 'O-cha o kudasai',
+    phonetic: 'Ocha o kudasai',
+    kanji: 'お茶をください',
+    spanish: 'Té verde por favor.'
+  },
+  {
+    id: 'd-10',
+    category: 'dining',
+    categoryName: '2. Restaurantes y Gastronomía',
+    romaji: 'Kodomo-yō no shokki wa arimasu ka?',
+    phonetic: 'Kodomoyoo no shokki wa arimas ka?',
+    kanji: '子供用の食器はありますか？',
+    spanish: '¿Tienen cubiertos/platos para niños?'
+  },
+  {
+    id: 'd-11',
+    category: 'dining',
+    categoryName: '2. Restaurantes y Gastronomía',
+    romaji: 'Itadakimasu',
+    phonetic: 'Itadakimas',
+    kanji: 'いただきます',
+    spanish: '¡Buen provecho! (antes de comer).'
+  },
+  {
+    id: 'd-12',
+    category: 'dining',
+    categoryName: '2. Restaurantes y Gastronomía',
+    romaji: 'Oishii desu!',
+    phonetic: 'Oishii des!',
+    kanji: '美味しいです！',
+    spanish: '¡Está riquísimo!'
+  },
+  {
+    id: 'd-13',
+    category: 'dining',
+    categoryName: '2. Restaurantes y Gastronomía',
+    romaji: 'Gochisōsama deshita',
+    phonetic: 'Gochisoosama deshita',
+    kanji: 'ごちそうさまでした',
+    spanish: 'Gracias por la comida (al terminar).'
+  },
+  {
+    id: 'd-14',
+    category: 'dining',
+    categoryName: '2. Restaurantes y Gastronomía',
+    romaji: 'O-kaikei o onegai shimasu',
+    phonetic: 'Okaikei o onegai shimas',
+    kanji: 'お会計をお願いします',
+    spanish: 'La cuenta, por favor.'
+  },
+  {
+    id: 'd-15',
+    category: 'dining',
+    categoryName: '2. Restaurantes y Gastronomía',
+    romaji: 'Kādo wa tsukaemasu ka?',
+    phonetic: 'Kaado wa tsukaemas ka?',
+    kanji: 'カードは使えますか？',
+    spanish: '¿Puedo pagar con tarjeta?'
+  },
+
+  // Categoría 3: Compras y Konbini
+  {
+    id: 's-1',
+    category: 'shopping',
+    categoryName: '3. Compras y Konbini',
+    romaji: 'Kore wa ikura desu ka?',
+    phonetic: 'Kore wa ikura des ka?',
+    kanji: 'これはいくらですか？',
+    spanish: '¿Cuánto cuesta esto?'
+  },
+  {
+    id: 's-2',
+    category: 'shopping',
+    categoryName: '3. Compras y Konbini',
+    romaji: 'Fukuro wa irimasen',
+    phonetic: 'Fukuro wa irimasen',
+    kanji: '袋はいりません',
+    spanish: 'No necesito bolsa, gracias.'
+  },
+  {
+    id: 's-3',
+    category: 'shopping',
+    categoryName: '3. Compras y Konbini',
+    romaji: 'Atatame masu ka?',
+    phonetic: 'Atatames ka?',
+    kanji: '温めますか？',
+    spanish: '¿Se lo caliento en el microondas? (pregunta del cajero).'
+  },
+  {
+    id: 's-4',
+    category: 'shopping',
+    categoryName: '3. Compras y Konbini',
+    romaji: 'Hai, onegai shimasu',
+    phonetic: 'Jai, onegai shimas',
+    kanji: 'はい、お願いします',
+    spanish: 'Sí, por favor.'
+  },
+  {
+    id: 's-5',
+    category: 'shopping',
+    categoryName: '3. Compras y Konbini',
+    romaji: 'Suica / Pasmo de haraemasu ka?',
+    phonetic: 'Suica / Pasmo de haraemas ka?',
+    kanji: 'Suicaで払えますか？',
+    spanish: '¿Puedo pagar con la tarjeta de transporte?'
+  },
+  {
+    id: 's-6',
+    category: 'shopping',
+    categoryName: '3. Compras y Konbini',
+    romaji: 'Tax-free wa dekimasu ka?',
+    phonetic: 'Taksu frii wa dekimas ka?',
+    kanji: '免税はできますか？',
+    spanish: '¿Hacen descuento Tax-Free (sin impuestos)?'
+  },
+
+  // Categoría 4: Orientación, Emergencias y Necesidades
+  {
+    id: 'o-1',
+    category: 'orientation',
+    categoryName: '4. Orientación y Emergencias',
+    romaji: 'Toire wa doko desu ka?',
+    phonetic: 'Toire wa doko des ka?',
+    kanji: 'トイレはどこですか？',
+    spanish: '¿Dónde está el baño?'
+  },
+  {
+    id: 'o-2',
+    category: 'orientation',
+    categoryName: '4. Orientación y Emergencias',
+    romaji: 'Eki wa doko desu ka?',
+    phonetic: 'Eki wa doko des ka?',
+    kanji: '駅はどこですか？',
+    spanish: '¿Dónde está la estación?'
+  },
+  {
+    id: 'o-3',
+    category: 'orientation',
+    categoryName: '4. Orientación y Emergencias',
+    romaji: 'Eigo ga hanasemasu ka?',
+    phonetic: 'Eigo ga janasemas ka?',
+    kanji: '英語が話せますか？',
+    spanish: '¿Habla inglés?'
+  },
+  {
+    id: 'o-4',
+    category: 'orientation',
+    categoryName: '4. Orientación y Emergencias',
+    romaji: 'Tasukete kudasai!',
+    phonetic: 'Taskete kudasai!',
+    kanji: '助けてください！',
+    spanish: '¡Ayuda, por favor!'
+  },
+  {
+    id: 'o-5',
+    category: 'orientation',
+    categoryName: '4. Orientación y Emergencias',
+    romaji: 'Koshitsu wa doko desu ka?',
+    phonetic: 'Koshitsu wa doko des ka?',
+    kanji: '忘れ物センターはどこですか？',
+    spanish: '¿Dónde está el centro de objetos perdidos?'
+  },
+
+  // Categoría 5: Expresiones Kawaii y Pop
+  {
+    id: 'k-1',
+    category: 'kawaii',
+    categoryName: '5. Expresiones Kawaii y Pop',
+    romaji: 'Kawaii!',
+    phonetic: 'Kawaiii!',
+    kanji: 'かわいい！',
+    spanish: '¡Qué lindo / qué mono!'
+  },
+  {
+    id: 'k-2',
+    category: 'kawaii',
+    categoryName: '5. Expresiones Kawaii y Pop',
+    romaji: 'Sugoi!',
+    phonetic: 'Sugoi!',
+    kanji: 'すごい！',
+    spanish: '¡Increíble! / ¡Guau!'
+  },
+  {
+    id: 'k-3',
+    category: 'kawaii',
+    categoryName: '5. Expresiones Kawaii y Pop',
+    romaji: 'Kakkoii!',
+    phonetic: 'Kakkoii!',
+    kanji: 'かっこいい！',
+    spanish: '¡Qué genial! / ¡Qué elegante!'
+  },
+  {
+    id: 'k-4',
+    category: 'kawaii',
+    categoryName: '5. Expresiones Kawaii y Pop',
+    romaji: 'Yatta!',
+    phonetic: 'Yatta!',
+    kanji: 'やったー！',
+    spanish: '¡Bien! / ¡Lo conseguimos!'
+  },
+  {
+    id: 'k-5',
+    category: 'kawaii',
+    categoryName: '5. Expresiones Kawaii y Pop',
+    romaji: 'Maji de?',
+    phonetic: 'Maji de?',
+    kanji: 'マジで？',
+    spanish: '¿En serio? / ¿De verdad?'
+  }
+];
 
 export const ToolsModule: React.FC = () => {
   const [jpyAmount, setJpyAmount] = useState<string>('1000');
   const [exchangeRate, setExchangeRate] = useState<number>(160); // 1 EUR = 160 JPY
-  const [activeTab, setActiveTab] = useState<'currency' | 'phrases' | 'sizes'>('currency');
+  const [activeTab, setActiveTab] = useState<'currency' | 'phrases' | 'sizes'>('phrases');
 
   const jpyNum = parseFloat(jpyAmount) || 0;
   const eurVal = (jpyNum / exchangeRate).toFixed(2);
@@ -32,72 +437,65 @@ export const ToolsModule: React.FC = () => {
     { label: 'Entrada a templo / santuario', jpy: '500 ¥ - 800 ¥', eur: `~${(500 / exchangeRate).toFixed(2)} € - ${(800 / exchangeRate).toFixed(2)} €` }
   ];
 
+  // Phrases state & Audio TTS Player
   const [phraseCategory, setPhraseCategory] = useState<string>('all');
   const [phraseSearch, setPhraseSearch] = useState<string>('');
+  const [currentlyPlaying, setCurrentlyPlaying] = useState<string | null>(null);
+
+  useEffect(() => {
+    // Warmup voices
+    if ('speechSynthesis' in window) {
+      window.speechSynthesis.getVoices();
+    }
+  }, []);
+
+  const speakPhrase = (phrase: Phrase) => {
+    if (!('speechSynthesis' in window)) {
+      alert('Tu navegador no soporta reproducción de voz.');
+      return;
+    }
+
+    window.speechSynthesis.cancel();
+
+    // Use kanji / Japanese text for TTS speech
+    const utterance = new SpeechSynthesisUtterance(phrase.kanji);
+    utterance.lang = 'ja-JP';
+    utterance.rate = 0.8; // adapted learning pace
+    utterance.pitch = 1.0;
+
+    const voices = window.speechSynthesis.getVoices();
+    const jaVoice = voices.find((v) => v.lang.includes('ja') || v.lang.includes('JP'));
+    if (jaVoice) {
+      utterance.voice = jaVoice;
+    }
+
+    setCurrentlyPlaying(phrase.id);
+
+    utterance.onend = () => setCurrentlyPlaying(null);
+    utterance.onerror = () => setCurrentlyPlaying(null);
+
+    window.speechSynthesis.speak(utterance);
+  };
 
   const phraseCategories = [
-    { id: 'all', name: 'Todas' },
-    { id: 'greetings', name: 'A. Saludos y Cortesía' },
-    { id: 'dining_entry', name: 'B. Entrada a Restaurantes' },
-    { id: 'ordering', name: 'C. Pedir Comida' },
-    { id: 'etiquette_pay', name: 'D. Etiqueta y Pago' },
-    { id: 'orientation', name: 'E. Orientación Clave' }
+    { id: 'all', name: 'Todas (35+)' },
+    { id: 'greetings', name: '1. Saludos y Cortesía' },
+    { id: 'dining', name: '2. Restaurantes' },
+    { id: 'shopping', name: '3. Compras & Konbini' },
+    { id: 'orientation', name: '4. Orientación & Emergencias' },
+    { id: 'kawaii', name: '5. Expresiones Kawaii' }
   ];
 
-  const usefulPhrases = [
-    // A. Saludos y Cortesía Básica
-    { category: 'greetings', categoryName: 'A. Saludos y Cortesía', romaji: 'Ohayō gozaimasu', kanji: 'おはようございます', spanish: 'Buenos días', note: 'Versión formal. Informal con familia o amigos: "Ohayō".' },
-    { category: 'greetings', categoryName: 'A. Saludos y Cortesía', romaji: 'Konnichiwa', kanji: 'こんにちは', spanish: 'Buenas tardes / Hola genérico', note: 'Utilizado durante la mayor parte del día hasta el atardecer.' },
-    { category: 'greetings', categoryName: 'A. Saludos y Cortesía', romaji: 'Konbanwa', kanji: 'こんばんは', spanish: 'Buenas noches (al saludar)', note: 'Para saludar al llegar a un sitio por la noche.' },
-    { category: 'greetings', categoryName: 'A. Saludos y Cortesía', romaji: 'Oyasumi nasai', kanji: 'おやすみなさい', spanish: 'Buenas noches (al despedirse)', note: 'Para despedirse antes de ir a dormir.' },
-    { category: 'greetings', categoryName: 'A. Saludos y Cortesía', romaji: 'Arigatō gozaimasu', kanji: 'ありがとうございます', spanish: 'Muchas gracias', note: 'Versión formal e imprescindible en el día a día.' },
-    { category: 'greetings', categoryName: 'A. Saludos y Cortesía', romaji: 'Dōmo', kanji: 'どうも', spanish: 'Gracias rápido / De nada informal', note: 'Agradecimiento ágil o saludo breve.' },
-    { category: 'greetings', categoryName: 'A. Saludos y Cortesía', romaji: 'Dōitashimashite', kanji: 'どういたしまして', spanish: 'De nada / No hay de qué', note: 'Respuesta educada a un agradecimiento.' },
-    { category: 'greetings', categoryName: 'A. Saludos y Cortesía', romaji: 'Sumimasen', kanji: 'すみません', spanish: 'Disculpe / Perdón / Llama atención', note: 'La palabra mágica multitarea en Japón.' },
-    { category: 'greetings', categoryName: 'A. Saludos y Cortesía', romaji: 'Gomen nasai', kanji: 'ごめんなさい', spanish: 'Lo siento / Disculpa', note: 'Si has tropezado o cometido un pequeño error involuntario.' },
-    { category: 'greetings', categoryName: 'A. Saludos y Cortesía', romaji: 'Hai / Iie', kanji: 'はい / いいえ', spanish: 'Sí / No', note: 'Respuestas afirmativas y negativas básicas.' },
-
-    // B. Entrada y Protocolo en Restaurantes
-    { category: 'dining_entry', categoryName: 'B. Entrada a Restaurantes', romaji: 'Irasshaimase!', kanji: 'いらっしゃいませ！', spanish: '¡Bienvenido!', note: 'Os lo gritarán al entrar. No hace falta responder, basta con sonreír o hacer una leve inclinación.' },
-    { category: 'dining_entry', categoryName: 'B. Entrada a Restaurantes', romaji: 'Sumimasen!', kanji: 'すみません！', spanish: '¡Disculpe!', note: 'La palabra mágica para llamar al camarero en mesas sin timbre.' },
-    { category: 'dining_entry', categoryName: 'B. Entrada a Restaurantes', romaji: 'Nan-mei sama desu ka?', kanji: '何名様ですか？', spanish: '¿Cuántos son?', note: 'Pregunta habitual del camarero al recibiros en la entrada.' },
-    { category: 'dining_entry', categoryName: 'B. Entrada a Restaurantes', romaji: 'Yonin desu', kanji: '4人です', spanish: 'Somos 4 personas', note: 'Yon = 4 personas (para el grupo familiar).' },
-    { category: 'dining_entry', categoryName: 'B. Entrada a Restaurantes', romaji: 'Oseki wa arimasu ka?', kanji: 'お席はありますか？', spanish: '¿Hay sitio / mesas libres?', note: 'Para consultar si hay mesa disponible al llegar.' },
-    { category: 'dining_entry', categoryName: 'B. Entrada a Restaurantes', romaji: 'Kinen-seki o negai shimasu', kanji: '禁煙席をお願いします', spanish: 'Mesa en zona de no fumadores, por favor', note: 'Para asegurar una mesa en espacio libre de humo.' },
-
-    // C. Pedir Comida y Modificaciones
-    { category: 'ordering', categoryName: 'C. Pedir Comida', romaji: 'Kore o kudasai', kanji: 'これをください', spanish: 'Quiero esto, por favor', note: 'Señalando directamente la foto o el plato en la carta.' },
-    { category: 'ordering', categoryName: 'C. Pedir Comida', romaji: 'Kore to kore o kudasai', kanji: 'これとこれをください', spanish: 'Quiero esto y esto, por favor', note: 'Para pedir dos o más platos señalando en el menú.' },
-    { category: 'ordering', categoryName: 'C. Pedir Comida', romaji: 'Eigo no menu wa arimasu ka?', kanji: '英語のメニューはありますか？', spanish: '¿Tienen menú en inglés?', note: 'Muy útil en restaurantes tradicionales.' },
-    { category: 'ordering', categoryName: 'C. Pedir Comida', romaji: 'Osusume wa nan desu ka?', kanji: 'おすすめは何ですか？', spanish: '¿Qué me recomienda? / ¿Especialidad?', note: 'Para consultar la especialidad recomendada de la casa.' },
-    { category: 'ordering', categoryName: 'C. Pedir Comida', romaji: 'O-mizu o kudasai', kanji: 'お水をください', spanish: 'Agua (fría) por favor', note: 'El agua con hielo suele ser gratuita en casi todos los locales.' },
-    { category: 'ordering', categoryName: 'C. Pedir Comida', romaji: 'O-cha o kudasai', kanji: 'お茶をください', spanish: 'Té verde por favor', note: 'Té verde de cortesía disponible en muchos establecimientos.' },
-    { category: 'ordering', categoryName: 'C. Pedir Comida', romaji: 'Kodomo-yō no shokki wa arimasu ka?', kanji: '子供用の食器はありますか？', spanish: '¿Tienen cubiertos/platos para niños?', note: 'Práctico para pedir adaptación infantil de vajilla.' },
-
-    // D. Etiqueta en la Mesa y Pago
-    { category: 'etiquette_pay', categoryName: 'D. Etiqueta y Pago', romaji: 'Itadakimasu', kanji: 'いただきます', spanish: 'Agradezco estos alimentos', note: 'Expresión sagrada y educada antes de empezar a comer.' },
-    { category: 'etiquette_pay', categoryName: 'D. Etiqueta y Pago', romaji: 'Gochisōsama deshita', kanji: 'ごちそうさまでした', spanish: 'Muchas gracias por la comida', note: 'Al terminar de comer: "Estaba delicioso / Gracias por el banquete".' },
-    { category: 'etiquette_pay', categoryName: 'D. Etiqueta y Pago', romaji: 'Oishii desu!', kanji: '美味しいです！', spanish: '¡Está riquísimo!', note: 'Elogio amable para los cocineros o personal.' },
-    { category: 'etiquette_pay', categoryName: 'D. Etiqueta y Pago', romaji: 'O-kaikei o negai shimasu', kanji: 'お会計をお願いします', spanish: 'La cuenta, por favor', note: 'También se puede indicar haciendo una "X" cruzando los dedos índices.' },
-    { category: 'etiquette_pay', categoryName: 'D. Etiqueta y Pago', romaji: 'Kādo wa tsukaemasu ka?', kanji: 'カードは使えますか？', spanish: '¿Puedo pagar con tarjeta?', note: 'Para consultar el pago con tarjeta bancaria.' },
-    { category: 'etiquette_pay', categoryName: 'D. Etiqueta y Pago', romaji: 'Genkin de (Kenshin de)', kanji: '現金で', spanish: 'En efectivo', note: 'Para indicar que pagarás en metálico con yenes.' },
-
-    // E. Orientación y Preguntas Clave
-    { category: 'orientation', categoryName: 'E. Orientación Clave', romaji: '...wa doko desu ka?', kanji: '〜はどこですか？', spanish: '¿Dónde está...?', note: 'Estructura general para preguntar por lugares (e.g. Eki wa doko desu ka?).' },
-    { category: 'orientation', categoryName: 'E. Orientación Clave', romaji: 'Toire wa doko desu ka?', kanji: 'トイレはどこですか？', spanish: '¿Dónde está el baño?', note: 'Frase vital de supervivencia.' },
-    { category: 'orientation', categoryName: 'E. Orientación Clave', romaji: 'Kore wa ikura desu ka?', kanji: 'これはいくらですか？', spanish: '¿Cuánto cuesta esto?', note: 'Para consultar el precio de productos o platos.' },
-    { category: 'orientation', categoryName: 'E. Orientación Clave', romaji: 'Eigo ga hanasemasu ka?', kanji: '英語が話せますか？', spanish: '¿Habla inglés?', note: 'Para consultar si el interlocutor habla inglés.' }
-  ];
-
-  const filteredPhrases = usefulPhrases.filter((p) => {
+  const filteredPhrases = JAPANESE_PHRASES.filter((p) => {
     const matchesCategory = phraseCategory === 'all' || p.category === phraseCategory;
     const q = phraseSearch.toLowerCase().trim();
     const matchesSearch =
       !q ||
       p.romaji.toLowerCase().includes(q) ||
+      p.phonetic.toLowerCase().includes(q) ||
       p.spanish.toLowerCase().includes(q) ||
       p.kanji.includes(q) ||
-      p.note.toLowerCase().includes(q);
+      (p.note && p.note.toLowerCase().includes(q));
     return matchesCategory && matchesSearch;
   });
 
@@ -119,15 +517,27 @@ export const ToolsModule: React.FC = () => {
           Módulo Herramientas & Utilidades
         </span>
         <h1 className="text-xl font-black text-white tracking-tight mt-1">
-          Conversor de Divisas y Guía de Bolsillo
+          Japonés de Supervivencia + Audio & Conversor
         </h1>
         <p className="text-xs font-bold text-slate-400 mt-1">
-          Cálculo inmediato JPY / EUR offline, frases esenciales y equivalencia de tallas.
+          Guía de frases con pronunciación en voz nativa, conversor JPY/EUR y tallas.
         </p>
       </section>
 
       {/* Navigation Sub-Tabs */}
       <nav className="grid grid-cols-3 gap-2 mb-6">
+        <button
+          onClick={() => setActiveTab('phrases')}
+          className={`p-3 rounded-2xl flex flex-col items-center justify-center min-h-[52px] font-black text-xs transition-all active:scale-95 ${
+            activeTab === 'phrases'
+              ? 'bg-rose-600 text-white shadow-lg shadow-rose-900/30'
+              : 'bg-white dark:bg-slate-800 text-slate-700 dark:text-slate-300 border border-slate-200 dark:border-slate-700 hover:bg-slate-100'
+          }`}
+        >
+          <Languages className="w-4 h-4 mb-1" />
+          <span>Japonés & Audio</span>
+        </button>
+
         <button
           onClick={() => setActiveTab('currency')}
           className={`p-3 rounded-2xl flex flex-col items-center justify-center min-h-[52px] font-black text-xs transition-all active:scale-95 ${
@@ -138,18 +548,6 @@ export const ToolsModule: React.FC = () => {
         >
           <Calculator className="w-4 h-4 mb-1" />
           <span>Divisas (JPY/EUR)</span>
-        </button>
-
-        <button
-          onClick={() => setActiveTab('phrases')}
-          className={`p-3 rounded-2xl flex flex-col items-center justify-center min-h-[52px] font-black text-xs transition-all active:scale-95 ${
-            activeTab === 'phrases'
-              ? 'bg-rose-600 text-white shadow-lg shadow-rose-900/30'
-              : 'bg-white dark:bg-slate-800 text-slate-700 dark:text-slate-300 border border-slate-200 dark:border-slate-700 hover:bg-slate-100'
-          }`}
-        >
-          <Languages className="w-4 h-4 mb-1" />
-          <span>Frases Útiles</span>
         </button>
 
         <button
@@ -165,10 +563,144 @@ export const ToolsModule: React.FC = () => {
         </button>
       </nav>
 
-      {/* Main Tab Content */}
+      {/* Phrases & Audio Tab */}
+      {activeTab === 'phrases' && (
+        <section className="bg-white dark:bg-slate-800 border-2 border-slate-200 dark:border-slate-700 rounded-3xl p-5 shadow-sm space-y-4">
+          <div className="border-b border-slate-100 dark:border-slate-700 pb-3 flex items-center justify-between gap-2">
+            <div>
+              <span className="text-[10px] font-black uppercase text-rose-500 bg-rose-50 dark:bg-rose-950/80 px-2.5 py-0.5 rounded-full border border-rose-200 dark:border-rose-900 mb-1 inline-block">
+                Audio Playback + Guía Masiva (35+ Frases)
+              </span>
+              <h2 className="text-sm font-black uppercase text-slate-900 dark:text-white tracking-wider flex items-center gap-2">
+                <Languages className="w-4 h-4 text-rose-500" />
+                Módulo &quot;Japonés de Supervivencia&quot;
+              </h2>
+              <p className="text-xs text-slate-500 dark:text-slate-400 mt-1">
+                Haz clic en el botón 🔊 para escuchar la pronunciación nativa en voz clara a velocidad adaptada.
+              </p>
+            </div>
+          </div>
+
+          {/* Search Box */}
+          <div className="relative">
+            <Search className="w-4 h-4 absolute left-3 top-1/2 -translate-y-1/2 text-slate-400" />
+            <input
+              type="text"
+              value={phraseSearch}
+              onChange={(e) => setPhraseSearch(e.target.value)}
+              placeholder="Buscar por expresión, pronunciación o traducción..."
+              className="w-full pl-9 pr-8 py-2.5 bg-slate-100 dark:bg-slate-900 border border-slate-200 dark:border-slate-700 rounded-xl text-xs font-medium focus:outline-hidden focus:border-rose-500"
+            />
+            {phraseSearch && (
+              <button
+                onClick={() => setPhraseSearch('')}
+                className="absolute right-3 top-1/2 -translate-y-1/2 text-xs text-slate-400 hover:text-slate-600 font-bold"
+              >
+                ✕
+              </button>
+            )}
+          </div>
+
+          {/* Category Filter Pills */}
+          <div className="flex gap-1.5 overflow-x-auto pb-1 scrollbar-thin">
+            {phraseCategories.map((cat) => (
+              <button
+                key={cat.id}
+                onClick={() => setPhraseCategory(cat.id)}
+                className={`px-3 py-1.5 rounded-xl text-[11px] font-black shrink-0 whitespace-nowrap min-h-[36px] transition-all active:scale-95 ${
+                  phraseCategory === cat.id
+                    ? 'bg-rose-600 text-white shadow-xs'
+                    : 'bg-slate-100 dark:bg-slate-900 text-slate-600 dark:text-slate-400 hover:bg-slate-200 dark:hover:bg-slate-800'
+                }`}
+              >
+                {cat.name}
+              </button>
+            ))}
+          </div>
+
+          {/* List of Phrase Cards with Floating Kawaii Audio Buttons */}
+          <div className="space-y-3 pt-1">
+            {filteredPhrases.length === 0 ? (
+              <div className="text-center py-8 bg-slate-50 dark:bg-slate-900/40 rounded-2xl border border-dashed border-slate-200 dark:border-slate-700">
+                <p className="text-xs font-bold text-slate-400">
+                  No se encontraron expresiones para esta búsqueda.
+                </p>
+              </div>
+            ) : (
+              filteredPhrases.map((phrase) => {
+                const isPlaying = currentlyPlaying === phrase.id;
+
+                return (
+                  <div
+                    key={phrase.id}
+                    className={`p-4 rounded-2xl space-y-2 transition-all relative border-2 ${
+                      isPlaying
+                        ? 'bg-rose-50 dark:bg-rose-950/40 border-rose-500 shadow-md'
+                        : 'bg-slate-50 dark:bg-slate-900/60 border-slate-200/80 dark:border-slate-700/80 hover:border-rose-300 dark:hover:border-rose-900'
+                    }`}
+                  >
+                    <div className="flex items-start justify-between gap-3">
+                      <div className="space-y-1 pr-12">
+                        <div className="flex flex-wrap items-center gap-2">
+                          <span className="text-base font-black text-rose-600 dark:text-rose-400 tracking-tight">
+                            {phrase.romaji}
+                          </span>
+                          <span className="text-xs font-bold text-amber-700 dark:text-amber-300 bg-amber-100 dark:bg-amber-950/80 px-2 py-0.5 rounded-lg border border-amber-200 dark:border-amber-900">
+                            ({phrase.phonetic})
+                          </span>
+                        </div>
+                        <div className="text-xs font-bold text-slate-400 dark:text-slate-500">
+                          {phrase.kanji}
+                        </div>
+                      </div>
+
+                      {/* Floating Kawaii Audio Playback Button */}
+                      <button
+                        onClick={() => speakPhrase(phrase)}
+                        className={`w-11 h-11 rounded-2xl flex items-center justify-center shrink-0 border transition-all active:scale-90 shadow-md ${
+                          isPlaying
+                            ? 'bg-rose-600 text-white border-rose-400 animate-bounce'
+                            : 'bg-rose-100 dark:bg-rose-950/80 text-rose-600 dark:text-rose-300 hover:bg-rose-600 hover:text-white border-rose-300 dark:border-rose-800'
+                        }`}
+                        title="Escuchar pronunciación nativa"
+                        aria-label={`Escuchar ${phrase.romaji}`}
+                      >
+                        {isPlaying ? (
+                          <VolumeX className="w-5 h-5 animate-pulse" />
+                        ) : (
+                          <div className="flex items-center gap-0.5">
+                            <span className="text-sm">🎧</span>
+                            <Volume2 className="w-4 h-4" />
+                          </div>
+                        )}
+                      </button>
+                    </div>
+
+                    <div className="pt-1 border-t border-slate-200/60 dark:border-slate-800 flex items-center justify-between">
+                      <span className="text-xs font-black text-slate-900 dark:text-slate-100">
+                        👉 {phrase.spanish}
+                      </span>
+                      <span className="text-[10px] font-extrabold uppercase text-slate-400 bg-slate-200/50 dark:bg-slate-800 px-2 py-0.5 rounded-full">
+                        {phrase.categoryName}
+                      </span>
+                    </div>
+
+                    {phrase.note && (
+                      <p className="text-[11px] font-semibold text-slate-500 dark:text-slate-400 bg-white/70 dark:bg-slate-950/50 p-2 rounded-xl border border-slate-100 dark:border-slate-800/80">
+                        💡 {phrase.note}
+                      </p>
+                    )}
+                  </div>
+                );
+              })
+            )}
+          </div>
+        </section>
+      )}
+
+      {/* Currency Converter Tab */}
       {activeTab === 'currency' && (
         <div className="space-y-6">
-          {/* Converter Card */}
           <article className="bg-white dark:bg-slate-800 border-2 border-slate-200 dark:border-slate-700 rounded-3xl p-5 shadow-sm space-y-4">
             <div className="flex items-center justify-between border-b border-slate-100 dark:border-slate-700 pb-3">
               <h2 className="text-sm font-black uppercase text-slate-400 tracking-wider flex items-center gap-2">
@@ -187,7 +719,6 @@ export const ToolsModule: React.FC = () => {
               </div>
             </div>
 
-            {/* Main Input Display Box */}
             <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
               <div className="bg-slate-900 text-white p-4 rounded-2xl flex flex-col justify-between">
                 <span className="text-[10px] font-black text-rose-400 uppercase tracking-wider">
@@ -215,7 +746,6 @@ export const ToolsModule: React.FC = () => {
               </div>
             </div>
 
-            {/* Quick Preset Buttons */}
             <div>
               <span className="text-[11px] font-black uppercase text-slate-400 block mb-2">
                 Importes Frecuentes
@@ -233,7 +763,6 @@ export const ToolsModule: React.FC = () => {
               </div>
             </div>
 
-            {/* Numeric On-Screen Keypad */}
             <div>
               <span className="text-[11px] font-black uppercase text-slate-400 block mb-2">
                 Teclado Numérico
@@ -258,7 +787,6 @@ export const ToolsModule: React.FC = () => {
             </div>
           </article>
 
-          {/* Price Reference Table */}
           <article className="bg-white dark:bg-slate-800 border-2 border-slate-200 dark:border-slate-700 rounded-3xl p-5 shadow-sm space-y-3">
             <div className="flex items-center gap-2 border-b border-slate-100 dark:border-slate-700 pb-2">
               <ShoppingBag className="w-4 h-4 text-amber-500" />
@@ -282,103 +810,7 @@ export const ToolsModule: React.FC = () => {
         </div>
       )}
 
-      {activeTab === 'phrases' && (
-        <section className="bg-white dark:bg-slate-800 border-2 border-slate-200 dark:border-slate-700 rounded-3xl p-5 shadow-sm space-y-4">
-          <div className="border-b border-slate-100 dark:border-slate-700 pb-3">
-            <span className="text-[10px] font-black uppercase text-rose-500 bg-rose-50 dark:bg-rose-950/80 px-2.5 py-0.5 rounded-full border border-rose-200 dark:border-rose-900 mb-1 inline-block">
-              Survival & Dining Japanese Guide
-            </span>
-            <h2 className="text-sm font-black uppercase text-slate-900 dark:text-white tracking-wider flex items-center gap-2">
-              <Languages className="w-4 h-4 text-rose-500" />
-              Guía Profunda de Japonés Útil
-            </h2>
-            <p className="text-xs text-slate-500 dark:text-slate-400 mt-1">
-              Kit de supervivencia lingüística para el día a día, restaurantes, etiqueta en la mesa y orientación.
-            </p>
-          </div>
-
-          {/* Search Box */}
-          <div className="relative">
-            <input
-              type="text"
-              value={phraseSearch}
-              onChange={(e) => setPhraseSearch(e.target.value)}
-              placeholder="Buscar por expresión, español o pronunciación..."
-              className="w-full pl-3 pr-8 py-2 bg-slate-100 dark:bg-slate-900 border border-slate-200 dark:border-slate-700 rounded-xl text-xs font-medium focus:outline-hidden focus:border-rose-500"
-            />
-            {phraseSearch && (
-              <button
-                onClick={() => setPhraseSearch('')}
-                className="absolute right-2.5 top-1/2 -translate-y-1/2 text-xs text-slate-400 hover:text-slate-600 font-bold"
-              >
-                ✕
-              </button>
-            )}
-          </div>
-
-          {/* Category Filter Pills */}
-          <div className="flex gap-1.5 overflow-x-auto pb-1 scrollbar-thin">
-            {phraseCategories.map((cat) => (
-              <button
-                key={cat.id}
-                onClick={() => setPhraseCategory(cat.id)}
-                className={`px-3 py-1.5 rounded-xl text-[11px] font-black shrink-0 whitespace-nowrap min-h-[36px] transition-all active:scale-95 ${
-                  phraseCategory === cat.id
-                    ? 'bg-rose-600 text-white shadow-xs'
-                    : 'bg-slate-100 dark:bg-slate-900 text-slate-600 dark:text-slate-400 hover:bg-slate-200 dark:hover:bg-slate-800'
-                }`}
-              >
-                {cat.name}
-              </button>
-            ))}
-          </div>
-
-          {/* List of Phrase Cards */}
-          <div className="space-y-3 pt-1">
-            {filteredPhrases.length === 0 ? (
-              <div className="text-center py-8 bg-slate-50 dark:bg-slate-900/40 rounded-2xl border border-dashed border-slate-200 dark:border-slate-700">
-                <p className="text-xs font-bold text-slate-400">
-                  No se encontraron expresiones para esta búsqueda.
-                </p>
-              </div>
-            ) : (
-              filteredPhrases.map((phrase, idx) => (
-                <div
-                  key={idx}
-                  className="bg-slate-50 dark:bg-slate-900/60 border border-slate-200/80 dark:border-slate-700 p-4 rounded-2xl space-y-1.5 transition-all hover:border-rose-300 dark:hover:border-rose-900"
-                >
-                  <div className="flex flex-wrap items-center justify-between gap-1 border-b border-slate-200/60 dark:border-slate-800 pb-2">
-                    <div className="flex items-center gap-2">
-                      <span className="text-base font-black text-rose-600 dark:text-rose-400 tracking-tight">
-                        {phrase.romaji}
-                      </span>
-                      <span className="text-xs font-bold text-slate-400 dark:text-slate-500 bg-slate-200/60 dark:bg-slate-800 px-2 py-0.5 rounded-md">
-                        {phrase.kanji}
-                      </span>
-                    </div>
-                    <span className="text-[10px] font-extrabold uppercase tracking-wider text-rose-700 dark:text-rose-300 bg-rose-100 dark:bg-rose-950/80 px-2 py-0.5 rounded-full border border-rose-200 dark:border-rose-900">
-                      {phrase.categoryName}
-                    </span>
-                  </div>
-
-                  <div className="flex flex-col sm:flex-row sm:items-baseline justify-between gap-1 pt-0.5">
-                    <span className="text-xs font-extrabold text-slate-900 dark:text-slate-100">
-                      👉 {phrase.spanish}
-                    </span>
-                  </div>
-
-                  {phrase.note && (
-                    <p className="text-[11px] font-semibold text-slate-500 dark:text-slate-400 bg-white/60 dark:bg-slate-950/40 p-2 rounded-xl border border-slate-100 dark:border-slate-800/80">
-                      💡 {phrase.note}
-                    </p>
-                  )}
-                </div>
-              ))
-            )}
-          </div>
-        </section>
-      )}
-
+      {/* Clothing Sizes Tab */}
       {activeTab === 'sizes' && (
         <section className="bg-white dark:bg-slate-800 border-2 border-slate-200 dark:border-slate-700 rounded-3xl p-5 shadow-sm space-y-4">
           <div className="border-b border-slate-100 dark:border-slate-700 pb-3">
@@ -387,7 +819,7 @@ export const ToolsModule: React.FC = () => {
               Tabla de Equivalencia de Tallas
             </h2>
             <p className="text-xs text-slate-500 dark:text-slate-400 mt-0.5">
-              Referencia rápida para calzado y vestimenta al comprar en tiendas como Uniqlo o Gu.
+              Referencia rápida para calzado y vestimenta al comprar en tiendas como Uniqlo o GU.
             </p>
           </div>
 
