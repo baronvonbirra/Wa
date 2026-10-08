@@ -72,21 +72,17 @@ export const ToolsView: React.FC<ToolsViewProps> = ({ initialSubTab = 'converter
   const [contactAddress, setContactAddress] = useState('');
   const [contactNotes, setContactNotes] = useState('');
 
-  // Fetch packing_list_items from Supabase or fallback
+  // Fetch packing_list_items from Supabase
   useEffect(() => {
     fetchPackingItems();
-  }, [waState.packingListItems]);
+  }, []);
 
   const fetchPackingItems = async () => {
     const { data } = await supabase
       .from('packing_list_items')
       .select('*')
       .order('category', { ascending: true });
-    if (data && data.length > 0) {
-      setPackingItems(data);
-    } else if (waState.packingListItems) {
-      setPackingItems(waState.packingListItems);
-    }
+    setPackingItems(data || []);
   };
 
   const togglePacked = async (id: string, currentPacked?: boolean) => {

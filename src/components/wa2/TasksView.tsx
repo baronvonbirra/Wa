@@ -16,7 +16,7 @@ export const TasksView: React.FC = () => {
       .from('trip_tasks')
       .select('*')
       .order('due_date', { ascending: true });
-    if (data) setTasks(data);
+    setTasks(data || []);
   };
 
   const toggleCompleted = async (id: string, currentStatus: boolean) => {
