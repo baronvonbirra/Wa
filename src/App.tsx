@@ -11,6 +11,7 @@ import { WishlistView } from './components/wa2/WishlistView';
 import { ToolsView } from './components/wa2/ToolsView';
 import { TasksView } from './components/wa2/TasksView';
 import { SurvivalPhrasesView } from './components/wa2/SurvivalPhrasesView';
+import { StaticItinerary } from './components/StaticItinerary';
 
 // Wa 1.0 Components
 import { Header as Wa1Header } from './components/Header';
@@ -217,6 +218,7 @@ function MainAppContent() {
       {/* Main View Module Content */}
       <main className="flex-grow">
         {wa2Tab === 'itinerary' && <ItineraryView onNavigateTab={handleNavigateWa2} />}
+        {wa2Tab === 'static_itinerary' && <StaticItinerary />}
         {wa2Tab === 'places' && <SavedPlacesView />}
         {wa2Tab === 'wishlist' && <WishlistView />}
         {wa2Tab === 'tools' && <ToolsView initialSubTab={toolsSubTab} />}
