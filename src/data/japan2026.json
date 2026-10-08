@@ -1,0 +1,222 @@
+{
+  "trip": {
+    "id": "japan-2026-2027",
+    "title": "Viaje a Japón 2026-2027",
+    "start_date": "2026-12-21",
+    "end_date": "2027-01-13",
+    "stages": [
+      {
+        "stage_id": 0,
+        "name": "Tokio Inicial & Nikko",
+        "start_date": "2026-12-21",
+        "end_date": "2026-12-27",
+        "accommodations": [
+          {
+            "name": "Toy Story Hotel",
+            "check_in": "2026-12-21",
+            "check_out": "2026-12-23",
+            "location": "Tokyo Disney Resort"
+          },
+          {
+            "name": "Hotel Tokio Centro",
+            "check_in": "2026-12-23",
+            "check_out": "2026-12-28",
+            "location": "Tokio Centro"
+          }
+        ],
+        "days": [
+          {
+            "date": "2026-12-21",
+            "title": "Llegada y Traslado a Disney",
+            "activities": ["Llegada a Aeropuerto de Haneda", "Traslado directo a Toy Story Hotel", "Check-in"]
+          },
+          {
+            "date": "2026-12-22",
+            "title": "Tokyo Disneyland",
+            "activities": ["Día completo en Tokyo Disneyland"]
+          },
+          {
+            "date": "2026-12-23",
+            "title": "Tokyo DisneySea y Cambio de Base",
+            "activities": ["Día completo en Tokyo DisneySea", "Recogida de equipaje", "Traslado a Hotel Tokio Centro"]
+          },
+          {
+            "date": "2026-12-24",
+            "title": "Asakusa, Ueno y Akihabara",
+            "activities": ["Templo Sensō-ji", "Parque de Ueno", "Zona tecnológica y pop de Akihabara"]
+          },
+          {
+            "date": "2026-12-25",
+            "title": "Excursión a Nikko y Utsunomiya",
+            "activities": ["Santuario Tōshō-gū", "Cascada Kegon", "Parada gastronómica en Utsunomiya (Gyozas)"]
+          },
+          {
+            "date": "2026-12-26",
+            "title": "Shibuya, Harajuku y Roppongi",
+            "activities": ["Cruce de Shibuya", "Calle Takeshita (Harajuku)", "Avenida Omotesando", "Roppongi"]
+          },
+          {
+            "date": "2026-12-27",
+            "title": "Shinjuku e Ikebukuro",
+            "activities": ["Distrito de rascacielos de Shinjuku", "Zona de ocio en Ikebukuro", "Logística y preparativos para Kawaguchiko"]
+          }
+        ]
+      },
+      {
+        "stage_id": 1,
+        "name": "Monte Fuji & Alpes Japoneses",
+        "start_date": "2026-12-28",
+        "end_date": "2027-01-01",
+        "accommodations": [
+          {
+            "name": "Kawaguchiko Country Cottage Ban",
+            "check_in": "2026-12-28",
+            "check_out": "2026-12-30",
+            "location": "Kawaguchiko"
+          },
+          {
+            "name": "Kouya",
+            "check_in": "2026-12-30",
+            "check_out": "2027-01-02",
+            "location": "Takayama"
+          }
+        ],
+        "days": [
+          {
+            "date": "2026-12-28",
+            "title": "Kawaguchiko Norte",
+            "activities": ["Kawaguchi Asama Shrine", "Tenku no Torii", "Haha-no-Shirataki", "Santuario Yama", "Santuario Homi", "Parque Nagasaki", "Parque Oishi"]
+          },
+          {
+            "date": "2026-12-29",
+            "title": "Kawaguchiko Sur, Fujiyoshida y Oshino",
+            "activities": ["Ubuyagasaki", "Mirador Komagari", "Teleférico Panorámico", "Barco por Lago Kawaguchiko", "Pagoda Chureito", "Kitaguchi Hongu Fuji Sengen", "Santuario Arayayama", "Honcho 2-chome", "Oshino Hakkai", "Shinobi No Sato"]
+          },
+          {
+            "date": "2026-12-30",
+            "title": "Takayama - Centro Histórico y Templos",
+            "activities": ["Traslado a Takayama Nohi Bus Center", "Sakurayama Hachiman", "Takayama Betsuin Shorenji", "Higashiyama Hakusan Shrine", "Templo Daiohji", "Templo Zennoji", "Santuario Akiba", "Residencia Yoshijima", "Museo Kusakabe", "Santuario Akiha Shimoninomachi", "Hida Takayama Omoide Taikenkan", "Museo de Takayama", "Barrio Hidatakayama Sanmachi", "Destilería Kawashiri", "Sanmachi Suji", "Fábrica de sake Funasaka", "Puente Nakahashi"]
+          },
+          {
+            "date": "2026-12-31",
+            "title": "Takayama y Excursión a Shirakawa-go",
+            "activities": ["Nakabashi Park", "Takayama Jinya", "Mercados matutinos", "Casa Wada (Shirakawa-go)", "Mirador Castillo Ogimachi", "Shirakawa Town Gassho Village", "Residencia Nagase", "Santuario Shirakawa Hachiman", "Tres Casas de Shirakawago", "Santuario Ogimachi Akiba", "Puente Deai", "Shirakawa-go Gassho-Zukuri Minka-en"]
+          },
+          {
+            "date": "2027-01-01",
+            "title": "Transición hacia Kioto",
+            "activities": ["Traslado de Takayama a Kioto", "Check-in en Kioto"]
+          }
+        ]
+      },
+      {
+        "stage_id": 2,
+        "name": "Kioto",
+        "start_date": "2027-01-02",
+        "end_date": "2027-01-06",
+        "accommodations": [
+          {
+            "name": "Kamon Inn Toji Higashi（ カモンイン 東寺東 ）",
+            "check_in": "2027-01-02",
+            "check_out": "2027-01-07",
+            "location": "Kioto (Recogida llaves: 41 Tōjihigashimonzenchō)"
+          }
+        ],
+        "days": [
+          {
+            "date": "2027-01-02",
+            "title": "Kioto Sur y Templos Principales",
+            "activities": ["Tō-ji", "Fushimi Inari-taisha", "Tōfuku-ji (Puerta Kusakamon)", "Sanjūsangen-dō", "Higashi Honganji", "Nishi-hongwanji", "Torre de Kioto", "Estación de Kioto"]
+          },
+          {
+            "date": "2027-01-03",
+            "title": "Templos Noroeste y Arashiyama",
+            "activities": ["Kinkaku-ji", "Ryōan-ji", "Ninna-ji", "Tenryū-ji", "Parque Kameyama", "Santuario Nonomiya", "Jōjakkō-ji", "Seiryō-ji", "Giō-ji", "Saga Toriimoto", "Otagi Nenbutsu-ji", "Toriimoto Hachimangu", "Daikaku-ji"]
+          },
+          {
+            "date": "2027-01-04",
+            "title": "Paseo del Filósofo y Higashiyama Norte",
+            "activities": ["Ginkaku-ji", "Paseo del Filósofo", "Templo Hōnen-in", "Mausoleo Emperador Reizei", "Templo Kōun-ji", "Santuario Kumanonyakuōji", "Eikan-dō (Zenrin-ji)", "Nanzen-ji", "Santuario Heian Jingū"]
+          },
+          {
+            "date": "2027-01-05",
+            "title": "Castillo Nijō",
+            "activities": ["Castillo Nijō (Nijō-jō)"]
+          },
+          {
+            "date": "2027-01-06",
+            "title": "Higashiyama Sur, Gion y Pontocho",
+            "activities": ["Kiyomizu-dera", "Kiyomizuzaka", "Sannenzaka y Ninenzaka", "Estatua Ryozen Kannon", "Kōdai-ji", "Entoku-in", "Santuario Yasaka", "Chion-in", "Shōren-in Monzeki", "Jardín Chōontei (Kennin-ji)", "Calle Hanamikoji", "Miyagawacho Kaburenjo", "Callejón Pontocho"]
+          }
+        ]
+      },
+      {
+        "stage_id": 3,
+        "name": "Osaka",
+        "start_date": "2027-01-07",
+        "end_date": "2027-01-09",
+        "accommodations": [
+          {
+            "name": "Henn na Hotel Osaka Shinsaibashi",
+            "check_in": "2027-01-07",
+            "check_out": "2027-01-10",
+            "location": "Osaka"
+          }
+        ],
+        "days": [
+          {
+            "date": "2027-01-07",
+            "title": "Llegada, Castillo y Dōtonbori",
+            "activities": ["Llegada a Osaka Station", "Castillo de Osaka", "Shitennō-ji", "Puente Ukiniwa", "Puente Daikoku", "Puente Ebisu", "Dōtonbori", "Kani Doraku Dotombori", "Ukiyo Koji", "Hozen-ji", "Hozenji Yokocho"]
+          },
+          {
+            "date": "2027-01-08",
+            "title": "Mercados, Cultura Pop y Shinsekai",
+            "activities": ["Mercado Kuromon", "Ota Road", "Nipponbashi Denden Town", "Namba Walk Forest Park", "America-mura", "BB Amemura", "Shinsaibashisuji", "Mitsuhachimangu", "Shinsekai Hondori", "Torre Tsūtenkaku", "Mercado Shin-sekai"]
+          },
+          {
+            "date": "2027-01-09",
+            "title": "Universal Studios Japan",
+            "activities": ["Universal Studios Japan (USJ)", "Osaka Takoyaki Park (Universal CityWalk)"]
+          }
+        ]
+      },
+      {
+        "stage_id": 4,
+        "name": "Tokio Final, Tsukiji & Kamakura",
+        "start_date": "2027-01-10",
+        "end_date": "2027-01-13",
+        "accommodations": [
+          {
+            "name": "Hotel Vista Tokyo Tsukiji",
+            "check_in": "2027-01-10",
+            "check_out": "2027-01-13",
+            "location": "Tokio (Tsukiji)"
+          }
+        ],
+        "days": [
+          {
+            "date": "2027-01-10",
+            "title": "Ginza, Bahía y Tsukishima",
+            "activities": ["Llegada a Tokyo Station", "Kabuki-za", "Asahi Inari", "Seiko House Ginza", "Kakugo Inari", "Ginza Lion Beer Hall", "Toyoiwa Inari", "Jardines Hamarikyu", "Sumidagawa Terrace", "Nishinaka dori", "Puente Triton", "Santuarios Tsukuda Namiyoke & Osaki Inari", "Puente Aioi", "Puente Tsukudako", "Sumiyoshi Jinja", "Faro Ishikawajima", "Cena Monjayaki en Tsukishima Monja Okoge"]
+          },
+          {
+            "date": "2027-01-11",
+            "title": "Nakano y Shimokitazawa",
+            "activities": ["Nakano Renga Zaka", "Fureai Road", "Calle Hakusen", "Nakano Broadway (Mandarake/Don Quijote)", "Marché Shimokitazawa", "Tiendas retro y vinilos (Flash Disc Ranch, Harajuku Chicago, Swing Toys, Disk Union, Vintage/A.M.A. Store)", "Shiro-Hige’s Cream Puff Factory"]
+          },
+          {
+            "date": "2027-01-12",
+            "title": "Excursión a Kamakura",
+            "activities": ["Llegada a Kamakura Station", "Hongaku-ji", "Segundo Torii", "Myoryu-ji", "Komachi-dori", "Hokai-ji", "Tsurugaoka Hachiman-gū", "Myohon-ji", "Jufukuji", "Jokomyoji", "Sugimoto-dera", "Kōtoku-in (Gran Buda)", "Playa Yuigahama", "Santuario Goryo", "Hase-dera"]
+          },
+          {
+            "date": "2027-01-13",
+            "title": "Gastronomía Final y Salida",
+            "activities": ["Mercado Exterior de Tsukiji", "Traslado al aeropuerto / Vuelo de regreso"]
+          }
+        ]
+      }
+    ]
+  }
+}

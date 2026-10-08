@@ -1,0 +1,57 @@
+{
+  "categories": [
+    {
+      "id": "docs",
+      "name": "Documentación y Dinero",
+      "items": [
+        "Pasaportes (revisar validez)",
+        "Seguro de viaje (pólizas impresas/PDF)",
+        "Tarjetas de crédito / débito sin comisiones",
+        "Yenes en efectivo",
+        "Billetes de avión y reservas de hoteles",
+        "Entradas Tokyo Disney y USJ"
+      ]
+    },
+    {
+      "id": "tech",
+      "name": "Electrónica y Gadgets",
+      "items": [
+        "Adaptadores de enchufe tipo A (Japón)",
+        "Powerbanks de gran capacidad",
+        "Cargadores y cables (móviles, Switch, cámaras)",
+        "Tarjetas eSIM o Pocket WiFi alquilado"
+      ]
+    },
+    {
+      "id": "clothes",
+      "name": "Ropa (Invierno)",
+      "items": [
+        "Camisetas y mallas térmicas (Heattech)",
+        "Abrigos / Plumas de invierno",
+        "Calzado cómodo para caminar (fácil de quitar/poner)",
+        "Calcetines gruesos y térmicos",
+        "Gorros, guantes y bufandas"
+      ]
+    },
+    {
+      "id": "family",
+      "name": "Equipaje Niños",
+      "items": [
+        "Ropa de abrigo de repuesto",
+        "Entretenimiento para vuelos largos (móvil/pantalla, juegos)",
+        "Botiquín infantil (ibuprofeno, tiritas, antitérmico)",
+        "Mochilas pequeñas para diario"
+      ]
+    },
+    {
+      "id": "toiletries",
+      "name": "Aseo y Botiquín",
+      "items": [
+        "Cepillos y pasta de dientes",
+        "Medicamentos personales + receta si aplica",
+        "Crema hidratante y cacao de labios (frío/nieve)",
+        "Neceser de viaje"
+      ]
+    }
+  ]
+}

@@ -1,7 +1,7 @@
 import React from 'react';
 import { Calendar, MapPin, ShoppingBag, Calculator, GraduationCap } from 'lucide-react';
 
-export type Wa2Tab = 'itinerary' | 'places' | 'wishlist' | 'tools' | 'tasks' | 'walearn';
+export type Wa2Tab = 'itinerary' | 'places' | 'wishlist' | 'tools' | 'tasks' | 'walearn' | 'static_itinerary';
 
 interface BottomNavProps {
   activeTab: Wa2Tab;
@@ -11,6 +11,7 @@ interface BottomNavProps {
 export const BottomNav: React.FC<BottomNavProps> = ({ activeTab, setActiveTab }) => {
   const tabs = [
     { id: 'itinerary' as Wa2Tab, label: 'Itinerario', icon: Calendar },
+    { id: 'static_itinerary' as Wa2Tab, label: 'Offline', icon: Calendar },
     { id: 'places' as Wa2Tab, label: 'Sitios', icon: MapPin },
     { id: 'wishlist' as Wa2Tab, label: 'Wishlist', icon: ShoppingBag },
     { id: 'tools' as Wa2Tab, label: 'Herramientas', icon: Calculator },
