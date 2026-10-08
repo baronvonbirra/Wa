@@ -1,0 +1,545 @@
+import React, { useState, useMemo } from 'react';
+import { TRIP_DATA, ACCOMMODATIONS_MAP } from '../data/tripData';
+import { useTripState } from '../hooks/useTripState';
+import { JapaneseAddressModal } from './JapaneseAddressModal';
+import { Accommodation, DayItinerary } from '../types/itinerary';
+import {
+  Search,
+  CheckCircle2,
+  Circle,
+  MapPin,
+  Building,
+  ChevronLeft,
+  ChevronRight,
+  Sparkles,
+  ExternalLink,
+  Filter
+} from 'lucide-react';
+
+export const ItineraryModule: React.FC = () => {
+  const [activeStageId, setActiveStageId] = useState<number>(0);
+  const [activeDayDate, setActiveDayDate] = useState<string>(TRIP_DATA.stages[0].days[0].date);
+  const [searchQuery, setSearchQuery] = useState<string>('');
+  const [filterState, setFilterState] = useState<'all' | 'pending' | 'completed'>('all');
+  const [selectedAccommodation, setSelectedAccommodation] = useState<Accommodation | null>(null);
+
+  const { completed, toggleActivity, isActivityCompleted } = useTripState();
+
+  const currentStage = useMemo(() => {
+    return TRIP_DATA.stages.find((s) => s.stage_id === activeStageId) || TRIP_DATA.stages[0];
+  }, [activeStageId]);
+
+  const currentDay: DayItinerary = useMemo(() => {
+    const foundInStage = currentStage.days.find((d) => d.date === activeDayDate);
+    if (foundInStage) return foundInStage;
+    return currentStage.days[0];
+  }, [currentStage, activeDayDate]);
+
+  const allDays = useMemo(() => {
+    return TRIP_DATA.stages.flatMap((s) => s.days);
+  }, []);
+
+  const currentDayGlobalIndex = useMemo(() => {
+    return allDays.findIndex((d) => d.date === currentDay.date);
+  }, [allDays, currentDay]);
+
+  const totalTripActivities = useMemo(() => {
+    return allDays.reduce((acc, day) => acc + day.activities.length, 0);
+  }, [allDays]);
+
+  const completedTripActivities = useMemo(() => {
+    return allDays.reduce((acc, day) => {
+      const doneInDay = day.activities.filter((act) => completed.includes(act.id)).length;
+      return acc + doneInDay;
+    }, 0);
+  }, [allDays, completed]);
+
+  const totalStageActivities = useMemo(() => {
+    return currentStage.days.reduce((acc, day) => acc + day.activities.length, 0);
+  }, [currentStage]);
+
+  const completedStageActivities = useMemo(() => {
+    return currentStage.days.reduce((acc, day) => {
+      const doneInDay = day.activities.filter((act) => completed.includes(act.id)).length;
+      return acc + doneInDay;
+    }, 0);
+  }, [currentStage, completed]);
+
+  const globalPercentage = Math.round((completedTripActivities / (totalTripActivities || 1)) * 100);
+  const stagePercentage = Math.round((completedStageActivities / (totalStageActivities || 1)) * 100);
+
+  const handleSelectStage = (stageId: number) => {
+    setActiveStageId(stageId);
+    const stageObj = TRIP_DATA.stages.find((s) => s.stage_id === stageId);
+    if (stageObj && stageObj.days.length > 0) {
+      setActiveDayDate(stageObj.days[0].date);
+    }
+  };
+
+  const handlePrevDay = () => {
+    if (currentDayGlobalIndex > 0) {
+      const prevDayObj = allDays[currentDayGlobalIndex - 1];
+      const parentStage = TRIP_DATA.stages.find((s) => s.days.some((d) => d.date === prevDayObj.date));
+      if (parentStage) {
+        setActiveStageId(parentStage.stage_id);
+      }
+      setActiveDayDate(prevDayObj.date);
+    }
+  };
+
+  const handleNextDay = () => {
+    if (currentDayGlobalIndex < allDays.length - 1) {
+      const nextDayObj = allDays[currentDayGlobalIndex + 1];
+      const parentStage = TRIP_DATA.stages.find((s) => s.days.some((d) => d.date === nextDayObj.date));
+      if (parentStage) {
+        setActiveStageId(parentStage.stage_id);
+      }
+      setActiveDayDate(nextDayObj.date);
+    }
+  };
+
+  const isSearching = searchQuery.trim().length > 0;
+
+  const searchResults = useMemo(() => {
+    if (!isSearching) return [];
+    const query = searchQuery.toLowerCase().trim();
+    const results: { day: DayItinerary; stageName: string; matchedActivities: typeof currentDay.activities }[] = [];
+
+    TRIP_DATA.stages.forEach((stage) => {
+      stage.days.forEach((day) => {
+        const matchesDayTitle = day.title.toLowerCase().includes(query);
+        const matchedActs = day.activities.filter((act) => {
+          const isDone = completed.includes(act.id);
+          if (filterState === 'pending' && isDone) return false;
+          if (filterState === 'completed' && !isDone) return false;
+          return act.title.toLowerCase().includes(query) || matchesDayTitle;
+        });
+
+        if (matchedActs.length > 0) {
+          results.push({
+            day,
+            stageName: stage.name,
+            matchedActivities: matchedActs
+          });
+        }
+      });
+    });
+
+    return results;
+  }, [isSearching, searchQuery, completed, filterState]);
+
+  const currentAccommodation = ACCOMMODATIONS_MAP[currentDay.accommodationId];
+
+  const currentDayFilteredActivities = useMemo(() => {
+    return currentDay.activities.filter((act) => {
+      const isDone = isActivityCompleted(act.id);
+      if (filterState === 'pending' && isDone) return false;
+      if (filterState === 'completed' && !isDone) return false;
+      return true;
+    });
+  }, [currentDay, filterState, isActivityCompleted]);
+
+  return (
+    <div className="max-w-3xl mx-auto px-4 pt-4 pb-28 font-sans text-slate-800 dark:text-slate-100">
+      {/* Top Trip Summary & Progress Header */}
+      <section className="bg-slate-900 text-white p-5 rounded-3xl mb-6 shadow-xl border border-slate-800 relative overflow-hidden">
+        <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-3 mb-4">
+          <div>
+            <div className="flex items-center gap-2">
+              <span className="text-2xl">🇯🇵</span>
+              <h1 className="text-xl font-black text-rose-400 tracking-tight">{TRIP_DATA.title}</h1>
+            </div>
+            <p className="text-xs font-bold text-slate-400 mt-1">
+              21 Diciembre 2026 — 13 Enero 2027 • 24 Días en Japón
+            </p>
+          </div>
+          <div className="self-start sm:self-auto bg-slate-800 border border-slate-700 px-3 py-1.5 rounded-2xl flex items-center gap-2">
+            <Sparkles className="w-4 h-4 text-amber-400" />
+            <span className="text-xs font-black text-amber-300">{globalPercentage}% Completado</span>
+          </div>
+        </div>
+
+        {/* Dual Progress Bars */}
+        <div className="space-y-2">
+          <div>
+            <div className="flex justify-between text-[11px] font-bold text-slate-300 mb-1">
+              <span>Progreso Global del Viaje</span>
+              <span>{completedTripActivities} / {totalTripActivities} actividades</span>
+            </div>
+            <div className="w-full bg-slate-800 h-2.5 rounded-full overflow-hidden">
+              <div
+                className="bg-gradient-to-r from-rose-500 to-amber-400 h-full transition-all duration-300 rounded-full"
+                style={{ width: `${globalPercentage}%` }}
+              />
+            </div>
+          </div>
+
+          <div>
+            <div className="flex justify-between text-[10px] font-semibold text-slate-400 mb-1">
+              <span>Etapa Activa: {currentStage.name}</span>
+              <span>{completedStageActivities} / {totalStageActivities} ({stagePercentage}%)</span>
+            </div>
+            <div className="w-full bg-slate-800/80 h-1.5 rounded-full overflow-hidden">
+              <div
+                className="bg-emerald-400 h-full transition-all duration-300 rounded-full"
+                style={{ width: `${stagePercentage}%` }}
+              />
+            </div>
+          </div>
+        </div>
+      </section>
+
+      {/* Global Search & Filter Controls */}
+      <section className="bg-white dark:bg-slate-800 border border-slate-200 dark:border-slate-700 rounded-2xl p-3 mb-6 shadow-xs space-y-3">
+        <div className="relative">
+          <Search className="w-4 h-4 absolute left-3 top-1/2 -translate-y-1/2 text-slate-400" />
+          <input
+            type="text"
+            value={searchQuery}
+            onChange={(e) => setSearchQuery(e.target.value)}
+            placeholder="Buscar templo, restaurante, ciudad o actividad en todo el itinerario..."
+            className="w-full pl-9 pr-4 py-2.5 bg-slate-100 dark:bg-slate-900 border border-transparent focus:border-rose-500 rounded-xl text-xs font-medium focus:outline-hidden transition-all"
+          />
+          {searchQuery && (
+            <button
+              onClick={() => setSearchQuery('')}
+              className="absolute right-3 top-1/2 -translate-y-1/2 text-xs font-bold text-slate-400 hover:text-slate-600 dark:hover:text-slate-200"
+            >
+              Limpiar
+            </button>
+          )}
+        </div>
+
+        {/* State Filter Pills */}
+        <div className="flex items-center gap-2 overflow-x-auto pb-1">
+          <span className="text-[11px] font-bold text-slate-400 flex items-center gap-1 shrink-0">
+            <Filter className="w-3.5 h-3.5" />
+            Estado:
+          </span>
+          <button
+            onClick={() => setFilterState('all')}
+            className={`px-3 py-1 rounded-xl text-[11px] font-black shrink-0 min-h-[36px] transition-all ${
+              filterState === 'all'
+                ? 'bg-slate-900 text-white dark:bg-slate-100 dark:text-slate-900 shadow-xs'
+                : 'bg-slate-100 dark:bg-slate-900 text-slate-600 dark:text-slate-400'
+            }`}
+          >
+            Todas ({totalTripActivities})
+          </button>
+          <button
+            onClick={() => setFilterState('pending')}
+            className={`px-3 py-1 rounded-xl text-[11px] font-black shrink-0 min-h-[36px] transition-all ${
+              filterState === 'pending'
+                ? 'bg-amber-500 text-white shadow-xs'
+                : 'bg-slate-100 dark:bg-slate-900 text-slate-600 dark:text-slate-400'
+            }`}
+          >
+            Pendientes ({totalTripActivities - completedTripActivities})
+          </button>
+          <button
+            onClick={() => setFilterState('completed')}
+            className={`px-3 py-1 rounded-xl text-[11px] font-black shrink-0 min-h-[36px] transition-all ${
+              filterState === 'completed'
+                ? 'bg-emerald-600 text-white shadow-xs'
+                : 'bg-slate-100 dark:bg-slate-900 text-slate-600 dark:text-slate-400'
+            }`}
+          >
+            Completadas ({completedTripActivities})
+          </button>
+        </div>
+      </section>
+
+      {/* Main Content Area: Search Mode vs. Normal Stage & Day View */}
+      {isSearching ? (
+        /* Search Mode View */
+        <main className="space-y-4">
+          <div className="flex items-center justify-between pb-2 border-b border-slate-200 dark:border-slate-700">
+            <h2 className="text-sm font-black text-rose-600 dark:text-rose-400 uppercase tracking-wider">
+              Resultados de Búsqueda ({searchResults.reduce((acc, r) => acc + r.matchedActivities.length, 0)})
+            </h2>
+            <button
+              onClick={() => setSearchQuery('')}
+              className="text-xs font-bold text-slate-500 hover:text-slate-800 dark:hover:text-white"
+            >
+              Volver al itinerario
+            </button>
+          </div>
+
+          {searchResults.length === 0 ? (
+            <div className="bg-slate-100 dark:bg-slate-800 p-8 rounded-3xl text-center">
+              <span className="text-4xl block mb-2">🔍</span>
+              <p className="text-xs font-bold text-slate-500 dark:text-slate-400">
+                No se encontraron actividades que coincidan con &quot;{searchQuery}&quot;.
+              </p>
+            </div>
+          ) : (
+            searchResults.map(({ day, stageName, matchedActivities }) => (
+              <div
+                key={day.date}
+                className="bg-white dark:bg-slate-800 border border-slate-200 dark:border-slate-700 rounded-2xl p-4 shadow-xs"
+              >
+                <div className="flex items-center justify-between border-b border-slate-100 dark:border-slate-700 pb-2 mb-3">
+                  <div>
+                    <span className="text-[10px] font-black uppercase text-slate-400 block">{stageName}</span>
+                    <h3 className="text-sm font-black text-slate-900 dark:text-white">{day.title}</h3>
+                  </div>
+                  <button
+                    onClick={() => {
+                      setSearchQuery('');
+                      setActiveDayDate(day.date);
+                      const pStage = TRIP_DATA.stages.find((s) => s.days.some((d) => d.date === day.date));
+                      if (pStage) setActiveStageId(pStage.stage_id);
+                    }}
+                    className="text-[11px] font-black text-rose-600 dark:text-rose-400 bg-rose-50 dark:bg-rose-950/60 border border-rose-200 dark:border-rose-900 px-2.5 py-1 rounded-xl hover:bg-rose-100 transition-all"
+                  >
+                    Ver Día {day.dayIndex} ({day.shortDate})
+                  </button>
+                </div>
+
+                <div className="space-y-2">
+                  {matchedActivities.map((act) => {
+                    const isDone = isActivityCompleted(act.id);
+                    const mapsUrl = `https://www.google.com/maps/search/?api=1&query=${encodeURIComponent(
+                      act.locationQuery
+                    )}`;
+
+                    return (
+                      <div
+                        key={act.id}
+                        className="flex items-center justify-between gap-3 p-2 rounded-xl bg-slate-50 dark:bg-slate-900/60"
+                      >
+                        <button
+                          onClick={() => toggleActivity(act.id)}
+                          className="flex items-center gap-3 text-left min-h-[44px] flex-grow active:scale-98 transition-all"
+                        >
+                          {isDone ? (
+                            <CheckCircle2 className="w-5 h-5 text-emerald-500 shrink-0" />
+                          ) : (
+                            <Circle className="w-5 h-5 text-slate-400 shrink-0" />
+                          )}
+                          <span
+                            className={`text-xs font-bold ${
+                              isDone
+                                ? 'line-through text-slate-400 dark:text-slate-500'
+                                : 'text-slate-800 dark:text-slate-100'
+                            }`}
+                          >
+                            {act.title}
+                          </span>
+                        </button>
+
+                        <a
+                          href={mapsUrl}
+                          target="_blank"
+                          rel="noopener noreferrer"
+                          className="w-10 h-10 flex items-center justify-center rounded-xl bg-rose-100 dark:bg-rose-950/80 text-rose-600 dark:text-rose-300 shrink-0 hover:scale-105 transition-all"
+                          title="Abrir en Google Maps"
+                        >
+                          <MapPin className="w-4 h-4" />
+                        </a>
+                      </div>
+                    );
+                  })}
+                </div>
+              </div>
+            ))
+          )}
+        </main>
+      ) : (
+        /* Normal Itinerary View */
+        <main className="space-y-5">
+          {/* Stage Selector Horizontal Scrollable Bar */}
+          <nav className="flex space-x-2 overflow-x-auto pb-2 scrollbar-thin">
+            {TRIP_DATA.stages.map((stage) => {
+              const isSelected = stage.stage_id === activeStageId;
+              return (
+                <button
+                  key={stage.stage_id}
+                  onClick={() => handleSelectStage(stage.stage_id)}
+                  className={`px-4 py-2.5 rounded-2xl whitespace-nowrap text-xs font-black transition-all flex flex-col items-start min-h-[48px] justify-center ${
+                    isSelected
+                      ? 'bg-rose-600 text-white shadow-md shadow-rose-900/20'
+                      : 'bg-white dark:bg-slate-800 text-slate-700 dark:text-slate-300 hover:bg-slate-100 dark:hover:bg-slate-700 border border-slate-200 dark:border-slate-700'
+                  }`}
+                >
+                  <span>{stage.subtitle}: {stage.name}</span>
+                  <span className={`text-[10px] font-bold ${isSelected ? 'text-rose-200' : 'text-slate-400'}`}>
+                    {stage.dateRange}
+                  </span>
+                </button>
+              );
+            })}
+          </nav>
+
+          {/* Sub-bar Horizontal Day Selector */}
+          <div className="bg-slate-100 dark:bg-slate-800/80 p-1.5 rounded-2xl flex items-center gap-1.5 overflow-x-auto scrollbar-thin border border-slate-200 dark:border-slate-700">
+            {currentStage.days.map((day) => {
+              const isSelectedDay = day.date === currentDay.date;
+              return (
+                <button
+                  key={day.date}
+                  onClick={() => setActiveDayDate(day.date)}
+                  className={`px-3 py-2 rounded-xl text-xs font-black whitespace-nowrap shrink-0 min-h-[44px] transition-all flex items-center gap-1.5 ${
+                    isSelectedDay
+                      ? 'bg-white dark:bg-slate-900 text-rose-600 dark:text-rose-400 shadow-sm border border-slate-200 dark:border-slate-700'
+                      : 'text-slate-600 dark:text-slate-400 hover:text-slate-900 dark:hover:text-white'
+                  }`}
+                >
+                  <span className="text-[10px] opacity-70">Día {day.dayIndex}</span>
+                  <span>{day.shortDate}</span>
+                </button>
+              );
+            })}
+          </div>
+
+          {/* Day Card Header & Accommodation */}
+          <article className="bg-white dark:bg-slate-800 border-2 border-slate-200 dark:border-slate-700 rounded-3xl p-5 shadow-sm space-y-4">
+            {/* Cabecera del Día */}
+            <div className="border-b border-slate-100 dark:border-slate-700 pb-4">
+              <div className="flex items-center justify-between mb-1">
+                <span className="bg-rose-100 dark:bg-rose-950/80 text-rose-700 dark:text-rose-300 font-extrabold text-[10px] uppercase px-2.5 py-0.5 rounded-full border border-rose-200 dark:border-rose-900">
+                  Día {currentDay.dayIndex} de {TRIP_DATA.totalDays}
+                </span>
+                <span className="text-xs font-bold text-slate-500 dark:text-slate-400">
+                  {currentDay.formattedDate}
+                </span>
+              </div>
+              <h2 className="text-xl font-black text-slate-900 dark:text-white tracking-tight mt-1">
+                {currentDay.title}
+              </h2>
+            </div>
+
+            {/* Accommodation Card */}
+            {currentAccommodation && (
+              <div className="bg-amber-50/80 dark:bg-slate-850 border-2 border-amber-200/80 dark:border-amber-800/40 rounded-2xl p-4 flex flex-col sm:flex-row sm:items-center justify-between gap-3">
+                <div className="space-y-1">
+                  <span className="text-[10px] font-black uppercase text-amber-800 dark:text-amber-300 flex items-center gap-1">
+                    <Building className="w-3.5 h-3.5" />
+                    Alojamiento de esta noche
+                  </span>
+                  <h3 className="text-sm font-black text-slate-900 dark:text-amber-100">
+                    {currentAccommodation.name}
+                  </h3>
+                  <p className="text-xs text-slate-600 dark:text-slate-400 font-medium">
+                    {currentAccommodation.nearestStation}
+                  </p>
+                </div>
+
+                <button
+                  onClick={() => setSelectedAccommodation(currentAccommodation)}
+                  className="min-h-[48px] px-4 py-2 bg-amber-500 hover:bg-amber-600 active:scale-95 text-white font-black text-xs rounded-xl flex items-center justify-center gap-1.5 shadow-sm transition-all shrink-0"
+                >
+                  <MapPin className="w-4 h-4" />
+                  <span>Ver dirección en japonés</span>
+                </button>
+              </div>
+            )}
+
+            {/* Listado de Actividades / Puntos de Interés */}
+            <div>
+              <h3 className="text-xs uppercase font-black tracking-wider text-slate-400 mb-3 flex items-center justify-between">
+                <span>Actividades Programadas ({currentDayFilteredActivities.length})</span>
+                <span className="text-[10px] font-normal lowercase">Toque para marcar</span>
+              </h3>
+
+              {currentDayFilteredActivities.length === 0 ? (
+                <div className="text-center py-6 bg-slate-50 dark:bg-slate-900/40 rounded-2xl border border-dashed border-slate-200 dark:border-slate-700">
+                  <p className="text-xs font-bold text-slate-400">
+                    No hay actividades con el filtro actual ({filterState}).
+                  </p>
+                </div>
+              ) : (
+                <div className="divide-y divide-slate-100 dark:divide-slate-700/60">
+                  {currentDayFilteredActivities.map((act) => {
+                    const isDone = isActivityCompleted(act.id);
+                    const mapsUrl = `https://www.google.com/maps/search/?api=1&query=${encodeURIComponent(
+                      act.locationQuery
+                    )}`;
+
+                    return (
+                      <div
+                        key={act.id}
+                        className="py-3 flex items-center justify-between gap-3 group hover:bg-slate-50/80 dark:hover:bg-slate-700/30 px-2 rounded-xl transition-all"
+                      >
+                        {/* Interactive Touch Target Checkbox (min 48px area) */}
+                        <button
+                          onClick={() => toggleActivity(act.id)}
+                          className="flex items-center gap-3 text-left min-h-[48px] flex-grow active:scale-98 transition-all"
+                        >
+                          {isDone ? (
+                            <CheckCircle2 className="w-6 h-6 text-emerald-500 shrink-0" />
+                          ) : (
+                            <Circle className="w-6 h-6 text-slate-300 dark:text-slate-600 group-hover:text-rose-500 shrink-0 transition-colors" />
+                          )}
+                          <span
+                            className={`text-sm font-black leading-snug ${
+                              isDone
+                                ? 'line-through text-slate-400 dark:text-slate-500'
+                                : 'text-slate-800 dark:text-slate-100'
+                            }`}
+                          >
+                            {act.title}
+                          </span>
+                        </button>
+
+                        {/* Quick Action Google Maps (min 48px touch target) */}
+                        <a
+                          href={mapsUrl}
+                          target="_blank"
+                          rel="noopener noreferrer"
+                          className="w-12 h-12 flex items-center justify-center rounded-2xl bg-rose-50 dark:bg-rose-950/80 text-rose-600 dark:text-rose-300 hover:bg-rose-600 hover:text-white transition-all shrink-0 border border-rose-200/60 dark:border-rose-900 active:scale-95"
+                          title="Abrir mapa en Google Maps"
+                          aria-label={`Abrir mapa de ${act.title}`}
+                        >
+                          <ExternalLink className="w-5 h-5" />
+                        </a>
+                      </div>
+                    );
+                  })}
+                </div>
+              )}
+            </div>
+          </article>
+        </main>
+      )}
+
+      {/* Sticky Bottom Day Paginator Bar */}
+      <nav className="fixed bottom-16 left-0 right-0 z-30 bg-white/95 dark:bg-slate-900/95 backdrop-blur-md border-t border-slate-200 dark:border-slate-800 px-4 py-2.5 shadow-lg">
+        <div className="max-w-3xl mx-auto flex items-center justify-between gap-2">
+          <button
+            onClick={handlePrevDay}
+            disabled={currentDayGlobalIndex === 0}
+            className="min-h-[48px] px-4 py-2 rounded-2xl font-black text-xs bg-slate-100 dark:bg-slate-800 text-slate-700 dark:text-slate-200 hover:bg-slate-200 dark:hover:bg-slate-700 disabled:opacity-30 disabled:pointer-events-none flex items-center gap-1 transition-all active:scale-95"
+          >
+            <ChevronLeft className="w-4 h-4" />
+            <span>Día Anterior</span>
+          </button>
+
+          <div className="text-center">
+            <span className="text-[10px] font-black uppercase text-slate-400 block">
+              Navegación
+            </span>
+            <span className="text-xs font-black text-rose-600 dark:text-rose-400">
+              Día {currentDay.dayIndex} / {TRIP_DATA.totalDays} ({currentDay.shortDate})
+            </span>
+          </div>
+
+          <button
+            onClick={handleNextDay}
+            disabled={currentDayGlobalIndex === allDays.length - 1}
+            className="min-h-[48px] px-4 py-2 rounded-2xl font-black text-xs bg-rose-600 text-white hover:bg-rose-700 disabled:opacity-30 disabled:pointer-events-none flex items-center gap-1 transition-all active:scale-95 shadow-md shadow-rose-900/20"
+          >
+            <span>Día Siguiente</span>
+            <ChevronRight className="w-4 h-4" />
+          </button>
+        </div>
+      </nav>
+
+      {/* Japanese Address Modal */}
+      <JapaneseAddressModal
+        accommodation={selectedAccommodation}
+        onClose={() => setSelectedAccommodation(null)}
+      />
+    </div>
+  );
+};

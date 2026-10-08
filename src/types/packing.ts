@@ -1,9 +1,11 @@
-export interface PackingCategory {
+export interface PackingItem {
   id: string;
-  name: string;
-  items: string[];
+  text: string;
+  categoryId: 'docs' | 'tech' | 'clothes' | 'family' | 'toiletries';
 }
 
-export interface PackingData {
-  categories: PackingCategory[];
+export interface PackingCategory {
+  id: 'docs' | 'tech' | 'clothes' | 'family' | 'toiletries';
+  name: string;
+  items: PackingItem[];
 }

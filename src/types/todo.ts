@@ -1,9 +1,12 @@
-export interface TodoCategory {
+export interface TodoItem {
   id: string;
-  name: string;
-  items: string[];
+  text: string;
+  categoryId: 'tramites' | 'reservas' | 'logistica';
 }
 
-export interface TodoData {
-  categories: TodoCategory[];
+export interface TodoCategory {
+  id: 'tramites' | 'reservas' | 'logistica';
+  name: string;
+  description: string;
+  items: TodoItem[];
 }
