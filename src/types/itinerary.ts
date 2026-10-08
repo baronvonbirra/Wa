@@ -10,12 +10,28 @@ export interface Accommodation {
   notes?: string;
 }
 
+export interface LearnPill {
+  label: string;
+  text: string;
+  icon?: string;
+  type?: 'historical' | 'cultural' | 'funFact' | 'geography' | 'etiquette' | 'general';
+}
+
+export interface LearnInfo {
+  title: string;
+  subtitle?: string;
+  categoryIcon?: string;
+  summary: string;
+  pills: LearnPill[];
+}
+
 export interface Activity {
   id: string;
   title: string;
   locationQuery: string;
   type?: 'transit' | 'hotel' | 'sights' | 'shopping' | 'food' | 'theme_park' | 'culture' | 'checkin' | 'tech_hub';
   coordinates?: [number, number];
+  learnInfo?: LearnInfo;
 }
 
 export interface ShopItem {
