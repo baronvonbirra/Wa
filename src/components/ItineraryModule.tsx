@@ -82,29 +82,15 @@ export const ItineraryModule: React.FC = () => {
   const { stamps, addStamp } = useGoshuinPassport();
   const [isGoshuinModalOpen, setIsGoshuinModalOpen] = useState<boolean>(false);
 
-  // Sakura confetti trigger state
+  // Sakura confetti trigger state & mode
   const [showConfetti, setShowConfetti] = useState<boolean>(false);
+  const [confettiMode, setConfettiMode] = useState<'normal' | 'dayCleared'>('normal');
 
   // Expandable cards state for Shops and Restaurants
   const [showShops, setShowShops] = useState<boolean>(true);
   const [showRestaurants, setShowRestaurants] = useState<boolean>(true);
 
   const { completed, toggleActivity, isActivityCompleted, syncError } = useTripState();
-
-  const handleToggleActivity = (actId: string) => {
-    const wasCompleted = isActivityCompleted(actId);
-    toggleActivity(actId);
-    if (!wasCompleted) {
-      // Trigger sakura confetti!
-      setShowConfetti(true);
-    }
-  };
-
-  const handleOpenLearnModal = (info: LearnInfo, stageName?: string) => {
-    setSelectedLearnInfo(info);
-    // Stamp Goshuin seal automatically!
-    addStamp(info.title, info.subtitle, '💮', stageName || 'Japón 2026-2027');
-  };
 
   const currentStage = useMemo(() => {
     return TRIP_DATA.stages.find((s) => s.stage_id === activeStageId) || TRIP_DATA.stages[0];
@@ -115,6 +101,33 @@ export const ItineraryModule: React.FC = () => {
     if (foundInStage) return foundInStage;
     return currentStage.days[0];
   }, [currentStage, activeDayDate]);
+
+  const isCurrentDayCleared = useMemo(() => {
+    if (!currentDay || currentDay.activities.length === 0) return false;
+    return currentDay.activities.every((act) => completed.includes(act.id));
+  }, [currentDay, completed]);
+
+  const handleToggleActivity = (actId: string) => {
+    const wasCompleted = isActivityCompleted(actId);
+    toggleActivity(actId);
+    if (!wasCompleted) {
+      const willCompleteDay = currentDay.activities.length > 0 &&
+        currentDay.activities.every((act) => act.id === actId || completed.includes(act.id));
+
+      if (willCompleteDay) {
+        setConfettiMode('dayCleared');
+      } else {
+        setConfettiMode('normal');
+      }
+      setShowConfetti(true);
+    }
+  };
+
+  const handleOpenLearnModal = (info: LearnInfo, stageName?: string) => {
+    setSelectedLearnInfo(info);
+    // Stamp Goshuin seal automatically!
+    addStamp(info.title, info.subtitle, '💮', stageName || 'Japón 2026-2027');
+  };
 
   const allDays = useMemo(() => {
     return TRIP_DATA.stages.flatMap((s) => s.days);
@@ -222,8 +235,8 @@ export const ItineraryModule: React.FC = () => {
 
   return (
     <div className="max-w-3xl mx-auto px-4 pt-4 pb-28 font-sans text-slate-800 dark:text-slate-100">
-      {/* Sakura Petals Confetti Effect */}
-      <SakuraConfetti trigger={showConfetti} onComplete={() => setShowConfetti(false)} />
+      {/* Sakura Petals & Candy Confetti Effect */}
+      <SakuraConfetti trigger={showConfetti} mode={confettiMode} onComplete={() => setShowConfetti(false)} />
 
       {/* Dynamic Countdown / Active Trip Banner Widget */}
       <CountdownWidget />
@@ -521,9 +534,16 @@ export const ItineraryModule: React.FC = () => {
           </div>
 
           {/* Day Card Header & Accommodation */}
-          <article className="bg-white dark:bg-slate-800 border-2 border-slate-200 dark:border-slate-700 rounded-3xl p-5 shadow-xs space-y-4">
+          <article className={`bg-white dark:bg-slate-800 border-2 ${isCurrentDayCleared ? 'border-pink-400 shadow-md shadow-pink-200/50 dark:shadow-none' : 'border-slate-200 dark:border-slate-700'} rounded-3xl p-5 shadow-xs space-y-4 transition-all`}>
+            {/* 2.3.B Day Cleared Floating Banner */}
+            {isCurrentDayCleared && (
+              <div className="bg-gradient-to-r from-pink-300 via-purple-300 via-yellow-200 via-emerald-200 to-sky-300 text-slate-900 font-black text-xs px-4 py-2.5 rounded-2xl flex items-center justify-center gap-2 shadow-sm animate-bounce border-2 border-pink-400/60 text-center">
+                <span>✨ ¡DÍA COMPLETADO! SUGOI! 🌟</span>
+              </div>
+            )}
+
             {/* Cabecera del Día */}
-            <div className="border-b border-slate-100 dark:border-slate-700 pb-4">
+            <div className={`border-b border-slate-100 dark:border-slate-700 pb-4 ${isCurrentDayCleared ? 'bg-gradient-to-r from-pink-50/80 via-purple-50/80 to-sky-50/80 dark:from-pink-950/30 dark:to-purple-950/30 p-3 rounded-2xl border-2 border-pink-300/50' : ''}`}>
               <div className="flex items-center justify-between mb-1">
                 <span className="bg-rose-100 dark:bg-rose-950/80 text-rose-700 dark:text-rose-300 font-extrabold text-[10px] uppercase px-2.5 py-0.5 rounded-full border border-rose-200 dark:border-rose-900">
                   {currentDay.dayIndex === 0 ? 'Etapa 0 • Día Especial' : `Día ${currentDay.dayIndex} de ${TRIP_DATA.totalDays - 1}`}

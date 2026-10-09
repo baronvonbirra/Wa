@@ -101,8 +101,31 @@ export const CountdownWidget: React.FC = () => {
   }
 
   return (
-    <div className="bg-gradient-to-r from-rose-950/90 via-slate-900 to-slate-900 border-2 border-rose-500/30 text-white p-3.5 rounded-2xl shadow-lg mb-4 flex flex-col sm:flex-row sm:items-center justify-between gap-3">
-      <div className="flex items-center gap-2.5">
+    <div className="relative bg-gradient-to-r from-rose-950/90 via-slate-900 to-slate-900 border-2 border-rose-500/30 text-white p-3.5 rounded-2xl shadow-lg mb-4 flex flex-col sm:flex-row sm:items-center justify-between gap-3 overflow-hidden">
+      {/* 2.1 Ambient Anime Floating Clouds with Blinking Eyes in Background */}
+      <div className="absolute inset-0 pointer-events-none overflow-hidden opacity-25">
+        {/* Floating Cloud 1 */}
+        <div className="absolute top-1 left-8 flex items-center gap-0.5 animate-cloud-1">
+          <span className="text-xl">☁️</span>
+          <span className="text-[9px] font-black -ml-4 mt-1 animate-cloud-eye">● ●</span>
+        </div>
+        {/* Floating Cloud 2 */}
+        <div className="absolute bottom-1 right-12 flex items-center gap-0.5 animate-cloud-2">
+          <span className="text-2xl">☁️</span>
+          <span className="text-[10px] font-black -ml-5 mt-1 animate-cloud-eye">◕ ◕</span>
+        </div>
+      </div>
+
+      {/* 2.1 Floating Kawaii Airplane Crossing Every 30s with Sparkle/Heart Trail */}
+      <div className="absolute top-1 left-0 w-full pointer-events-none z-10 overflow-hidden">
+        <div className="inline-flex items-center gap-1 animate-airplane whitespace-nowrap text-xs">
+          <span className="text-rose-300 drop-shadow-xs">✨💖✨</span>
+          <span className="text-base transform rotate-12">✈️</span>
+        </div>
+      </div>
+
+      {/* Content Header Info */}
+      <div className="flex items-center gap-2.5 z-10 relative">
         <Timer className="w-5 h-5 text-rose-400 shrink-0 animate-pulse" />
         <div>
           <span className="text-[10px] font-black uppercase tracking-wider text-rose-300 block">
@@ -114,24 +137,37 @@ export const CountdownWidget: React.FC = () => {
         </div>
       </div>
 
-      <div className="flex items-center gap-2 self-center sm:self-auto">
+      {/* Timer Digits with 4-Point Sparkles */}
+      <div className="flex items-center gap-2 self-center sm:self-auto z-10 relative">
         <div className="flex items-center gap-1.5">
-          <div className="bg-slate-800/90 border border-slate-700/80 px-2.5 py-1 rounded-xl text-center min-w-[44px]">
+          {/* Days */}
+          <div className="relative bg-slate-800/90 border border-slate-700/80 px-2.5 py-1 rounded-xl text-center min-w-[44px]">
+            <span className="absolute -top-1.5 -right-1.5 text-[10px] animate-sparkle-1 pointer-events-none">✨</span>
             <span className="text-sm font-black text-amber-400 block leading-tight">{timeLeft.days}</span>
             <span className="text-[9px] font-bold text-slate-400 uppercase">Días</span>
           </div>
+
           <span className="text-xs font-black text-rose-400">:</span>
-          <div className="bg-slate-800/90 border border-slate-700/80 px-2.5 py-1 rounded-xl text-center min-w-[40px]">
+
+          {/* Hours */}
+          <div className="relative bg-slate-800/90 border border-slate-700/80 px-2.5 py-1 rounded-xl text-center min-w-[40px]">
             <span className="text-sm font-black text-white block leading-tight">{timeLeft.hours}</span>
             <span className="text-[9px] font-bold text-slate-400 uppercase">Horas</span>
           </div>
+
           <span className="text-xs font-black text-rose-400">:</span>
-          <div className="bg-slate-800/90 border border-slate-700/80 px-2.5 py-1 rounded-xl text-center min-w-[40px]">
+
+          {/* Minutes */}
+          <div className="relative bg-slate-800/90 border border-slate-700/80 px-2.5 py-1 rounded-xl text-center min-w-[40px]">
+            <span className="absolute -bottom-1 -left-1 text-[10px] animate-sparkle-2 pointer-events-none">✨</span>
             <span className="text-sm font-black text-white block leading-tight">{timeLeft.minutes}</span>
             <span className="text-[9px] font-bold text-slate-400 uppercase">Min</span>
           </div>
+
           <span className="text-xs font-black text-rose-400">:</span>
-          <div className="bg-slate-800/90 border border-slate-700/80 px-2.5 py-1 rounded-xl text-center min-w-[40px]">
+
+          {/* Seconds */}
+          <div className="relative bg-slate-800/90 border border-slate-700/80 px-2.5 py-1 rounded-xl text-center min-w-[40px]">
             <span className="text-sm font-black text-rose-400 block leading-tight">{timeLeft.seconds}</span>
             <span className="text-[9px] font-bold text-slate-400 uppercase">Seg</span>
           </div>

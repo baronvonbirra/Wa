@@ -44,30 +44,53 @@ export const MascotsWidget: React.FC = () => {
         </h2>
       </div>
 
-      {/* Static 3 Mascot Cards Grid - No Clicks or Switchers */}
+      {/* 3 Mascot Cards Grid with Entrance & Personality Animations */}
       <div className="grid grid-cols-1 md:grid-cols-3 gap-3">
-        {mascotList.map((m) => (
-          <div
-            key={m.id}
-            className={`p-3.5 rounded-2xl border-2 ${m.bg} ${m.border} space-y-2 flex flex-col justify-between shadow-xs select-none`}
-          >
-            <div className="flex items-center gap-2 border-b border-slate-200/60 dark:border-slate-800 pb-2">
-              <span className="text-2xl">{m.avatar}</span>
-              <div>
-                <h3 className="text-xs font-black text-slate-900 dark:text-white">
-                  {m.name}
-                </h3>
-                <span className="text-[10px] font-extrabold text-rose-600 dark:text-rose-400 block">
-                  {m.role}
-                </span>
-              </div>
-            </div>
+        {mascotList.map((m) => {
+          let cardAnimClass = '';
+          let avatarAnimClass = '';
+          let gestureDecoration = null;
 
-            <p className="text-xs font-bold text-slate-700 dark:text-slate-200 leading-relaxed bg-white/70 dark:bg-slate-900/60 p-2.5 rounded-xl border border-slate-200/50 dark:border-slate-800 flex-grow">
-              💡 {m.message}
-            </p>
-          </div>
-        ))}
+          if (m.id === 'koji') {
+            cardAnimClass = 'animate-koji-bounce';
+            avatarAnimClass = 'hover:rotate-12 transition-transform';
+            gestureDecoration = <span className="text-xs">🐕✨</span>;
+          } else if (m.id === 'tama') {
+            cardAnimClass = 'animate-panko-pop';
+            avatarAnimClass = 'animate-tama-wave inline-block origin-bottom-right';
+            gestureDecoration = <span className="text-xs animate-pulse">😉🐾</span>;
+          } else if (m.id === 'panko') {
+            cardAnimClass = 'animate-panko-pop';
+            avatarAnimClass = 'animate-panko-dance inline-block';
+            gestureDecoration = <span className="text-xs animate-sparkle-1">✨🍙✨</span>;
+          }
+
+          return (
+            <div
+              key={m.id}
+              className={`p-3.5 rounded-2xl border-2 ${m.bg} ${m.border} space-y-2 flex flex-col justify-between shadow-xs select-none transition-all ${cardAnimClass}`}
+            >
+              <div className="flex items-center justify-between border-b border-slate-200/60 dark:border-slate-800 pb-2">
+                <div className="flex items-center gap-2">
+                  <span className={`text-2xl ${avatarAnimClass}`}>{m.avatar}</span>
+                  <div>
+                    <h3 className="text-xs font-black text-slate-900 dark:text-white flex items-center gap-1">
+                      {m.name}
+                    </h3>
+                    <span className="text-[10px] font-extrabold text-rose-600 dark:text-rose-400 block">
+                      {m.role}
+                    </span>
+                  </div>
+                </div>
+                {gestureDecoration}
+              </div>
+
+              <p className="text-xs font-bold text-slate-700 dark:text-slate-200 leading-relaxed bg-white/70 dark:bg-slate-900/60 p-2.5 rounded-xl border border-slate-200/50 dark:border-slate-800 flex-grow">
+                💡 {m.message}
+              </p>
+            </div>
+          );
+        })}
       </div>
     </div>
   );
