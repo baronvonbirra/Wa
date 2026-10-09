@@ -14,15 +14,19 @@ interface Petal {
 interface SakuraConfettiProps {
   trigger: boolean;
   onComplete?: () => void;
+  mode?: 'normal' | 'dayCleared';
 }
 
-export const SakuraConfetti: React.FC<SakuraConfettiProps> = ({ trigger, onComplete }) => {
+export const SakuraConfetti: React.FC<SakuraConfettiProps> = ({ trigger, onComplete, mode = 'normal' }) => {
   const [petals, setPetals] = useState<Petal[]>([]);
 
   useEffect(() => {
     if (trigger) {
-      const emojis = ['🌸', '✨', '🌸', '💫', '🌸', '💖'];
-      const newPetals: Petal[] = Array.from({ length: 28 }).map((_, i) => ({
+      const emojis = mode === 'dayCleared'
+        ? ['🌸', '🍬', '🍡', '⭐', '✨', '💖', '🌸', '🍬', '🍡']
+        : ['🌸', '✨', '🌸', '💫', '🌸', '💖'];
+      const petalCount = mode === 'dayCleared' ? 42 : 28;
+      const newPetals: Petal[] = Array.from({ length: petalCount }).map((_, i) => ({
         id: Date.now() + i,
         x: Math.random() * 100, // percentage x position
         y: -10,

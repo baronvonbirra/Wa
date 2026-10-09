@@ -54,7 +54,7 @@ export const AprenderModal: React.FC<AprenderModalProps> = ({ isOpen, onClose, l
       aria-modal="true"
     >
       <div
-        className="bg-white dark:bg-slate-900 border-2 border-rose-500/40 rounded-3xl p-5 sm:p-6 max-w-lg w-full shadow-2xl relative overflow-hidden text-slate-900 dark:text-slate-100 space-y-5 max-h-[90vh] overflow-y-auto transform transition-all animate-in zoom-in-95 duration-200"
+        className="bg-white dark:bg-slate-900 border-2 border-rose-500/40 rounded-3xl p-5 sm:p-6 max-w-lg w-full shadow-2xl relative overflow-hidden text-slate-900 dark:text-slate-100 space-y-5 max-h-[90vh] overflow-y-auto transform animate-bubble-pop"
         onClick={(e) => e.stopPropagation()}
       >
         {/* Top Decorative Glow */}
@@ -81,7 +81,7 @@ export const AprenderModal: React.FC<AprenderModalProps> = ({ isOpen, onClose, l
 
           <button
             onClick={onClose}
-            className="w-10 h-10 rounded-2xl bg-slate-100 dark:bg-slate-800 text-slate-500 hover:text-slate-900 dark:hover:text-white flex items-center justify-center shrink-0 transition-all active:scale-95 border border-slate-200 dark:border-slate-700"
+            className="w-10 h-10 rounded-2xl bg-slate-100 dark:bg-slate-800 text-slate-500 hover:text-slate-900 dark:hover:text-white flex items-center justify-center shrink-0 border border-slate-200 dark:border-slate-700 squishy"
             aria-label="Cerrar modal"
           >
             <X className="w-5 h-5" />
@@ -137,7 +137,7 @@ export const AprenderModal: React.FC<AprenderModalProps> = ({ isOpen, onClose, l
         <div className="pt-2">
           <button
             onClick={onClose}
-            className="w-full py-3 px-4 rounded-2xl bg-rose-600 hover:bg-rose-700 text-white font-black text-xs shadow-lg shadow-rose-900/30 transition-all active:scale-98 flex items-center justify-center gap-2"
+            className="w-full py-3 px-4 rounded-2xl bg-rose-600 hover:bg-rose-700 text-white font-black text-xs shadow-lg shadow-rose-900/30 flex items-center justify-center gap-2 squishy"
           >
             <span>¡Entendido! Volver al Itinerario</span>
           </button>
