@@ -5,7 +5,7 @@ import { CheckCircle2, Circle, FileText, Ticket, Landmark, Sparkles } from 'luci
 
 export const TodoModule: React.FC = () => {
   const [activeCategoryId, setActiveCategoryId] = useState<'tramites' | 'reservas' | 'logistica'>('tramites');
-  const { completedTodos, toggleTodo } = useTodoState();
+  const { completedTodos, toggleTodo, syncError } = useTodoState();
 
   const getCategoryIcon = (id: string) => {
     switch (id) {
@@ -130,6 +130,13 @@ export const TodoModule: React.FC = () => {
           })}
         </div>
       </article>
+
+      {/* Sync Error Toast Notification */}
+      {syncError && (
+        <div className="fixed bottom-20 left-1/2 -translate-x-1/2 z-50 bg-slate-900/95 text-rose-300 border border-rose-500/50 px-4 py-2.5 rounded-2xl text-xs font-black shadow-2xl animate-in fade-in duration-200">
+          ⚠️ {syncError}
+        </div>
+      )}
     </div>
   );
 };

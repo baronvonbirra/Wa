@@ -8,7 +8,7 @@ import { WeatherWidget } from './WeatherWidget';
 import { AprenderModal } from './AprenderModal';
 import { MascotsWidget } from './MascotsWidget';
 import { SakuraConfetti } from './SakuraConfetti';
-import { GoshuinPassportModal } from './GoshuinPassportModal';
+import { GoshuinPassportModal, FEATURED_BADGES } from './GoshuinPassportModal';
 import { Accommodation, DayItinerary, Activity, LearnInfo } from '../types/itinerary';
 import {
   Search,
@@ -89,7 +89,7 @@ export const ItineraryModule: React.FC = () => {
   const [showShops, setShowShops] = useState<boolean>(true);
   const [showRestaurants, setShowRestaurants] = useState<boolean>(true);
 
-  const { completed, toggleActivity, isActivityCompleted } = useTripState();
+  const { completed, toggleActivity, isActivityCompleted, syncError } = useTripState();
 
   const handleToggleActivity = (actId: string) => {
     const wasCompleted = isActivityCompleted(actId);
@@ -225,8 +225,8 @@ export const ItineraryModule: React.FC = () => {
       {/* Sakura Petals Confetti Effect */}
       <SakuraConfetti trigger={showConfetti} onComplete={() => setShowConfetti(false)} />
 
-      {/* Countdown Timer Widget with Learn trigger */}
-      <CountdownWidget onOpenLearnModal={(info) => handleOpenLearnModal(info, 'Etapa 0')} />
+      {/* Dynamic Countdown / Active Trip Banner Widget */}
+      <CountdownWidget />
 
       {/* Travel Mascot Guides Widget */}
       <MascotsWidget />
@@ -251,7 +251,16 @@ export const ItineraryModule: React.FC = () => {
               title="Abrir Pasaporte Kawaii de Sellos Goshuin"
             >
               <Award className="w-4 h-4 text-rose-400" />
-              <span>Goshuin ({stamps.length}) 💮</span>
+              <span>
+                Goshuin (
+                {
+                  FEATURED_BADGES.filter((b) => b.isUnlocked(completed)).length +
+                    stamps.filter(
+                      (s) => !FEATURED_BADGES.some((b) => b.name.toLowerCase() === s.title.toLowerCase())
+                    ).length
+                }
+                ) 💮
+              </span>
             </button>
 
             <div className="bg-slate-800 border border-slate-700 px-3 py-1.5 rounded-2xl flex items-center gap-2">
@@ -580,26 +589,38 @@ export const ItineraryModule: React.FC = () => {
                         key={act.id}
                         className="py-3 flex items-center justify-between gap-2 group hover:bg-slate-50/80 dark:hover:bg-slate-700/30 px-2 rounded-xl transition-all"
                       >
-                        {/* Interactive Touch Target Checkbox */}
-                        <button
-                          onClick={() => handleToggleActivity(act.id)}
-                          className="flex items-center gap-3 text-left min-h-[48px] flex-grow active:scale-98 transition-all"
-                        >
-                          {isDone ? (
-                            <CheckCircle2 className="w-6 h-6 text-emerald-500 shrink-0" />
-                          ) : (
-                            <Circle className="w-6 h-6 text-slate-300 dark:text-slate-600 group-hover:text-rose-500 shrink-0 transition-colors" />
-                          )}
-                          <span
-                            className={`text-sm font-black leading-snug ${
-                              isDone
-                                ? 'line-through text-slate-400 dark:text-slate-500'
-                                : 'text-slate-800 dark:text-slate-100'
-                            }`}
+                        {/* Interactive Activity Row: Checkbox + Title */}
+                        <div className="flex items-center gap-3 flex-grow min-h-[48px]">
+                          <button
+                            onClick={(e) => {
+                              e.stopPropagation();
+                              handleToggleActivity(act.id);
+                            }}
+                            className="p-1 rounded-full hover:bg-slate-200 dark:hover:bg-slate-700 transition-all shrink-0 active:scale-90"
+                            aria-label={`Marcar ${act.title} como ${isDone ? 'pendiente' : 'completada'}`}
                           >
-                            {act.title}
-                          </span>
-                        </button>
+                            {isDone ? (
+                              <CheckCircle2 className="w-6 h-6 text-emerald-500" />
+                            ) : (
+                              <Circle className="w-6 h-6 text-slate-300 dark:text-slate-600 group-hover:text-rose-500 transition-colors" />
+                            )}
+                          </button>
+
+                          <button
+                            onClick={() => handleOpenLearnModal(getActivityLearnInfo(act, currentDay.title), currentStage.name)}
+                            className="text-left flex-grow active:scale-98 transition-all"
+                          >
+                            <span
+                              className={`text-sm font-black leading-snug cursor-pointer ${
+                                isDone
+                                  ? 'line-through text-slate-400 dark:text-slate-500'
+                                  : 'text-slate-800 dark:text-slate-100 hover:text-rose-600 dark:hover:text-rose-400'
+                              }`}
+                            >
+                              {act.title}
+                            </span>
+                          </button>
+                        </div>
 
                         {/* Actions: Learn Modal + Google Maps */}
                         <div className="flex items-center gap-1.5 shrink-0">
@@ -825,6 +846,7 @@ export const ItineraryModule: React.FC = () => {
         isOpen={isGoshuinModalOpen}
         onClose={() => setIsGoshuinModalOpen(false)}
         stamps={stamps}
+        completedActivityIds={completed}
       />
 
       {/* Japanese Address Modal */}
@@ -832,6 +854,13 @@ export const ItineraryModule: React.FC = () => {
         accommodation={selectedAccommodation}
         onClose={() => setSelectedAccommodation(null)}
       />
+
+      {/* Sync Error Toast Notification */}
+      {syncError && (
+        <div className="fixed bottom-20 left-1/2 -translate-x-1/2 z-50 bg-slate-900/95 text-rose-300 border border-rose-500/50 px-4 py-2.5 rounded-2xl text-xs font-black shadow-2xl animate-in fade-in duration-200">
+          ⚠️ {syncError}
+        </div>
+      )}
     </div>
   );
 };

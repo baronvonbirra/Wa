@@ -44,22 +44,22 @@ export async function upsertInteractiveItem(
   completed: boolean
 ): Promise<boolean> {
   if (!supabase) {
-    return false;
+    // Return true in offline / unconfigured mode to prevent rolling back local optimistic state
+    return true;
   }
 
   try {
-    const { error } = await supabase.from('interactive_items').upsert(
-      {
-        id,
-        source,
-        completed,
-        updated_at: new Date().toISOString()
-      },
-      { onConflict: 'id' }
-    );
+    const payload = {
+      id: String(id),
+      source: String(source),
+      completed: Boolean(completed),
+      updated_at: new Date().toISOString()
+    };
+
+    const { error } = await supabase.from('interactive_items').upsert(payload, { onConflict: 'id' });
 
     if (error) {
-      console.warn('[Supabase] Error upserting interactive item:', error.message);
+      console.warn('[Supabase] Error upserting interactive item:', error.message, error.details);
       return false;
     }
     return true;
@@ -74,14 +74,14 @@ export async function bulkUpdateInteractiveItems(
   completed: boolean
 ): Promise<boolean> {
   if (!supabase) {
-    return false;
+    return true;
   }
 
   try {
     const { error } = await supabase
       .from('interactive_items')
       .update({
-        completed,
+        completed: Boolean(completed),
         updated_at: new Date().toISOString()
       })
       .eq('source', source);
