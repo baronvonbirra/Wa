@@ -13,6 +13,8 @@ export const useTodoState = () => {
     }
   });
 
+  const [syncError, setSyncError] = useState<string | null>(null);
+
   // Hydrate state from Supabase on mount (authoritative remote state sync)
   useEffect(() => {
     let isMounted = true;
@@ -36,30 +38,51 @@ export const useTodoState = () => {
     };
   }, []);
 
-  // Sync to localStorage whenever completedTodos changes
-  useEffect(() => {
-    try {
-      localStorage.setItem(STORAGE_KEY, JSON.stringify(completedTodos));
-    } catch (e) {
-      console.error('Error saving todo progress to localStorage:', e);
-    }
-  }, [completedTodos]);
+  // Toggle todo with Optimistic UI, Async Mutation & Rollback on error
+  const toggleTodo = useCallback(async (todoId: string) => {
+    let wasCompleted = false;
 
-  const toggleTodo = useCallback((todoId: string) => {
+    // 1. Optimistic UI update
     setCompletedTodos((prev) => {
-      const isCurrentlyCompleted = prev.includes(todoId);
-      const nextCompletedStatus = !isCurrentlyCompleted;
+      wasCompleted = prev.includes(todoId);
+      const nextCompletedStatus = !wasCompleted;
+      const updated = nextCompletedStatus
+        ? [...prev.filter((id) => id !== todoId), todoId]
+        : prev.filter((id) => id !== todoId);
 
-      // Remote write to Supabase
-      upsertInteractiveItem(todoId, 'todo', nextCompletedStatus);
-
-      if (nextCompletedStatus) {
-        return prev.includes(todoId) ? prev : [...prev, todoId];
-      } else {
-        return prev.filter((id) => id !== todoId);
+      try {
+        localStorage.setItem(STORAGE_KEY, JSON.stringify(updated));
+      } catch (e) {
+        console.error('Error saving todo progress to localStorage:', e);
       }
+      return updated;
     });
+
+    const nextCompletedStatus = !wasCompleted;
+
+    // 2. Async mutation to Supabase
+    const success = await upsertInteractiveItem(todoId, 'todo', nextCompletedStatus);
+
+    // 3. Rollback if mutation failed
+    if (!success) {
+      console.warn(`[useTodoState] Remote sync failed for todo ${todoId}. Rolling back...`);
+      setCompletedTodos((prev) => {
+        const rolledBack = wasCompleted
+          ? [...prev.filter((id) => id !== todoId), todoId]
+          : prev.filter((id) => id !== todoId);
+
+        try {
+          localStorage.setItem(STORAGE_KEY, JSON.stringify(rolledBack));
+        } catch (e) {
+          console.error('Error rolling back localStorage:', e);
+        }
+        return rolledBack;
+      });
+
+      setSyncError('No se pudo guardar el cambio en la nube. Operación revertida.');
+      setTimeout(() => setSyncError(null), 3500);
+    }
   }, []);
 
-  return { completedTodos, toggleTodo };
+  return { completedTodos, toggleTodo, syncError };
 };

@@ -15,7 +15,7 @@ import {
 } from 'lucide-react';
 
 export const PackingModule: React.FC = () => {
-  const { checkedItems, toggleItem, resetPacking } = usePackingState();
+  const { checkedItems, toggleItem, resetPacking, syncError } = usePackingState();
   const [showResetModal, setShowResetModal] = useState(false);
 
   const getCategoryIcon = (id: string) => {
@@ -188,6 +188,13 @@ export const PackingModule: React.FC = () => {
               </button>
             </div>
           </div>
+        </div>
+      )}
+
+      {/* Sync Error Toast Notification */}
+      {syncError && (
+        <div className="fixed bottom-20 left-1/2 -translate-x-1/2 z-50 bg-slate-900/95 text-rose-300 border border-rose-500/50 px-4 py-2.5 rounded-2xl text-xs font-black shadow-2xl animate-in fade-in duration-200">
+          ⚠️ {syncError}
         </div>
       )}
     </div>

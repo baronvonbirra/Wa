@@ -13,6 +13,8 @@ export const useTripState = () => {
     }
   });
 
+  const [syncError, setSyncError] = useState<string | null>(null);
+
   // Hydrate state from Supabase on mount (authoritative remote state sync)
   useEffect(() => {
     let isMounted = true;
@@ -36,29 +38,50 @@ export const useTripState = () => {
     };
   }, []);
 
-  // Sync to localStorage whenever completed changes
-  useEffect(() => {
-    try {
-      localStorage.setItem(STORAGE_KEY, JSON.stringify(completed));
-    } catch (e) {
-      console.error('Error saving activity progress to localStorage:', e);
-    }
-  }, [completed]);
+  // Toggle activity with Optimistic UI, Async Mutation & Rollback on error
+  const toggleActivity = useCallback(async (activityId: string) => {
+    let wasCompleted = false;
 
-  const toggleActivity = useCallback((activityId: string) => {
+    // 1. Optimistic UI update
     setCompleted((prev) => {
-      const isCurrentlyCompleted = prev.includes(activityId);
-      const nextCompletedStatus = !isCurrentlyCompleted;
+      wasCompleted = prev.includes(activityId);
+      const nextCompletedStatus = !wasCompleted;
+      const updated = nextCompletedStatus
+        ? [...prev.filter((id) => id !== activityId), activityId]
+        : prev.filter((id) => id !== activityId);
 
-      // Remote write to Supabase
-      upsertInteractiveItem(activityId, 'itinerary', nextCompletedStatus);
-
-      if (nextCompletedStatus) {
-        return prev.includes(activityId) ? prev : [...prev, activityId];
-      } else {
-        return prev.filter((id) => id !== activityId);
+      try {
+        localStorage.setItem(STORAGE_KEY, JSON.stringify(updated));
+      } catch (e) {
+        console.error('Error saving activity progress to localStorage:', e);
       }
+      return updated;
     });
+
+    const nextCompletedStatus = !wasCompleted;
+
+    // 2. Async mutation to Supabase
+    const success = await upsertInteractiveItem(activityId, 'itinerary', nextCompletedStatus);
+
+    // 3. Rollback if mutation failed
+    if (!success) {
+      console.warn(`[useTripState] Remote sync failed for activity ${activityId}. Rolling back...`);
+      setCompleted((prev) => {
+        const rolledBack = wasCompleted
+          ? [...prev.filter((id) => id !== activityId), activityId]
+          : prev.filter((id) => id !== activityId);
+
+        try {
+          localStorage.setItem(STORAGE_KEY, JSON.stringify(rolledBack));
+        } catch (e) {
+          console.error('Error rolling back localStorage:', e);
+        }
+        return rolledBack;
+      });
+
+      setSyncError('No se pudo guardar el cambio en la nube. Operación revertida.');
+      setTimeout(() => setSyncError(null), 3500);
+    }
   }, []);
 
   const isActivityCompleted = useCallback(
@@ -68,5 +91,5 @@ export const useTripState = () => {
     [completed]
   );
 
-  return { completed, toggleActivity, isActivityCompleted };
+  return { completed, toggleActivity, isActivityCompleted, syncError };
 };

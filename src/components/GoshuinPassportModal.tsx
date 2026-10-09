@@ -1,74 +1,80 @@
-import React, { useEffect } from 'react';
+import React, { useEffect, useMemo } from 'react';
 import { GoshuinStamp } from '../hooks/useGoshuinPassport';
 import { X, Award, Sparkles, BookOpen, CheckCircle2, Lock } from 'lucide-react';
 
-interface GoshuinPassportModalProps {
-  isOpen: boolean;
-  onClose: () => void;
-  stamps: GoshuinStamp[];
-}
-
-interface FeaturedBadge {
+export interface FeaturedBadge {
   id: string;
   name: string;
   icon: string;
   stage: string;
   description: string;
-  targetTitles: string[]; // Match keywords in stamp title or id
+  isUnlocked: (completedIds: string[]) => boolean;
 }
 
-const FEATURED_BADGES: FeaturedBadge[] = [
+export const FEATURED_BADGES: FeaturedBadge[] = [
   {
     id: 'fuji-badge',
-    name: 'Mt. Fuji Badge',
+    name: 'Sello del Fuji',
     icon: '⛩️',
     stage: 'Etapa 2 • Mt. Fuji',
-    description: 'Explora el Tenku no Torii o la Pagoda Chureito con vistas al Fuji.',
-    targetTitles: ['tenku no torii', 'pagoda chureito', 'arakurayama sengen', 'santuario kawaguchi asama']
+    description: 'Santuario Kawaguchi Asama O Parque Arakurayama Sengen.',
+    isUnlocked: (ids) => ids.includes('act-8-1') || ids.includes('act-9-5')
   },
   {
     id: 'shirakawa-badge',
-    name: 'Shirakawa Snow',
+    name: 'Sello de Nieve',
     icon: '❄️',
     stage: 'Etapa 2 • Shirakawa-go',
-    description: 'Descubre las casas de paja Gassho-zukuri entre la nieve.',
-    targetTitles: ['shirakawa-go', 'gassho village', 'casa wada', 'casa nagase']
+    description: 'Aldea Gassho Village (Shirakawa-go).',
+    isUnlocked: (ids) => ids.includes('act-11-4')
   },
   {
     id: 'fushimi-badge',
-    name: 'Fushimi Fox Stamp',
+    name: 'Sello del Zorro Sagrado',
     icon: '🦊',
     stage: 'Etapa 3 • Kioto Sur',
-    description: 'Recorre el túnel de los mil Torii y halla los zorros Kitsune.',
-    targetTitles: ['fushimi inari-taisha', 'fushimi inari', 'kitsune']
+    description: 'Santuario Fushimi Inari-taisha.',
+    isUnlocked: (ids) => ids.includes('act-13-2')
   },
   {
     id: 'nara-badge',
-    name: 'Nara Deer Master',
+    name: 'Sello Ciervo de Nara',
     icon: '🦌',
     stage: 'Etapa 3 • Nara',
-    description: 'Interactúa con los ciervos sika y visita el Gran Buda de Todai-ji.',
-    targetTitles: ['parque de nara', 'ciervos sagrados', 'tōdai-ji', 'todai-ji', 'gran buda']
-  },
-  {
-    id: 'golden-badge',
-    name: 'Golden Pavilion',
-    icon: '🌟',
-    stage: 'Etapa 3 • Arashiyama',
-    description: 'Contempla los reflejos dorados del templo zen Kinkaku-ji.',
-    targetTitles: ['pabellón dorado', 'kinkaku-ji', 'kinkakuji']
+    description: 'Parque de Nara y ciervos sagrados.',
+    isUnlocked: (ids) => ids.includes('act-16-7')
   },
   {
     id: 'nijo-badge',
-    name: 'Nightingale Floor',
+    name: 'Sello Ninja Nijō',
     icon: '🗡️',
     stage: 'Etapa 3 • Castillo Nijō',
-    description: 'Aprende el secreto ninja de los Suelos de Ruiseñor cantantes.',
-    targetTitles: ['castillo nijō', 'castillo nijo', 'suelos de ruiseñor']
+    description: 'Castillo Nijō y suelos de ruiseñor.',
+    isUnlocked: (ids) => ids.includes('act-16-14')
+  },
+  {
+    id: 'nintendo-badge',
+    name: 'Sello Super Nintendo',
+    icon: '🍄',
+    stage: 'Etapa 4 • Universal Studios',
+    description: 'Universal Studios Japan y Super Nintendo World.',
+    isUnlocked: (ids) => ids.includes('act-20-1')
   }
 ];
 
-export const GoshuinPassportModal: React.FC<GoshuinPassportModalProps> = ({ isOpen, onClose, stamps }) => {
+interface GoshuinPassportModalProps {
+  isOpen: boolean;
+  onClose: () => void;
+  stamps?: GoshuinStamp[];
+  completedActivityIds?: string[];
+}
+
+export const GoshuinPassportModal: React.FC<GoshuinPassportModalProps> = ({
+  isOpen,
+  onClose,
+  stamps = [],
+  completedActivityIds = []
+}) => {
   useEffect(() => {
     const handleKeyDown = (e: KeyboardEvent) => {
       if (e.key === 'Escape') onClose();
@@ -85,20 +91,35 @@ export const GoshuinPassportModal: React.FC<GoshuinPassportModalProps> = ({ isOp
     };
   }, [isOpen, onClose]);
 
-  if (!isOpen) return null;
+  // Compute derived unlocked badges
+  const unlockedBadges = useMemo(() => {
+    return FEATURED_BADGES.filter((badge) => badge.isUnlocked(completedActivityIds));
+  }, [completedActivityIds]);
 
-  const isBadgeUnlocked = (badge: FeaturedBadge) => {
-    return stamps.some((s) => {
-      const lowerTitle = s.title.toLowerCase();
-      const lowerSub = (s.subtitle || '').toLowerCase();
-      const lowerId = s.id.toLowerCase();
+  // Combine derived badge stamps with explicit learn stamps
+  const combinedStampsList = useMemo(() => {
+    const list: GoshuinStamp[] = [...stamps];
 
-      return badge.targetTitles.some(
-        (target) =>
-          lowerTitle.includes(target) || lowerSub.includes(target) || lowerId.includes(target)
-      );
+    FEATURED_BADGES.forEach((b) => {
+      if (b.isUnlocked(completedActivityIds)) {
+        const derivedId = `derived-${b.id}`;
+        if (!list.some((s) => s.id === derivedId || s.title.toLowerCase() === b.name.toLowerCase())) {
+          list.unshift({
+            id: derivedId,
+            title: b.name,
+            subtitle: b.description,
+            stampedAt: 'Sello Derivado de Itinerario',
+            icon: b.icon,
+            stageName: b.stage
+          });
+        }
+      }
     });
-  };
+
+    return list;
+  }, [stamps, completedActivityIds]);
+
+  if (!isOpen) return null;
 
   return (
     <div
@@ -122,7 +143,7 @@ export const GoshuinPassportModal: React.FC<GoshuinPassportModalProps> = ({ isOp
               GOSHUIN STAMP ALBUM (御朱印)
             </h2>
             <p className="text-xs text-slate-600 dark:text-slate-400 font-bold">
-              Desbloquea sellos coleccionables explorando los hitos educativos del viaje.
+              Estado derivado automático: Completa las actividades asociadas en el itinerario para desbloquear los sellos.
             </p>
           </div>
 
@@ -144,7 +165,7 @@ export const GoshuinPassportModal: React.FC<GoshuinPassportModalProps> = ({ isOp
             </span>
           </div>
           <span className="bg-white text-rose-700 font-black text-sm px-3.5 py-0.5 rounded-full shadow-xs">
-            {stamps.length} Sellos 💮
+            {combinedStampsList.length} Sellos 💮
           </span>
         </div>
 
@@ -153,13 +174,13 @@ export const GoshuinPassportModal: React.FC<GoshuinPassportModalProps> = ({ isOp
           <div className="flex items-center gap-2">
             <Sparkles className="w-4 h-4 text-amber-500" />
             <h3 className="text-xs font-black uppercase tracking-wider text-rose-700 dark:text-rose-400">
-              Álbum de Misiones Principales (Etapas 2 y 3)
+              Álbum de Sellos Principales (Desbloqueo Derivado)
             </h3>
           </div>
 
           <div className="grid grid-cols-1 sm:grid-cols-3 gap-2.5">
             {FEATURED_BADGES.map((badge) => {
-              const unlocked = isBadgeUnlocked(badge);
+              const unlocked = badge.isUnlocked(completedActivityIds);
 
               return (
                 <div
@@ -207,22 +228,22 @@ export const GoshuinPassportModal: React.FC<GoshuinPassportModalProps> = ({ isOp
         {/* Stamps History Log */}
         <div className="space-y-3 pt-2">
           <h3 className="text-xs font-black uppercase tracking-wider text-slate-400 border-t border-slate-200 dark:border-slate-800 pt-3">
-            Historial de Sellos Estampados ({stamps.length})
+            Historial de Sellos Estampados ({combinedStampsList.length})
           </h3>
 
-          {stamps.length === 0 ? (
+          {combinedStampsList.length === 0 ? (
             <div className="text-center py-8 bg-rose-50/50 dark:bg-slate-800/40 rounded-3xl border-2 border-dashed border-rose-200 dark:border-slate-700 p-6 space-y-2">
               <span className="text-4xl block animate-bounce">💮</span>
               <h3 className="text-sm font-black text-slate-700 dark:text-slate-300">
                 ¡Tu Pasaporte Goshuin está esperando su primer sello!
               </h3>
               <p className="text-xs text-slate-500 dark:text-slate-400 font-medium max-w-sm mx-auto">
-                Abre cualquier ficha &quot;¡Aprender!&quot; en el itinerario para estampártelo automáticamente.
+                Marca como completados los hitos del itinerario para desbloquear automáticamente tus sellos Goshuin.
               </p>
             </div>
           ) : (
             <div className="grid grid-cols-1 sm:grid-cols-2 gap-3 max-h-60 overflow-y-auto pr-1">
-              {stamps.map((s) => (
+              {combinedStampsList.map((s) => (
                 <div
                   key={s.id}
                   className="bg-white dark:bg-slate-850 border-2 border-rose-200 dark:border-slate-700 p-3 rounded-2xl relative overflow-hidden shadow-sm flex items-center gap-3"
