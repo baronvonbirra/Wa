@@ -1,4 +1,4 @@
-import { useState, useEffect, useCallback } from 'react';
+import { useState, useEffect, useCallback, useRef } from 'react';
 import { fetchInteractiveItems, upsertInteractiveItem, isSupabaseConfigured } from '../lib/supabase';
 
 export const useTripState = () => {
@@ -13,6 +13,11 @@ export const useTripState = () => {
     }
   });
 
+  const completedRef = useRef<string[]>(completed);
+  useEffect(() => {
+    completedRef.current = completed;
+  }, [completed]);
+
   const [syncError, setSyncError] = useState<string | null>(null);
 
   // Hydrate state from Supabase on mount
@@ -21,21 +26,26 @@ export const useTripState = () => {
     if (!isSupabaseConfigured) return;
 
     fetchInteractiveItems('itinerary').then((remoteItems) => {
-      if (!isMounted) return;
-
-      const remoteCompletedIds = remoteItems
-        .filter((item) => item.completed)
-        .map((item) => item.id);
+      if (!isMounted || !remoteItems) return;
 
       setCompleted((localPrev) => {
-        // Merge local and remote completed IDs to prevent losing offline state
-        const merged = Array.from(new Set([...localPrev, ...remoteCompletedIds]));
+        const nextSet = new Set(localPrev);
+
+        remoteItems.forEach((item) => {
+          if (item.completed) {
+            nextSet.add(item.id);
+          } else {
+            nextSet.delete(item.id);
+          }
+        });
+
+        const reconciled = Array.from(nextSet);
         try {
-          localStorage.setItem(STORAGE_KEY, JSON.stringify(merged));
+          localStorage.setItem(STORAGE_KEY, JSON.stringify(reconciled));
         } catch (e) {
           console.error('Error saving activity progress to localStorage during hydration:', e);
         }
-        return merged;
+        return reconciled;
       });
     });
 
@@ -46,12 +56,11 @@ export const useTripState = () => {
 
   // Toggle activity with Optimistic UI, Async Mutation & Rollback on error
   const toggleActivity = useCallback(async (activityId: string) => {
-    let wasCompleted = false;
+    const wasCompleted = completedRef.current.includes(activityId);
+    const nextCompletedStatus = !wasCompleted;
 
     // 1. Optimistic UI update
     setCompleted((prev) => {
-      wasCompleted = prev.includes(activityId);
-      const nextCompletedStatus = !wasCompleted;
       const updated = nextCompletedStatus
         ? [...prev.filter((id) => id !== activityId), activityId]
         : prev.filter((id) => id !== activityId);
@@ -63,8 +72,6 @@ export const useTripState = () => {
       }
       return updated;
     });
-
-    const nextCompletedStatus = !wasCompleted;
 
     // 2. Async mutation to Supabase
     const success = await upsertInteractiveItem(activityId, 'itinerary', nextCompletedStatus);

@@ -1,19 +1,45 @@
 import { createClient, SupabaseClient } from '@supabase/supabase-js';
 
-const getEnvVar = (key: string): string | undefined => {
-  if (typeof import.meta !== 'undefined' && import.meta.env && import.meta.env[key]) {
-    return import.meta.env[key] as string;
-  }
-  if (typeof window !== 'undefined' && (window as any).__ENV__ && (window as any).__ENV__[key]) {
-    return (window as any).__ENV__[key] as string;
-  }
-  return undefined;
-};
+function getSupabaseConfig(): { url?: string; key?: string } {
+  let url: string | undefined;
+  let key: string | undefined;
 
-const supabaseUrl = getEnvVar('VITE_SUPABASE_URL') || getEnvVar('SUPABASE_URL');
-const supabaseAnonKey = getEnvVar('VITE_SUPABASE_ANON_KEY') || getEnvVar('SUPABASE_ANON_KEY');
+  if (typeof import.meta !== 'undefined' && import.meta.env) {
+    url = (import.meta.env.VITE_SUPABASE_URL as string) || (import.meta.env.SUPABASE_URL as string);
+    key = (import.meta.env.VITE_SUPABASE_ANON_KEY as string) || (import.meta.env.SUPABASE_ANON_KEY as string);
+  }
 
-export const isSupabaseConfigured = Boolean(supabaseUrl && supabaseAnonKey);
+  if (!url && typeof window !== 'undefined' && (window as any).__ENV__) {
+    url = (window as any).__ENV__.VITE_SUPABASE_URL || (window as any).__ENV__.SUPABASE_URL;
+  }
+  if (!key && typeof window !== 'undefined' && (window as any).__ENV__) {
+    key = (window as any).__ENV__.VITE_SUPABASE_ANON_KEY || (window as any).__ENV__.SUPABASE_ANON_KEY;
+  }
+
+  const procEnv = typeof globalThis !== 'undefined' ? (globalThis as any).process?.env : undefined;
+  if (!url && procEnv) {
+    url = procEnv.VITE_SUPABASE_URL || procEnv.SUPABASE_URL;
+  }
+  if (!key && procEnv) {
+    key = procEnv.VITE_SUPABASE_ANON_KEY || procEnv.SUPABASE_ANON_KEY;
+  }
+
+  return { url: url?.trim(), key: key?.trim() };
+}
+
+let cachedClient: SupabaseClient | null = null;
+
+export function getSupabaseClient(): SupabaseClient | null {
+  if (cachedClient) return cachedClient;
+  const { url, key } = getSupabaseConfig();
+  if (url && key) {
+    cachedClient = createClient(url, key);
+    return cachedClient;
+  }
+  return null;
+}
+
+export const isSupabaseConfigured = Boolean(getSupabaseConfig().url && getSupabaseConfig().key);
 
 if (!isSupabaseConfigured) {
   console.warn(
@@ -23,9 +49,7 @@ if (!isSupabaseConfigured) {
   console.log('[Supabase] Cliente de Supabase inicializado correctamente.');
 }
 
-export const supabase: SupabaseClient | null = isSupabaseConfigured
-  ? createClient(supabaseUrl!, supabaseAnonKey!)
-  : null;
+export const supabase: SupabaseClient | null = getSupabaseClient();
 
 export interface InteractiveItem {
   id: string;
@@ -35,13 +59,14 @@ export interface InteractiveItem {
 }
 
 export async function fetchInteractiveItems(source?: string): Promise<InteractiveItem[]> {
-  if (!supabase) {
+  const client = getSupabaseClient() || supabase;
+  if (!client) {
     console.warn('[Supabase] fetchInteractiveItems cancelado: Supabase no está configurado.');
     return [];
   }
 
   try {
-    let query = supabase.from('interactive_items').select('id, source, completed, updated_at');
+    let query = client.from('interactive_items').select('id, source, completed, updated_at');
     if (source) {
       query = query.eq('source', source);
     }
@@ -63,7 +88,8 @@ export async function upsertInteractiveItem(
   source: string,
   completed: boolean
 ): Promise<boolean> {
-  if (!supabase) {
+  const client = getSupabaseClient() || supabase;
+  if (!client) {
     console.warn(`[Supabase] Omitiendo llamada UPSERT a BD para ${id}: Supabase no está configurado.`);
     return true;
   }
@@ -77,7 +103,7 @@ export async function upsertInteractiveItem(
     };
 
     console.log(`[Supabase] Ejecutando UPSERT en la BD para '${id}' (${source}): completed=${completed}`);
-    const { error } = await supabase.from('interactive_items').upsert(payload, { onConflict: 'id' });
+    const { error } = await client.from('interactive_items').upsert(payload, { onConflict: 'id' });
 
     if (error) {
       console.warn('[Supabase] Error al guardar en interactive_items:', error.message, error.details);
@@ -95,14 +121,15 @@ export async function bulkUpdateInteractiveItems(
   source: string,
   completed: boolean
 ): Promise<boolean> {
-  if (!supabase) {
+  const client = getSupabaseClient() || supabase;
+  if (!client) {
     console.warn(`[Supabase] Omitiendo actualización masiva para '${source}': Supabase no está configurado.`);
     return true;
   }
 
   try {
     console.log(`[Supabase] Ejecutando UPDATE masivo para source '${source}': completed=${completed}`);
-    const { error } = await supabase
+    const { error } = await client
       .from('interactive_items')
       .update({
         completed: Boolean(completed),
