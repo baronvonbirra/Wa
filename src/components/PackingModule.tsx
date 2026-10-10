@@ -11,11 +11,13 @@ import {
   HeartPulse,
   RotateCcw,
   AlertTriangle,
-  X
+  X,
+  Database,
+  HardDrive
 } from 'lucide-react';
 
 export const PackingModule: React.FC = () => {
-  const { checkedItems, toggleItem, resetPacking, syncError } = usePackingState();
+  const { checkedItems, toggleItem, resetPacking, syncError, isSupabaseConfigured } = usePackingState();
   const [showResetModal, setShowResetModal] = useState(false);
 
   const getCategoryIcon = (id: string) => {
@@ -59,13 +61,27 @@ export const PackingModule: React.FC = () => {
             </h1>
           </div>
 
-          <button
-            onClick={() => setShowResetModal(true)}
-            className="self-start sm:self-auto min-h-[44px] px-3.5 py-2 rounded-2xl bg-slate-800 hover:bg-slate-700 text-rose-300 font-extrabold text-xs flex items-center gap-1.5 border border-slate-700 active:scale-95 transition-all"
-          >
-            <RotateCcw className="w-4 h-4" />
-            <span>Desmarcar Todo</span>
-          </button>
+          <div className="flex flex-wrap items-center gap-2 self-start sm:self-auto">
+            {isSupabaseConfigured ? (
+              <div className="bg-emerald-950/80 border border-emerald-500/40 px-3 py-1.5 rounded-2xl flex items-center gap-1.5 text-xs font-black text-emerald-300" title="Sincronizado con Supabase BD">
+                <Database className="w-3.5 h-3.5 text-emerald-400" />
+                <span>BD Sincronizada</span>
+              </div>
+            ) : (
+              <div className="bg-amber-950/80 border border-amber-500/40 px-3 py-1.5 rounded-2xl flex items-center gap-1.5 text-xs font-black text-amber-300" title="Almacenamiento en LocalStorage (Sin BD configurada)">
+                <HardDrive className="w-3.5 h-3.5 text-amber-400" />
+                <span>Modo Local</span>
+              </div>
+            )}
+
+            <button
+              onClick={() => setShowResetModal(true)}
+              className="min-h-[44px] px-3.5 py-2 rounded-2xl bg-slate-800 hover:bg-slate-700 text-rose-300 font-extrabold text-xs flex items-center gap-1.5 border border-slate-700 active:scale-95 transition-all"
+            >
+              <RotateCcw className="w-4 h-4" />
+              <span>Desmarcar Todo</span>
+            </button>
+          </div>
         </div>
 
         {/* Progress Bar */}

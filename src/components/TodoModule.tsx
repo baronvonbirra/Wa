@@ -1,11 +1,11 @@
 import React, { useState } from 'react';
 import { TODO_CATEGORIES } from '../data/todoData';
 import { useTodoState } from '../hooks/useTodoState';
-import { CheckCircle2, Circle, FileText, Ticket, Landmark, Sparkles } from 'lucide-react';
+import { CheckCircle2, Circle, FileText, Ticket, Landmark, Sparkles, Database, HardDrive } from 'lucide-react';
 
 export const TodoModule: React.FC = () => {
   const [activeCategoryId, setActiveCategoryId] = useState<'tramites' | 'reservas' | 'logistica'>('tramites');
-  const { completedTodos, toggleTodo, syncError } = useTodoState();
+  const { completedTodos, toggleTodo, syncError, isSupabaseConfigured } = useTodoState();
 
   const getCategoryIcon = (id: string) => {
     switch (id) {
@@ -40,9 +40,23 @@ export const TodoModule: React.FC = () => {
               Preparativos y Tareas Pendientes
             </h1>
           </div>
-          <div className="bg-slate-800 border border-slate-700 px-3 py-1.5 rounded-2xl flex items-center gap-2">
-            <Sparkles className="w-4 h-4 text-amber-400" />
-            <span className="text-xs font-black text-amber-300">{completedCount} / {totalCount} ({overallPercentage}%)</span>
+          <div className="flex flex-wrap items-center gap-2">
+            <div className="bg-slate-800 border border-slate-700 px-3 py-1.5 rounded-2xl flex items-center gap-2">
+              <Sparkles className="w-4 h-4 text-amber-400" />
+              <span className="text-xs font-black text-amber-300">{completedCount} / {totalCount} ({overallPercentage}%)</span>
+            </div>
+
+            {isSupabaseConfigured ? (
+              <div className="bg-emerald-950/80 border border-emerald-500/40 px-3 py-1.5 rounded-2xl flex items-center gap-1.5 text-xs font-black text-emerald-300" title="Sincronizado con Supabase BD">
+                <Database className="w-3.5 h-3.5 text-emerald-400" />
+                <span>BD Sincronizada</span>
+              </div>
+            ) : (
+              <div className="bg-amber-950/80 border border-amber-500/40 px-3 py-1.5 rounded-2xl flex items-center gap-1.5 text-xs font-black text-amber-300" title="Almacenamiento en LocalStorage (Sin BD configurada)">
+                <HardDrive className="w-3.5 h-3.5 text-amber-400" />
+                <span>Modo Local</span>
+              </div>
+            )}
           </div>
         </div>
 

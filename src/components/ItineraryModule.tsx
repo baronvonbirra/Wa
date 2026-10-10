@@ -26,7 +26,9 @@ import {
   ChevronDown,
   ChevronUp,
   Lightbulb,
-  Award
+  Award,
+  Database,
+  HardDrive
 } from 'lucide-react';
 
 function getActivityLearnInfo(act: Activity, dayTitle: string): LearnInfo {
@@ -90,7 +92,7 @@ export const ItineraryModule: React.FC = () => {
   const [showShops, setShowShops] = useState<boolean>(true);
   const [showRestaurants, setShowRestaurants] = useState<boolean>(true);
 
-  const { completed, toggleActivity, isActivityCompleted, syncError } = useTripState();
+  const { completed, toggleActivity, isActivityCompleted, syncError, isSupabaseConfigured } = useTripState();
 
   const currentStage = useMemo(() => {
     return TRIP_DATA.stages.find((s) => s.stage_id === activeStageId) || TRIP_DATA.stages[0];
@@ -280,6 +282,18 @@ export const ItineraryModule: React.FC = () => {
               <Sparkles className="w-4 h-4 text-amber-400" />
               <span className="text-xs font-black text-amber-300">{globalPercentage}% Completado</span>
             </div>
+
+            {isSupabaseConfigured ? (
+              <div className="bg-emerald-950/80 border border-emerald-500/40 px-3 py-1.5 rounded-2xl flex items-center gap-1.5 text-xs font-black text-emerald-300" title="Sincronizado con Supabase BD">
+                <Database className="w-3.5 h-3.5 text-emerald-400" />
+                <span>BD Sincronizada</span>
+              </div>
+            ) : (
+              <div className="bg-amber-950/80 border border-amber-500/40 px-3 py-1.5 rounded-2xl flex items-center gap-1.5 text-xs font-black text-amber-300" title="Almacenamiento en LocalStorage (Sin BD configurada)">
+                <HardDrive className="w-3.5 h-3.5 text-amber-400" />
+                <span>Modo Local</span>
+              </div>
+            )}
           </div>
         </div>
 

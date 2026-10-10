@@ -1,5 +1,5 @@
 import { useState, useEffect, useCallback } from 'react';
-import { fetchInteractiveItems, upsertInteractiveItem } from '../lib/supabase';
+import { fetchInteractiveItems, upsertInteractiveItem, isSupabaseConfigured } from '../lib/supabase';
 
 export const useTodoState = () => {
   const STORAGE_KEY = 'japan_2026_todos_completed';
@@ -15,22 +15,27 @@ export const useTodoState = () => {
 
   const [syncError, setSyncError] = useState<string | null>(null);
 
-  // Hydrate state from Supabase on mount (authoritative remote state sync)
+  // Hydrate state from Supabase on mount
   useEffect(() => {
     let isMounted = true;
+    if (!isSupabaseConfigured) return;
+
     fetchInteractiveItems('todo').then((remoteItems) => {
-      if (!isMounted || remoteItems.length === 0) return;
+      if (!isMounted) return;
 
       const remoteCompletedIds = remoteItems
         .filter((item) => item.completed)
         .map((item) => item.id);
 
-      setCompletedTodos(remoteCompletedIds);
-      try {
-        localStorage.setItem(STORAGE_KEY, JSON.stringify(remoteCompletedIds));
-      } catch (e) {
-        console.error('Error saving todo progress to localStorage during hydration:', e);
-      }
+      setCompletedTodos((localPrev) => {
+        const merged = Array.from(new Set([...localPrev, ...remoteCompletedIds]));
+        try {
+          localStorage.setItem(STORAGE_KEY, JSON.stringify(merged));
+        } catch (e) {
+          console.error('Error saving todo progress to localStorage during hydration:', e);
+        }
+        return merged;
+      });
     });
 
     return () => {
@@ -79,10 +84,10 @@ export const useTodoState = () => {
         return rolledBack;
       });
 
-      setSyncError('No se pudo guardar el cambio en la nube. Operación revertida.');
+      setSyncError('No se pudo guardar el cambio en la base de datos. Operación revertida.');
       setTimeout(() => setSyncError(null), 3500);
     }
   }, []);
 
-  return { completedTodos, toggleTodo, syncError };
+  return { completedTodos, toggleTodo, syncError, isSupabaseConfigured };
 };

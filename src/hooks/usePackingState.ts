@@ -2,7 +2,8 @@ import { useState, useEffect, useCallback } from 'react';
 import {
   fetchInteractiveItems,
   upsertInteractiveItem,
-  bulkUpdateInteractiveItems
+  bulkUpdateInteractiveItems,
+  isSupabaseConfigured
 } from '../lib/supabase';
 
 export const usePackingState = () => {
@@ -19,22 +20,27 @@ export const usePackingState = () => {
 
   const [syncError, setSyncError] = useState<string | null>(null);
 
-  // Hydrate state from Supabase on mount (authoritative remote state sync)
+  // Hydrate state from Supabase on mount
   useEffect(() => {
     let isMounted = true;
+    if (!isSupabaseConfigured) return;
+
     fetchInteractiveItems('packing').then((remoteItems) => {
-      if (!isMounted || remoteItems.length === 0) return;
+      if (!isMounted) return;
 
       const remoteCheckedIds = remoteItems
         .filter((item) => item.completed)
         .map((item) => item.id);
 
-      setCheckedItems(remoteCheckedIds);
-      try {
-        localStorage.setItem(STORAGE_KEY, JSON.stringify(remoteCheckedIds));
-      } catch (e) {
-        console.error('Error saving packing progress to localStorage during hydration:', e);
-      }
+      setCheckedItems((localPrev) => {
+        const merged = Array.from(new Set([...localPrev, ...remoteCheckedIds]));
+        try {
+          localStorage.setItem(STORAGE_KEY, JSON.stringify(merged));
+        } catch (e) {
+          console.error('Error saving packing progress to localStorage during hydration:', e);
+        }
+        return merged;
+      });
     });
 
     return () => {
@@ -83,7 +89,7 @@ export const usePackingState = () => {
         return rolledBack;
       });
 
-      setSyncError('No se pudo guardar el cambio en la nube. Operación revertida.');
+      setSyncError('No se pudo guardar el cambio en la base de datos. Operación revertida.');
       setTimeout(() => setSyncError(null), 3500);
     }
   }, []);
@@ -98,5 +104,5 @@ export const usePackingState = () => {
     bulkUpdateInteractiveItems('packing', false);
   }, []);
 
-  return { checkedItems, toggleItem, resetPacking, syncError };
+  return { checkedItems, toggleItem, resetPacking, syncError, isSupabaseConfigured };
 };
