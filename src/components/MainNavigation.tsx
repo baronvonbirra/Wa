@@ -1,5 +1,6 @@
 import React from 'react';
-import { Calendar, CheckSquare, Luggage, Calculator, Building2 } from 'lucide-react';
+import { Calendar, CheckSquare, Luggage, Calculator, Building2, Database, HardDrive } from 'lucide-react';
+import { isSupabaseConfigured } from '../lib/supabase';
 
 export type MainTab = 'itinerary' | 'todo' | 'packing' | 'tools' | 'guide';
 
@@ -23,9 +24,23 @@ export const MainNavigation: React.FC<MainNavigationProps> = ({ activeTab, setAc
         <div className="hidden md:flex items-center gap-2">
           <span className="text-xl">🇯🇵</span>
           <span className="font-black text-white tracking-wider text-sm uppercase">Japón 2026/2027</span>
-          <span className="bg-rose-500/20 text-rose-300 text-[10px] font-extrabold px-2 py-0.5 rounded-full border border-rose-500/30">
-            Offline PWA
-          </span>
+          {isSupabaseConfigured ? (
+            <span
+              className="bg-emerald-500/20 text-emerald-300 text-[10px] font-extrabold px-2 py-0.5 rounded-full border border-emerald-500/30 flex items-center gap-1"
+              title="Sincronizado en tiempo real con Supabase DB"
+            >
+              <Database className="w-3 h-3 text-emerald-400" />
+              DB On
+            </span>
+          ) : (
+            <span
+              className="bg-amber-500/20 text-amber-300 text-[10px] font-extrabold px-2 py-0.5 rounded-full border border-amber-500/30 flex items-center gap-1"
+              title="Modo Local: los datos se guardan únicamente en el navegador (localStorage)"
+            >
+              <HardDrive className="w-3 h-3 text-amber-400" />
+              Local
+            </span>
+          )}
         </div>
 
         <div className="flex items-center justify-around w-full md:w-auto md:gap-1">

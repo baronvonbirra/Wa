@@ -1,5 +1,5 @@
 import { useState, useEffect, useCallback } from 'react';
-import { fetchInteractiveItems, upsertInteractiveItem } from '../lib/supabase';
+import { fetchInteractiveItems, upsertInteractiveItem, isSupabaseConfigured } from '../lib/supabase';
 
 export const useTripState = () => {
   const STORAGE_KEY = 'japan_2026_completed_activities';
@@ -15,22 +15,28 @@ export const useTripState = () => {
 
   const [syncError, setSyncError] = useState<string | null>(null);
 
-  // Hydrate state from Supabase on mount (authoritative remote state sync)
+  // Hydrate state from Supabase on mount
   useEffect(() => {
     let isMounted = true;
+    if (!isSupabaseConfigured) return;
+
     fetchInteractiveItems('itinerary').then((remoteItems) => {
-      if (!isMounted || remoteItems.length === 0) return;
+      if (!isMounted) return;
 
       const remoteCompletedIds = remoteItems
         .filter((item) => item.completed)
         .map((item) => item.id);
 
-      setCompleted(remoteCompletedIds);
-      try {
-        localStorage.setItem(STORAGE_KEY, JSON.stringify(remoteCompletedIds));
-      } catch (e) {
-        console.error('Error saving activity progress to localStorage during hydration:', e);
-      }
+      setCompleted((localPrev) => {
+        // Merge local and remote completed IDs to prevent losing offline state
+        const merged = Array.from(new Set([...localPrev, ...remoteCompletedIds]));
+        try {
+          localStorage.setItem(STORAGE_KEY, JSON.stringify(merged));
+        } catch (e) {
+          console.error('Error saving activity progress to localStorage during hydration:', e);
+        }
+        return merged;
+      });
     });
 
     return () => {
@@ -79,7 +85,7 @@ export const useTripState = () => {
         return rolledBack;
       });
 
-      setSyncError('No se pudo guardar el cambio en la nube. Operación revertida.');
+      setSyncError('No se pudo guardar el cambio en la base de datos. Operación revertida.');
       setTimeout(() => setSyncError(null), 3500);
     }
   }, []);
@@ -91,5 +97,5 @@ export const useTripState = () => {
     [completed]
   );
 
-  return { completed, toggleActivity, isActivityCompleted, syncError };
+  return { completed, toggleActivity, isActivityCompleted, syncError, isSupabaseConfigured };
 };
