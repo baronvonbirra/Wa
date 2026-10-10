@@ -1,4 +1,4 @@
-import { useState, useEffect, useCallback } from 'react';
+import { useState, useEffect, useCallback, useRef } from 'react';
 import {
   fetchInteractiveItems,
   upsertInteractiveItem,
@@ -18,6 +18,11 @@ export const usePackingState = () => {
     }
   });
 
+  const checkedItemsRef = useRef<string[]>(checkedItems);
+  useEffect(() => {
+    checkedItemsRef.current = checkedItems;
+  }, [checkedItems]);
+
   const [syncError, setSyncError] = useState<string | null>(null);
 
   // Hydrate state from Supabase on mount
@@ -26,20 +31,26 @@ export const usePackingState = () => {
     if (!isSupabaseConfigured) return;
 
     fetchInteractiveItems('packing').then((remoteItems) => {
-      if (!isMounted) return;
-
-      const remoteCheckedIds = remoteItems
-        .filter((item) => item.completed)
-        .map((item) => item.id);
+      if (!isMounted || !remoteItems) return;
 
       setCheckedItems((localPrev) => {
-        const merged = Array.from(new Set([...localPrev, ...remoteCheckedIds]));
+        const nextSet = new Set(localPrev);
+
+        remoteItems.forEach((item) => {
+          if (item.completed) {
+            nextSet.add(item.id);
+          } else {
+            nextSet.delete(item.id);
+          }
+        });
+
+        const reconciled = Array.from(nextSet);
         try {
-          localStorage.setItem(STORAGE_KEY, JSON.stringify(merged));
+          localStorage.setItem(STORAGE_KEY, JSON.stringify(reconciled));
         } catch (e) {
           console.error('Error saving packing progress to localStorage during hydration:', e);
         }
-        return merged;
+        return reconciled;
       });
     });
 
@@ -50,12 +61,11 @@ export const usePackingState = () => {
 
   // Toggle item with Optimistic UI, Async Mutation & Rollback on error
   const toggleItem = useCallback(async (itemId: string) => {
-    let wasChecked = false;
+    const wasChecked = checkedItemsRef.current.includes(itemId);
+    const nextCheckedStatus = !wasChecked;
 
     // 1. Optimistic UI update
     setCheckedItems((prev) => {
-      wasChecked = prev.includes(itemId);
-      const nextCheckedStatus = !wasChecked;
       const updated = nextCheckedStatus
         ? [...prev.filter((id) => id !== itemId), itemId]
         : prev.filter((id) => id !== itemId);
@@ -67,8 +77,6 @@ export const usePackingState = () => {
       }
       return updated;
     });
-
-    const nextCheckedStatus = !wasChecked;
 
     // 2. Async mutation to Supabase
     const success = await upsertInteractiveItem(itemId, 'packing', nextCheckedStatus);
