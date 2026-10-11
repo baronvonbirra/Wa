@@ -3,7 +3,7 @@ import {
   fetchInteractiveItems,
   upsertInteractiveItem,
   bulkUpdateInteractiveItems,
-  isSupabaseConfigured
+  checkIsSupabaseConfigured
 } from '../lib/supabase';
 
 export const usePackingState = () => {
@@ -24,34 +24,27 @@ export const usePackingState = () => {
   }, [checkedItems]);
 
   const [syncError, setSyncError] = useState<string | null>(null);
+  const isDbConnected = checkIsSupabaseConfigured();
 
   // Hydrate state from Supabase on mount
   useEffect(() => {
     let isMounted = true;
-    if (!isSupabaseConfigured) return;
+    if (!checkIsSupabaseConfigured()) return;
 
     fetchInteractiveItems('packing').then((remoteItems) => {
-      if (!isMounted || !remoteItems) return;
+      if (!isMounted) return;
 
-      setCheckedItems((localPrev) => {
-        const nextSet = new Set(localPrev);
+      // DB is source of truth!
+      const dbCompleted = remoteItems
+        .filter((item) => Boolean(item.completed))
+        .map((item) => item.id);
 
-        remoteItems.forEach((item) => {
-          if (item.completed) {
-            nextSet.add(item.id);
-          } else {
-            nextSet.delete(item.id);
-          }
-        });
-
-        const reconciled = Array.from(nextSet);
-        try {
-          localStorage.setItem(STORAGE_KEY, JSON.stringify(reconciled));
-        } catch (e) {
-          console.error('Error saving packing progress to localStorage during hydration:', e);
-        }
-        return reconciled;
-      });
+      setCheckedItems(dbCompleted);
+      try {
+        localStorage.setItem(STORAGE_KEY, JSON.stringify(dbCompleted));
+      } catch (e) {
+        console.error('Error saving packing progress to localStorage during hydration:', e);
+      }
     });
 
     return () => {
@@ -79,26 +72,28 @@ export const usePackingState = () => {
     });
 
     // 2. Async mutation to Supabase
-    const success = await upsertInteractiveItem(itemId, 'packing', nextCheckedStatus);
+    if (checkIsSupabaseConfigured()) {
+      const success = await upsertInteractiveItem(itemId, 'packing', nextCheckedStatus);
 
-    // 3. Rollback if mutation failed
-    if (!success) {
-      console.warn(`[usePackingState] Remote sync failed for packing item ${itemId}. Rolling back...`);
-      setCheckedItems((prev) => {
-        const rolledBack = wasChecked
-          ? [...prev.filter((id) => id !== itemId), itemId]
-          : prev.filter((id) => id !== itemId);
+      // 3. Rollback if mutation failed
+      if (!success) {
+        console.warn(`[usePackingState] Remote sync failed for packing item ${itemId}. Rolling back...`);
+        setCheckedItems((prev) => {
+          const rolledBack = wasChecked
+            ? [...prev.filter((id) => id !== itemId), itemId]
+            : prev.filter((id) => id !== itemId);
 
-        try {
-          localStorage.setItem(STORAGE_KEY, JSON.stringify(rolledBack));
-        } catch (e) {
-          console.error('Error rolling back localStorage:', e);
-        }
-        return rolledBack;
-      });
+          try {
+            localStorage.setItem(STORAGE_KEY, JSON.stringify(rolledBack));
+          } catch (e) {
+            console.error('Error rolling back localStorage:', e);
+          }
+          return rolledBack;
+        });
 
-      setSyncError('No se pudo guardar el cambio en la base de datos. Operación revertida.');
-      setTimeout(() => setSyncError(null), 3500);
+        setSyncError('No se pudo guardar el cambio en la base de datos. Operación revertida.');
+        setTimeout(() => setSyncError(null), 3500);
+      }
     }
   }, []);
 
@@ -109,8 +104,10 @@ export const usePackingState = () => {
     } catch (e) {
       console.error('Error resetting packing in localStorage:', e);
     }
-    bulkUpdateInteractiveItems('packing', false);
+    if (checkIsSupabaseConfigured()) {
+      bulkUpdateInteractiveItems('packing', false);
+    }
   }, []);
 
-  return { checkedItems, toggleItem, resetPacking, syncError, isSupabaseConfigured };
+  return { checkedItems, toggleItem, resetPacking, syncError, isSupabaseConfigured: isDbConnected };
 };
