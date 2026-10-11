@@ -13,17 +13,16 @@ CREATE TABLE IF NOT EXISTS interactive_items (
 ALTER TABLE interactive_items ENABLE ROW LEVEL SECURITY;
 
 -- RLS Policies for public access
+-- RLS Policies for public access (anon and authenticated roles)
 DROP POLICY IF EXISTS "Allow public select" ON interactive_items;
-CREATE POLICY "Allow public select" ON interactive_items FOR SELECT USING (true);
-
 DROP POLICY IF EXISTS "Allow public insert" ON interactive_items;
-CREATE POLICY "Allow public insert" ON interactive_items FOR INSERT WITH CHECK (true);
-
 DROP POLICY IF EXISTS "Allow public update" ON interactive_items;
-CREATE POLICY "Allow public update" ON interactive_items FOR UPDATE USING (true);
-
 DROP POLICY IF EXISTS "Allow public delete" ON interactive_items;
-CREATE POLICY "Allow public delete" ON interactive_items FOR DELETE USING (true);
+
+CREATE POLICY "Allow public select" ON interactive_items FOR SELECT TO anon, authenticated USING (true);
+CREATE POLICY "Allow public insert" ON interactive_items FOR INSERT TO anon, authenticated WITH CHECK (true);
+CREATE POLICY "Allow public update" ON interactive_items FOR UPDATE TO anon, authenticated USING (true) WITH CHECK (true);
+CREATE POLICY "Allow public delete" ON interactive_items FOR DELETE TO anon, authenticated USING (true);
 
 -- ==========================================
 -- INITIAL DATA SEEDING (POPULATION)
