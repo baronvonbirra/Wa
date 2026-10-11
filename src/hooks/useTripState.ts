@@ -19,17 +19,14 @@ export const useTripState = () => {
   }, [completed]);
 
   const [syncError, setSyncError] = useState<string | null>(null);
-  const isDbConnected = checkIsSupabaseConfigured();
+  const [isDbConnected, setIsDbConnected] = useState(() => checkIsSupabaseConfigured());
 
-  // Hydrate state from Supabase on mount
-  useEffect(() => {
-    let isMounted = true;
-    if (!checkIsSupabaseConfigured()) return;
+  const hydrateFromSupabase = useCallback(() => {
+    const isConfigured = checkIsSupabaseConfigured();
+    setIsDbConnected(isConfigured);
+    if (!isConfigured) return;
 
     fetchInteractiveItems('itinerary').then((remoteItems) => {
-      if (!isMounted) return;
-
-      // DB is source of truth!
       const dbCompleted = remoteItems
         .filter((item) => Boolean(item.completed))
         .map((item) => item.id);
@@ -41,11 +38,21 @@ export const useTripState = () => {
         console.error('Error saving activity progress to localStorage during hydration:', e);
       }
     });
-
-    return () => {
-      isMounted = false;
-    };
   }, []);
+
+  // Hydrate state from Supabase on mount and on config change
+  useEffect(() => {
+    hydrateFromSupabase();
+
+    const handleConfigChange = () => {
+      hydrateFromSupabase();
+    };
+
+    window.addEventListener('supabase-config-changed', handleConfigChange);
+    return () => {
+      window.removeEventListener('supabase-config-changed', handleConfigChange);
+    };
+  }, [hydrateFromSupabase]);
 
   // Toggle activity with Optimistic UI, Async Mutation & Rollback on error
   const toggleActivity = useCallback(async (activityId: string) => {
