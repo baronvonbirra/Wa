@@ -24,14 +24,6 @@ function getSupabaseConfig(): { url?: string; key?: string } {
     key = procEnv.VITE_SUPABASE_ANON_KEY || procEnv.SUPABASE_ANON_KEY;
   }
 
-  // Default credentials fallback for deployment / client runtime
-  if (!url) {
-    url = 'https://bebuahwnzgzhguekgnkb.supabase.co';
-  }
-  if (!key) {
-    key = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6ImJlYnVhaHduemd6aGd1ZWtnbmtiIiwicm9sZSI6ImFub24iLCJpYXQiOjE3Njk2ODEzOTQsImV4cCI6MjA4NTI1NzM5NH0.W74Y5LGYEztrT3gM1l9C7M7DkT8TFfg7ENRvHgnzIE8';
-  }
-
   return { url: url?.trim(), key: key?.trim() };
 }
 
