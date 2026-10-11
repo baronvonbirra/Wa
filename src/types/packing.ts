@@ -1,11 +1,11 @@
 export interface PackingItem {
   id: string;
   text: string;
-  categoryId: 'docs' | 'tech' | 'clothes' | 'family' | 'toiletries';
+  categoryId: string;
 }
 
 export interface PackingCategory {
-  id: 'docs' | 'tech' | 'clothes' | 'family' | 'toiletries';
+  id: string;
   name: string;
   items: PackingItem[];
 }

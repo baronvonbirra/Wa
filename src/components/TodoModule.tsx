@@ -1,20 +1,30 @@
 import React, { useState } from 'react';
 import { TODO_CATEGORIES } from '../data/todoData';
 import { useTodoState } from '../hooks/useTodoState';
-import { CheckCircle2, Circle, FileText, Ticket, Landmark, Sparkles, Database, HardDrive } from 'lucide-react';
+import {
+  CheckCircle2,
+  Circle,
+  FileText,
+  Ticket,
+  Bus,
+  ShieldCheck,
+  Sparkles,
+  Database,
+  HardDrive
+} from 'lucide-react';
 
 export const TodoModule: React.FC = () => {
-  const [activeCategoryId, setActiveCategoryId] = useState<'tramites' | 'reservas' | 'logistica'>('tramites');
+  const [activeCategoryId, setActiveCategoryId] = useState<string>(TODO_CATEGORIES[0]?.id || 'entradas-parques');
   const { completedTodos, toggleTodo, syncError, isSupabaseConfigured } = useTodoState();
 
   const getCategoryIcon = (id: string) => {
     switch (id) {
-      case 'tramites':
-        return FileText;
-      case 'reservas':
+      case 'entradas-parques':
         return Ticket;
-      case 'logistica':
-        return Landmark;
+      case 'transporte-trenes':
+        return Bus;
+      case 'documentacion-logistica':
+        return ShieldCheck;
       default:
         return FileText;
     }
@@ -31,7 +41,7 @@ export const TodoModule: React.FC = () => {
     <div className="max-w-3xl mx-auto px-4 pt-4 pb-28 font-sans text-slate-800 dark:text-slate-100">
       {/* Header Banner */}
       <section className="bg-slate-900 text-white p-5 rounded-3xl mb-6 shadow-xl border border-slate-800">
-        <div className="flex items-center justify-between mb-3">
+        <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-3 mb-3">
           <div>
             <span className="text-[10px] font-black uppercase text-rose-400 bg-rose-950/80 px-2.5 py-0.5 rounded-full border border-rose-900">
               Módulo Pre-Viaje
@@ -40,7 +50,7 @@ export const TodoModule: React.FC = () => {
               Preparativos y Tareas Pendientes
             </h1>
           </div>
-          <div className="flex flex-wrap items-center gap-2">
+          <div className="flex flex-wrap items-center gap-2 self-start sm:self-auto">
             <div className="bg-slate-800 border border-slate-700 px-3 py-1.5 rounded-2xl flex items-center gap-2">
               <Sparkles className="w-4 h-4 text-amber-400" />
               <span className="text-xs font-black text-amber-300">{completedCount} / {totalCount} ({overallPercentage}%)</span>
@@ -82,7 +92,7 @@ export const TodoModule: React.FC = () => {
       </section>
 
       {/* Category Tabs */}
-      <nav className="grid grid-cols-3 gap-2 mb-6">
+      <nav className="grid grid-cols-1 sm:grid-cols-3 gap-2 mb-6">
         {TODO_CATEGORIES.map((cat) => {
           const Icon = getCategoryIcon(cat.id);
           const isSelected = cat.id === activeCategoryId;
@@ -93,14 +103,14 @@ export const TodoModule: React.FC = () => {
             <button
               key={cat.id}
               onClick={() => setActiveCategoryId(cat.id)}
-              className={`p-3 rounded-2xl flex flex-col items-center text-center justify-between min-h-[64px] transition-all active:scale-95 ${
+              className={`p-3.5 rounded-2xl flex flex-col items-center text-center justify-between min-h-[68px] transition-all active:scale-95 ${
                 isSelected
                   ? 'bg-rose-600 text-white shadow-lg shadow-rose-900/30'
                   : 'bg-white dark:bg-slate-800 text-slate-700 dark:text-slate-300 border border-slate-200 dark:border-slate-700 hover:bg-slate-100 dark:hover:bg-slate-700'
               }`}
             >
               <Icon className={`w-5 h-5 mb-1 ${isSelected ? 'scale-110' : ''}`} />
-              <span className="text-[11px] font-black leading-tight line-clamp-1">{cat.name}</span>
+              <span className="text-xs font-black leading-tight">{cat.name}</span>
               <span className={`text-[10px] font-bold mt-1 ${isSelected ? 'text-rose-200' : 'text-slate-400'}`}>
                 {catCompleted}/{catTotal}
               </span>
@@ -111,7 +121,7 @@ export const TodoModule: React.FC = () => {
 
       {/* Active Category Tasks Card */}
       <article className="bg-white dark:bg-slate-800 border-2 border-slate-200 dark:border-slate-700 rounded-3xl p-5 shadow-sm space-y-4">
-        <div className="border-b border-slate-100 dark:border-slate-700 pb-3 flex items-center justify-between">
+        <div className="border-b border-slate-100 dark:border-slate-700 pb-3 flex flex-col sm:flex-row sm:items-center justify-between gap-2">
           <div>
             <h2 className="text-lg font-black text-slate-900 dark:text-white">
               {activeCategory.name}
@@ -120,7 +130,7 @@ export const TodoModule: React.FC = () => {
               {activeCategory.description}
             </p>
           </div>
-          <span className="text-xs font-black bg-slate-100 dark:bg-slate-900 text-slate-700 dark:text-slate-300 px-3 py-1 rounded-full border border-slate-200 dark:border-slate-700">
+          <span className="self-start sm:self-auto text-xs font-black bg-slate-100 dark:bg-slate-900 text-slate-700 dark:text-slate-300 px-3 py-1 rounded-full border border-slate-200 dark:border-slate-700 shrink-0">
             {activeCategory.items.filter((i) => completedTodos.includes(i.id)).length} / {activeCategory.items.length} completadas
           </span>
         </div>
@@ -133,12 +143,12 @@ export const TodoModule: React.FC = () => {
               <button
                 key={item.id}
                 onClick={() => toggleTodo(item.id)}
-                className="w-full py-3.5 px-2 flex items-center gap-3 text-left min-h-[48px] rounded-xl hover:bg-slate-50 dark:hover:bg-slate-700/30 active:scale-98 transition-all"
+                className="w-full py-3.5 px-2 flex items-start sm:items-center gap-3 text-left min-h-[48px] rounded-xl hover:bg-slate-50 dark:hover:bg-slate-700/30 active:scale-98 transition-all"
               >
                 {isDone ? (
-                  <CheckCircle2 className="w-6 h-6 text-emerald-500 shrink-0" />
+                  <CheckCircle2 className="w-6 h-6 text-emerald-500 shrink-0 mt-0.5 sm:mt-0" />
                 ) : (
-                  <Circle className="w-6 h-6 text-slate-300 dark:text-slate-600 hover:text-rose-500 shrink-0 transition-colors" />
+                  <Circle className="w-6 h-6 text-slate-300 dark:text-slate-600 hover:text-rose-500 shrink-0 transition-colors mt-0.5 sm:mt-0" />
                 )}
                 <span
                   className={`text-sm font-bold leading-snug ${
