@@ -1,6 +1,6 @@
 import React from 'react';
 import { Calendar, CheckSquare, Luggage, Calculator, Building2, Database, HardDrive } from 'lucide-react';
-import { isSupabaseConfigured } from '../lib/supabase';
+import { checkIsSupabaseConfigured } from '../lib/supabase';
 
 export type MainTab = 'itinerary' | 'todo' | 'packing' | 'tools' | 'guide';
 
@@ -10,6 +10,8 @@ interface MainNavigationProps {
 }
 
 export const MainNavigation: React.FC<MainNavigationProps> = ({ activeTab, setActiveTab }) => {
+  const isDbConnected = checkIsSupabaseConfigured();
+
   const navItems: { id: MainTab; label: string; icon: React.ComponentType<{ className?: string }> }[] = [
     { id: 'itinerary', label: 'Itinerario', icon: Calendar },
     { id: 'todo', label: 'Pre-Viaje', icon: CheckSquare },
@@ -24,7 +26,7 @@ export const MainNavigation: React.FC<MainNavigationProps> = ({ activeTab, setAc
         <div className="hidden md:flex items-center gap-2">
           <span className="text-xl">🇯🇵</span>
           <span className="font-black text-white tracking-wider text-sm uppercase">Japón 2026/2027</span>
-          {isSupabaseConfigured ? (
+          {isDbConnected ? (
             <span
               className="bg-emerald-500/20 text-emerald-300 text-[10px] font-extrabold px-2 py-0.5 rounded-full border border-emerald-500/30 flex items-center gap-1"
               title="Sincronizado en tiempo real con Supabase DB"

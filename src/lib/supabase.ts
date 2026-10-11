@@ -24,6 +24,21 @@ function getSupabaseConfig(): { url?: string; key?: string } {
     key = procEnv.VITE_SUPABASE_ANON_KEY || procEnv.SUPABASE_ANON_KEY;
   }
 
+  if (!url && typeof window !== 'undefined') {
+    try {
+      url = localStorage.getItem('VITE_SUPABASE_URL') || localStorage.getItem('SUPABASE_URL') || undefined;
+    } catch {
+      // ignore
+    }
+  }
+  if (!key && typeof window !== 'undefined') {
+    try {
+      key = localStorage.getItem('VITE_SUPABASE_ANON_KEY') || localStorage.getItem('SUPABASE_ANON_KEY') || undefined;
+    } catch {
+      // ignore
+    }
+  }
+
   return { url: url?.trim(), key: key?.trim() };
 }
 
@@ -39,7 +54,11 @@ export function getSupabaseClient(): SupabaseClient | null {
   return null;
 }
 
-export const isSupabaseConfigured = Boolean(getSupabaseConfig().url && getSupabaseConfig().key);
+export function checkIsSupabaseConfigured(): boolean {
+  return Boolean(getSupabaseClient());
+}
+
+export const isSupabaseConfigured = checkIsSupabaseConfigured();
 
 if (!isSupabaseConfigured) {
   console.warn(
@@ -91,7 +110,7 @@ export async function upsertInteractiveItem(
   const client = getSupabaseClient() || supabase;
   if (!client) {
     console.warn(`[Supabase] Omitiendo llamada UPSERT a BD para ${id}: Supabase no está configurado.`);
-    return true;
+    return false;
   }
 
   try {
@@ -103,13 +122,13 @@ export async function upsertInteractiveItem(
     };
 
     console.log(`[Supabase] Ejecutando UPSERT en la BD para '${id}' (${source}): completed=${completed}`);
-    const { error } = await client.from('interactive_items').upsert(payload, { onConflict: 'id' });
+    const { data, error } = await client.from('interactive_items').upsert(payload, { onConflict: 'id' }).select();
 
     if (error) {
       console.warn('[Supabase] Error al guardar en interactive_items:', error.message, error.details);
       return false;
     }
-    console.log(`[Supabase] UPSERT en BD exitoso para '${id}'`);
+    console.log(`[Supabase] UPSERT en BD exitoso para '${id}':`, data);
     return true;
   } catch (err) {
     console.warn('[Supabase] Excepción en upsertInteractiveItem:', err);
@@ -124,24 +143,25 @@ export async function bulkUpdateInteractiveItems(
   const client = getSupabaseClient() || supabase;
   if (!client) {
     console.warn(`[Supabase] Omitiendo actualización masiva para '${source}': Supabase no está configurado.`);
-    return true;
+    return false;
   }
 
   try {
     console.log(`[Supabase] Ejecutando UPDATE masivo para source '${source}': completed=${completed}`);
-    const { error } = await client
+    const { data, error } = await client
       .from('interactive_items')
       .update({
         completed: Boolean(completed),
         updated_at: new Date().toISOString()
       })
-      .eq('source', source);
+      .eq('source', source)
+      .select();
 
     if (error) {
       console.warn('[Supabase] Error en actualización masiva de interactive_items:', error.message);
       return false;
     }
-    console.log(`[Supabase] Actualización masiva en BD completada para '${source}'`);
+    console.log(`[Supabase] Actualización masiva en BD completada para '${source}':`, data);
     return true;
   } catch (err) {
     console.warn('[Supabase] Excepción en bulkUpdateInteractiveItems:', err);

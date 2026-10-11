@@ -1,8 +1,60 @@
+export interface MascotCharacter {
+  id: 'koji' | 'tama' | 'panko';
+  name: string;
+  fullName: string;
+  role: string;
+  avatar: string;
+  emoji: string;
+  bg: string;
+  border: string;
+  badgeBg: string;
+  personality: string;
+}
+
 export interface MascotMessage {
   koji: string;
   tama: string;
   panko: string;
 }
+
+export const MASCOT_CHARACTERS: MascotCharacter[] = [
+  {
+    id: 'koji',
+    name: 'Koji',
+    fullName: 'Koji el Shiba 🐕',
+    role: 'Guía Explorador',
+    avatar: '🐕🎒',
+    emoji: '🐕',
+    bg: 'bg-amber-50 dark:bg-amber-950/40',
+    border: 'border-amber-300 dark:border-amber-800',
+    badgeBg: 'bg-amber-100 text-amber-800 dark:bg-amber-900/60 dark:text-amber-200',
+    personality: 'Energético, valiente y experto en rutas de aventura.'
+  },
+  {
+    id: 'tama',
+    name: 'Tama',
+    fullName: 'Tama el Neko 🐱',
+    role: 'Buena Suerte & Cultura',
+    avatar: '🐱🐾',
+    emoji: '🐱',
+    bg: 'bg-rose-50 dark:bg-rose-950/40',
+    border: 'border-rose-300 dark:border-rose-800',
+    badgeBg: 'bg-rose-100 text-rose-800 dark:bg-rose-900/60 dark:text-rose-200',
+    personality: 'Tranquilo, observador y sabio guardián de las tradiciones.'
+  },
+  {
+    id: 'panko',
+    name: 'Panko',
+    fullName: 'Panko el Onigiri 🍙',
+    role: 'Experto Gastronómico',
+    avatar: '🍙✨',
+    emoji: '🍙',
+    bg: 'bg-emerald-50 dark:bg-emerald-950/40',
+    border: 'border-emerald-300 dark:border-emerald-800',
+    badgeBg: 'bg-emerald-100 text-emerald-800 dark:bg-emerald-900/60 dark:text-emerald-200',
+    personality: 'Gourmet, divertido y enamorado de la comida japonesa.'
+  }
+];
 
 export const PRE_TRAVEL_MASCOT_MESSAGES: MascotMessage = {
   koji: '¡Falta muy poco para la gran aventura! Revisad que las mochilas y las consolas estén a punto.',
@@ -17,126 +69,128 @@ export const DAILY_MASCOT_MESSAGES: Record<string, MascotMessage> = {
     panko: '¡Atentos al menú del avión! Pero guardad espacio para las delicias que nos esperan al aterrizar en HND.'
   },
   '2026-12-21': {
-    koji: '¡Llegamos a Tokio! Hoy activamos el Suica y nos instalamos cerca de Disney Resort.',
-    tama: 'En el transporte público japonés recordad poner el móvil en modo silencio (Mano Mōdo).',
-    panko: '¡Nada como una cena rápida y reconfortante en el Konbini tras volar cruzar el océano!'
+    koji: "¡Primeras horas en el metro de Tokio! Para no despistaros en las grandes estaciones como Ikebukuro o Shinjuku, buscad siempre las cartelas con el número y color de la línea.",
+    tama: "Observad la calma y el respeto en el vagón: los japoneses no hablan por teléfono ni usan altavoces. Es el momento perfecto para descansar la mente.",
+    panko: "¡Misión de bienvenida al Konbini! En 7-Eleven o Lawson probad los onigiri de salmón (Sake) o atún con mayonesa (Tuna Mayo) nada más llegar."
   },
   '2026-12-22': {
-    koji: '¡Día completo en Tokyo Disneyland! Acompañad a Mickey y disfrutad de la magia kawaii.',
-    tama: 'Guardad los tickets del parque en un lugar seguro para acceder a los pases rápidos y espectáculos.',
-    panko: '¡Tenéis que probar las palomitas de sabores mágicos como mantequilla de cacahuete o miel!'
+    koji: "¡En Disneyland Tokio el ritmo es alegre! Para montarnos en las atracciones más concurridas, consultad los tiempos de espera en la app oficial nada más entrar.",
+    tama: "Rinde culto al civismo japonés en los desfiles: todos los espectadores se sientan pacíficamente en el suelo para no tapar la vista a los de atrás.",
+    panko: "¡Misión palomitas! Buscad los carritos con sabores locos: las de mantequilla con salsa de soja y las de miel son auténticos manjares."
   },
   '2026-12-23': {
-    koji: '¡Explorando DisneySea! No os perdáis la atracción de Indiana Jones y la zona de Sinbad.',
-    tama: 'Por la tarde nos trasladamos al centro de Tokio. Manteneos juntos en la estación de metro.',
-    panko: '¡Aprovechad para degustar un helado temático o los snacks de curry en DisneySea!'
+    koji: "¡Atracción estrella: 'Journey to the Center of the Earth'! Si os gustan las emociones fuertes dentro del volcán, os va a encantar.",
+    tama: "Admirad el diseño del parque: es el único Disney del mundo ambientado en leyendas náuticas, Julio Verne y el misterio del océano.",
+    panko: "Para cenar al llegar al hotel de Asakusabashi, un bol de arroz caliente con cerdo empanado (Katsudon) nos devolverá toda la energía."
   },
   '2026-12-24': {
-    koji: '¡Nochebuena en Shibuya y Harajuku! Cruzamos el cruce más famoso del planeta.',
-    tama: 'Cerca del cruce está la estatua del fiel Hachiko. ¡Un lugar muy emotivo para nosotros los perritos!',
-    panko: 'En Japón la tradición de Nochebuena es comer pollo frito de KFC y tarta de fresa (Shortcake).'
+    koji: "¡A cruzar el paso de peatones de Shibuya corriendo de lado a lado! La foto desde la azotea de Shibuya SKY es sencillamente impresionante.",
+    tama: "¡Meri Kurisumasu! En Japón la Nochebuena se celebra paseando bajo las luces de la ciudad. ¡Las iluminaciones de Roppongi Hills son mágicas!",
+    panko: "La tradición navideña japonesa es cenar pollo frito y tarta de nata con fresas (Shortcake). ¡Hoy hay que cumplir la tradición!"
   },
   '2026-12-25': {
-    koji: '¡Excursión a Nikko y Utsunomiya! Visitamos el santuario Toshogu entre montañas.',
-    tama: 'En Toshogu veréis el grabado original de los Tres Monos Sabios: no ver, no oír, no decir el mal.',
-    panko: '¡Llegando a Utsunomiya toca banquete de Gyozas! A la plancha, fritas y en sopa.'
+    koji: "¡Respirad el aire puro de las montañas entre cedros gigantes! El sendero hacia la cascada Kegon os dejará con la boca abierta.",
+    tama: "¡Feliz Navidad! En el templo Tōshō-gū buscad el famoso grabado en madera de los 'Tres Monos Sabios': no ver, no oír y no decir el mal.",
+    panko: "¡Cena navideña en Utsunomiya! Vamos a atiborrarnos a gyozas a la plancha. Probad las tradicionales de verdura y carne."
   },
   '2026-12-26': {
-    koji: '¡Día Otaku y Tradicional! Paseamos por Asakusa Senso-ji y luego la electrónica de Akihabara.',
-    tama: 'Al cruzar la puerta Kaminarimon en Senso-ji, podéis abanicaros con el humo del incienso para la salud.',
-    panko: '¡En Akihabara no olvides probar el Taiyaki relleno de anko o crema pastelera caliente!'
+    koji: "¡A explorar Akihabara de arriba a abajo! Muchas de las mejores tiendas de cómics y videojuegos están en los pisos 3 y 4 de los edificios.",
+    tama: "En el templo Sensō-ji, atraed el humo del gran quemador de incienso hacia vosotros con las manos para atraer la salud y la buena suerte.",
+    panko: "En la calle Nakamise, probad los Ningyo-yaki: unos bizcochitos calientes rellenos de crema con formas de figuritas tradicionales."
   },
   '2026-12-27': {
-    koji: '¡Palacio Imperial, jardines y las luces deslumbrantes de Shinjuku!',
-    tama: 'En los jardines imperiales caminad con tranquilidad y disfrutad del arte del paisajismo nipón.',
-    panko: '¡En Shinjuku buscaremos un auténtico Ramen de caldo espeso para recargar energías!'
+    koji: "¡Subida a los miradores del Ayuntamiento de Tokio! Si el cielo está despejado, podremos contemplar el horizonte entero de la capital.",
+    tama: "En el barrio de Yotsuya, subid las escaleras rojas del santuario Suga para recrear la escena final de la película de anime Your Name.",
+    panko: "Para comer en el barrio de las librerías Jinbocho, el curry japonés de Curry Bondy acompañado de patata cocida es insuperable."
   },
   '2026-12-28': {
-    koji: '¡Ponemos rumbo hacia el Monte Fuji y la relajante zona de Kawaguchiko!',
-    tama: 'Con un poco de suerte con el cielo despejado, el Fuji nos regalará sus mejores vistas al atardecer.',
-    panko: '¡Noche de Ryokan e Yutaka! Cena Kaiseki tradicional con productos frescos de montaña.'
+    koji: "¡Abrochaos bien los abrigos! La brisa junto al lago Kawaguchiko es fresquita pero contemplar el volcán tan cerca merece la pena.",
+    tama: "La puerta Torii del Cielo encuadra el Monte Fuji de forma sagrada. Si conseguís una foto sin nubes, guardadla como amuleto de viaje.",
+    panko: "Hoy cenamos un reconfortante bol de Houtou Udon: fideos anchos de montaña cocinados en caldo espeso con calabaza local."
   },
   '2026-12-29': {
-    koji: '¡Ruta por Fujiyoshida y Oshino Hakkai! Los estanques cristalinos alimentados por la nieve del Fuji.',
-    tama: 'Sacad fotos en el torii del santuario Kawaguchi Asama y la pagoda Chureito.',
-    panko: '¡Probad los fideos Hōtō, la sopa típica de verduras y calabaza de la región del Fuji!'
+    koji: "¡A entrenar esas piernas! Nos esperan 398 escalones hasta la Pagoda Chureito, pero la vista de la postal japonesa pagará el esfuerzo.",
+    tama: "El agua cristalina de los estanques de Oshino Hakkai proviene de la nieve del Fuji filtrada bajo tierra durante más de 80 años.",
+    panko: "En la aldea ninja, probad la puntería lanzando estrellas shuriken de metal. ¡El que clave más gana un postre de mochi!"
   },
   '2026-12-30': {
-    koji: '¡Viaje hacia los Alpes Japoneses! Llegamos a Takayama y su casco antiguo de madera.',
-    tama: 'En Takayama el frío es intenso. Usad ropa térmica Heattech y calzado cómodo con buen agarre.',
-    panko: '¡Llegó el momento de probar la famosa carne de ternera de Hida (Hida-gyu) a la piedra!'
+    koji: "Pasead por las calles de madera de Sanmachi Suji al atardecer cuando se encienden los farolillos. Parecerá que viajáis al Japón feudal.",
+    tama: "Las grandes bolas de cedro (Sugidama) colgadas en las fachadas cambian de verde a marrón cuando el sake artesanal ha fermentado.",
+    panko: "¡Momento gastronómico estelar! Probad el sushi de ternera de Hida servido sobre una galleta crujiente de arroz tostado."
   },
   '2026-12-31': {
-    koji: '¡Nochevieja en las alpes y visita a la mágica aldea nevada de Shirakawa-go!',
-    tama: 'En la medianoche escucharemos las 108 campanadas (Joya no Kane) en los templos de Takayama.',
-    panko: '¡En Nochevieja los japoneses comen Toshikoshi Soba para atraer longevidad y prosperidad!'
+    koji: "¡Cuidado al caminar por las callejuelas nevadas! Las casas de paja Gassho-zukuri rodeadas de nieve parecen un cuento de invierno.",
+    tama: "¡Akemashite Omedetō! Esta noche los templos tocarán 108 campanadas (Joya no Kane) para purificar los 108 deseos mundanos antes del nuevo año.",
+    panko: "En Nochevieja la tradición japonesa es cenar fideos finos Toshikoshi Soba, que simbolizan una vida larga y próspera para la familia."
   },
   '2027-01-01': {
-    koji: '¡Feliz Año Nuevo 2027! Primer día del año (Hatsumode) paseando por los templos de Takayama.',
-    tama: 'Podéis pedir un deseo para 2027 y comprar un amuleto Omamori de protección y suerte.',
-    panko: '¡En Año Nuevo es típico el Ozōni, una deliciosa sopa tradicional con pastelitode arroz Mochi!'
+    koji: "¡Feliz Año Nuevo 2027! Vamos a caminar hasta el santuario Hie para compartir el primer día del año junto a los habitantes locales.",
+    tama: "Hoy realizamos el Hatsumode (primera visita del año al templo). Comprad un amuleto Omamori para proteger la salud de la familia.",
+    panko: "Probad el Ozōni: una sopa caliente tradicional de Año Nuevo que lleva un pastelito de arroz mochi muy elástico en su interior."
   },
   '2027-01-02': {
-    koji: '¡Nos trasladamos a Kioto, la antigua capital imperial repleta de historia!',
-    tama: 'En Kioto los santuarios respiran una paz única. Sostened los palillos del temizuya con elegancia.',
-    panko: '¡Probad los dulces tradicionales Yatsuhashi rellenos de té verde matcha o canela!'
+    koji: "¡Adentrémonos en el túnel de miles de arcos Torii rojos! Cuanto más alto subáis por la colina, más tranquilo estará el camino.",
+    tama: "Fijaos en las estatuas de los zorros Kitsune: muchos llevan llaves o pergaminos en la boca porque son los guardianes del templo.",
+    panko: "Cerca de la estación de Kioto hay puestos de brochetas de carne a la parrilla y pastelitos de té matcha para reponer fuerzas."
   },
   '2027-01-03': {
-    koji: '¡Explorando Arashiyama! El bosque de bambú y los monitos del parque Iwatayama.',
-    tama: 'Al caminar por el bosque de bambú, escuchad el susurro del viento entre los tallos verdes.',
-    panko: '¡Deliciosos dango a la parrilla con salsa dulce de soja para tomar junto al río Togetsukyo!'
+    koji: "Cruzad el puente Togetsukyo en Arashiyama y subid a saludar a los monos en libertad del parque Iwatayama.",
+    tama: "En el Pabellón Dorado Kinkaku-ji, contemplad cómo las dos plantas cubiertas de pan de oro puro se reflejan en el estanque Espejo.",
+    panko: "En el templo Otagi Nenbutsu-ji buscad las estatuas de piedra más graciosas: ¡hay una bebiendo sake y otra con una raqueta!"
   },
   '2027-01-04': {
-    koji: '¡Paseo del Filósofo e Higashiyama Norte! Templos rodeados de jardines zen y estanques.',
-    tama: 'Contemplad el Pabellón Dorado (Kinkaku-ji) reflejado en las aguas del estanque.',
-    panko: '¡Parada técnica para un helado de té verde suave (Soft Soft) en los puestos de Higashiyama!'
+    koji: "Paseo relajado bordeando el canal. Un día magnífico para caminar sin prisas y disfrutar del silencio de los barrios tradicionales.",
+    tama: "El templo Nanzen-ji oculta un auténtico acueducto romano de ladrillo rojo en su jardín posterior. ¡Un contraste arquitectónico único!",
+    panko: "Tenéis que probar el helado cremoso de té verde matcha con brocheta de dango en las teterías a lo largo del camino."
   },
   '2027-01-05': {
-    koji: '¡Excursión al Parque de Nara para saludar a los ciervos y ver el Gran Buda de Todai-ji!',
-    tama: 'Los ciervos Sika de Nara se inclinan para pedir galletas (Senbei). ¡Saludadles inclinando la cabeza!',
-    panko: '¡En Nara probaremos el Senbei especial de arroz tostado fresco y cruzaremos hacia el Castillo Nijō!'
+    koji: "En el Castillo Nijō, pisad con ganas el 'Suelo de Ruiseñor'. Las maderas crujen emitiendo el canto de un pájaro para alertar de intrusos.",
+    tama: "¡Modales con los ciervos de Nara! Hacedles una inclinación de cabeza y veréis cómo os devuelven la reverencia educadamente.",
+    panko: "Comprad un paquete de galletas Shika-senbei para alimentar a los ciervos en la entrada del gran templo Tōdai-ji."
   },
   '2027-01-06': {
-    koji: '¡Fushimi Inari-taisha y los mil Torii rojos! Subimos por la ladera de la montaña sagrada.',
-    tama: 'Buscad las estatuas de las zorras Kitsune que custodian el santuario con la llave en el hocico.',
-    panko: '¡Parrillada de yakitori e Inari-zushi (bolsitas de tofu dulce con arroz) en los puestos del templo!'
+    koji: "A subir las empedradas cuestas de Sannenzaka y Ninenzaka explorando sus tiendas de artesanía y cerámica tradicional.",
+    tama: "En Kiyomizu-dera, bebed de uno de los tres chorros de la cascada Otowa usando los cazos de mango largo: salud, éxito o amor.",
+    panko: "Para cenar por el callejón Pontocho, buscad una taberna acogedora donde pedir brochetas Yakitori o un okonomiyaki bien sabroso."
   },
   '2027-01-07': {
-    koji: '¡Bienvenidos a Osaka, la capital gastronómica y del entretenimiento del oeste!',
-    tama: 'Visita al majestuoso Castillo de Osaka y paseo nocturno por las luces neón de Dōtonbori.',
-    panko: '¡Es la hora oficial de los Takoyakis recién hechos y las brochetas crujientes de Kushikatsu!'
+    koji: "¡Llegamos a la ciudad más alegre de Japón! Hay que hacerse la foto obligatoria haciendo la pose del corredor de Glico Man.",
+    tama: "En el templo Hozen-ji, verted un cazo de agua sobre la estatua de Buda cubierta de musgo verde para pedir prosperidad familiar.",
+    panko: "¡Misión gastronómica! Comer Takoyaki recién hechos en los puestos callejeros de Dōtonbori. ¡Soplad bien antes de morder!"
   },
   '2027-01-08': {
-    koji: '¡Paseo por el vibrante barrio retro de Shinsekai y la torre Tsutenkaku!',
-    tama: 'En Shinsekai podréis frotar los pies de la figura de Billiken para conseguir buena fortuna.',
-    panko: '¡Probad el Okonomiyaki, la pizza/tortilla japonesa cocinada en plancha de hierro frente a vosotros!'
+    koji: "Recorred las tiendas de Ota Road en Nipponbashi. Es el epicentro de los videojuegos retro y las figuras en el oeste de Japón.",
+    tama: "En el barrio retro de Shinsekai, buscad la estatua dorada de Billiken y rascadle las plantas de los pies para tener buena suerte.",
+    panko: "En el mercado Kuromon encontraréis brochetas de marisco fresco, carne Wagyu a la plancha y fruta gigante en cada puesto."
   },
   '2027-01-09': {
-    koji: '¡Día épico en Universal Studios Japan! Super Nintendo World y Harry Potter.',
-    tama: 'Poneos vuestra Power-Up Band para golpear los bloques "?" y juntar monedas virtuales.',
-    panko: '¡Bebida de Cerveza de Mantequilla en Hogsmeade y hamburguesa de Mario en Toadstool Cafe!'
+    koji: "¡A poner rumbo directo a Super Nintendo World nada más entrar para exprimir cada atracción del parque al máximo!",
+    tama: "Sincronizad la pulsera Power-Up Band con la aplicación para ir registrando cada bloque '?' que golpeéis durante el día.",
+    panko: "En la zona de Harry Potter, la Butterbeer (cerveza de mantequilla sin alcohol) espumosa servida helada está riquísima."
   },
   '2027-01-10': {
-    koji: '¡De regreso a Tokio! Paseo por la elegante zona de Ginza y Tsukishima.',
-    tama: 'En Ginza las aceras son amplias y los escaparates de arquitectura son obras de arte.',
-    panko: '¡Hoy cenamos Monjayaki en la famosa calle Monja Street de Tsukishima!'
+    koji: "Paseo por la elegancia de Ginza y caminata cruzando los puentes sobre el río Sumida hacia la isla de Tsukishima al atardecer.",
+    tama: "La torre del reloj de Seiko en la esquina de Ginza lleva marcando las horas de la capital desde hace casi un siglo.",
+    panko: "¡Cena interactiva cocinando Monjayaki en la plancha de la mesa! Usad las pequeñas palitas metálicas para ir rascando la masa tostada."
   },
   '2027-01-11': {
-    koji: '¡Explorando Nakano Broadway y las tiendas vintage de Shimokitazawa!',
-    tama: 'En Nakano encontraréis figuras coleccionables y recuerdos únicos de vuestra infancia.',
-    panko: '¡Probad los crêpes dulces gigantes rellenos de nata, fresas y brownie en Shimokitazawa!'
+    koji: "¡Cacería de tesoros retro en Nakano Broadway! Un laberinto de varias plantas repleto de juguetes vintage y coleccionismo.",
+    tama: "En Shimokitazawa se respira la atmósfera más bohemia de Tokio. Un lugar perfecto para pasear entre tiendas de ropa de segunda mano.",
+    panko: "¡Parada dulce en Shiro-Hige! Los profiteroles de crema horneados con la forma exacta del personaje Totoro son adorables."
   },
   '2027-01-12': {
-    koji: '¡Excursión costera a Kamakura! El Gran Buda gigante de bronce (Daibutsu).',
-    tama: 'El Daibutsu de Kamakura lleva desde el siglo XIII al aire libre soportando maremotos y terremotos.',
-    panko: '¡Galletas de paloma Hato Sabure y croquetas de boniato morado junto a la estación!'
+    koji: "Caminata entre templos rodeados de bambú hasta bajar a la playa de Yuigahama para admirar el Océano Pacífico.",
+    tama: "El Gran Buda de Kamakura lleva desde el año 1252 sentado al aire libre tras sobrevivir a un tsunami histórico que destruyó su templo.",
+    panko: "Por una pequeña donación de 50 yenes se puede entrar dentro de la estatua de bronce del Buda. ¡Es una experiencia única!"
   },
   '2027-01-13': {
-    koji: '¡Último día en Japón! Visita al mercado de Tsukiji para las últimas compras y despedida.',
-    tama: 'Gracias por esta increíble aventura familiar por Japón. ¡Arigatō gozaimasu y hasta pronto!',
-    panko: '¡Último broche de oro con sashimi fresco, nigiris y brochetas de tamagoyaki caliente!'
+    koji: "¡Últimos paseos por Tokio! Toca empaquetar las maletas con cuidado para que todos los recuerdos y compras lleguen perfectos.",
+    tama: "Agradecemos al País del Sol Naciente su hospitalidad y seguridad. Volvemos a casa con recuerdos inolvidables en el corazón.",
+    panko: "Desayuno de despedida en el mercado exterior de Tsukiji con tortillas dulce Tamagoyaki recién hechas. ¡Hasta la próxima, Japón!"
   }
 };
+
+export const DAILY_MASCOT_TIPS: Record<string, MascotMessage> = DAILY_MASCOT_MESSAGES;
 
 export function getMascotMessages(now: Date = new Date()): MascotMessage {
   const formatter = new Intl.DateTimeFormat('en-CA', {

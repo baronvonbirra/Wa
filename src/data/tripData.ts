@@ -2777,13 +2777,52 @@ export const TRIP_DATA: TripItinerary = {
               "id": "act-18-1",
               "title": "Castillo Osaka",
               "locationQuery": "Osaka Castle",
-              "type": "sights"
+              "type": "sights",
+              "learnInfo": {
+                "title": "Castillo de Osaka (Osaka-jō)",
+                "subtitle": "07 de Enero • Osaka 🏯",
+                "summary": "Una imponente fortaleza construida en 1583 por Toyotomi Hideyoshi, rodeada de fosos gigantes de agua y muros de piedra colosales.",
+                "pills": [
+                  {
+                    "label": "Dato Curioso / Histórico",
+                    "text": "Las piedras de las murallas son tan gigantescas que la más grande (llamada Tako-ishi o 'Piedra Pulpo') pesa casi 130 toneladas y fue llevada desde islas lejanas en barco.",
+                    "type": "historical"
+                  },
+                  {
+                    "label": "Misión Kawaii",
+                    "text": "Buscar el adorno de oro en forma de pez con cabeza de tigre (Shachihoko) en los tejados del castillo, encargado de proteger el edificio contra los incendios.",
+                    "type": "funFact"
+                  },
+                  {
+                    "label": "Patrimonio de Osaka",
+                    "text": "El gran torreón central de 8 pisos alberga un museo sobre la historia de los samuráis y ofrece vistas panorámicas de toda la ciudad.",
+                    "type": "cultural"
+                  }
+                ]
+              }
             },
             {
               "id": "act-18-2",
               "title": "Shitennō-ji",
               "locationQuery": "Shitennoji Temple Osaka",
-              "type": "sights"
+              "type": "sights",
+              "learnInfo": {
+                "title": "Templo Shitennō-ji",
+                "subtitle": "07 de Enero • Osaka ⛩️",
+                "summary": "El primer templo budista financiado por el estado en Japón, fundado en el año 593 por el venerado Príncipe Shōtoku.",
+                "pills": [
+                  {
+                    "label": "Historia Milenaria",
+                    "text": "Fundado a finales del siglo VI, mantiene el trazado simétrico Asuka-style con su pagoda rectilínea de cinco pisos.",
+                    "type": "historical"
+                  },
+                  {
+                    "label": "Misión / Dato Curioso",
+                    "text": "En el estanque Kame-ike habitan decenas de tortugas tomando el sol, consideradas en Japón símbolo de longevidad y buena fortuna.",
+                    "type": "funFact"
+                  }
+                ]
+              }
             },
             {
               "id": "act-18-3",
@@ -2801,13 +2840,47 @@ export const TRIP_DATA: TripItinerary = {
               "id": "act-18-5",
               "title": "Ebisu Bridge",
               "locationQuery": "Ebisubashi Bridge Osaka",
-              "type": "sights"
+              "type": "sights",
+              "learnInfo": {
+                "title": "Puente Ebisu y Cartel de Glico Man",
+                "subtitle": "07 de Enero • Osaka 🏃‍♂️",
+                "summary": "El icónico puente peatonal sobre el canal Dōtonbori, famoso por ofrecer la mejor vista del histórico cartel del corredor de Glico.",
+                "pills": [
+                  {
+                    "label": "Misión Fotográfica",
+                    "text": "¡Imprescindible hacerse la foto clásica en el Puente Ebisu imitando la pose de brazos en alto de Glico Man!",
+                    "type": "funFact"
+                  },
+                  {
+                    "label": "Píldora Gastronómica",
+                    "text": "Desde aquí se accede directamente a los mejores puestos de Takoyaki y Okonomiyaki de la ciudad.",
+                    "type": "cultural"
+                  }
+                ]
+              }
             },
             {
               "id": "act-18-6",
               "title": "Dōtonbori",
               "locationQuery": "Dotonbori Osaka",
-              "type": "sights"
+              "type": "sights",
+              "learnInfo": {
+                "title": "Dōtonbori y la Magia Nocturna de Osaka",
+                "subtitle": "07 de Enero • Osaka 🌃",
+                "summary": "El canal más efervescente de Osaka, famoso por sus neones gigantes, esculturas animadas en fachadas y ambiente festivo.",
+                "pills": [
+                  {
+                    "label": "Píldora Gastronómica",
+                    "text": "Osaka es la capital del Takoyaki (bolitas de masa rellenas de pulpo preparadas en planchas con huecos semicirculares) y del Okonomiyaki (la deliciosa tortilla japonesa).",
+                    "type": "cultural"
+                  },
+                  {
+                    "label": "Espíritu Kuidaore",
+                    "text": "Kuidaore es el famoso dicho de Osaka que significa 'comer hasta reventar o arruinarse disfrutando de la buena comida'.",
+                    "type": "funFact"
+                  }
+                ]
+              }
             },
             {
               "id": "act-18-7",
@@ -2825,13 +2898,42 @@ export const TRIP_DATA: TripItinerary = {
               "id": "act-18-9",
               "title": "Hozen-ji",
               "locationQuery": "Hozenji Temple Osaka",
-              "type": "sights"
+              "type": "sights",
+              "learnInfo": {
+                "title": "Templo Hozen-ji y Buda Mizukake Fudo",
+                "subtitle": "07 de Enero • Osaka 🍃",
+                "summary": "Un santuario recogido en mitad del bullicioso centro que oculta la estatua del Buda Mizukake Fudo completamente cubierta de musgo verde.",
+                "pills": [
+                  {
+                    "label": "Dato Tradicional",
+                    "text": "Para pedir un deseo o buena suerte para la familia, no se echan monedas: ¡se le echa agua por encima a la estatua con un cazo de madera!",
+                    "type": "cultural"
+                  },
+                  {
+                    "label": "Píldora Kawaii",
+                    "text": "El vertido constante de agua por parte de los devotos durante décadas ha hecho que el Buda parezca un mullido muñeco de terciopelo verde.",
+                    "type": "funFact"
+                  }
+                ]
+              }
             },
             {
               "id": "act-18-10",
               "title": "Hozenji Yokocho",
               "locationQuery": "Hozenji Yokocho Osaka",
-              "type": "sights"
+              "type": "sights",
+              "learnInfo": {
+                "title": "Callejón Histórico Hozenji Yokocho",
+                "subtitle": "07 de Enero • Osaka 🏮",
+                "summary": "Un pintoresco callejón empedrado flanqueado por farolillos de papel y tabernas tradicionales que conserva la atmósfera clásica del Japón antiguo.",
+                "pills": [
+                  {
+                    "label": "Patrimonio Urbano",
+                    "text": "Un remanso de paz con suelo de piedra de ochenta metros de largo que contrasta con los neones del canal Dōtonbori.",
+                    "type": "historical"
+                  }
+                ]
+              }
             }
           ],
           "shops": [
@@ -2880,19 +2982,65 @@ export const TRIP_DATA: TripItinerary = {
               "id": "act-19-1",
               "title": "Kuromon Market",
               "locationQuery": "Kuromon Market Osaka",
-              "type": "sights"
+              "type": "sights",
+              "learnInfo": {
+                "title": "Mercado Kuromon (La Cocina de Osaka)",
+                "subtitle": "08 de Enero • Osaka 🦀",
+                "summary": "Un mercado cubierto con más de 600 metros de puestos de brochetas de marisco, fruta fresca gigante y brochetas de carne Wagyu.",
+                "pills": [
+                  {
+                    "label": "Historia Gastronómica",
+                    "text": "Conocido históricamente como 'Kuromon Ichiba' (Mercado de la Puerta Negra) por la antigua puerta del cercano templo Enmyoji.",
+                    "type": "historical"
+                  },
+                  {
+                    "label": "Misión Kawaii",
+                    "text": "Probar las brochetas de fruta fresca gigante con las famosas fresas blancas y rojas de prefecturas japonesas.",
+                    "type": "funFact"
+                  }
+                ]
+              }
             },
             {
               "id": "act-19-2",
               "title": "Ota Road",
               "locationQuery": "Nipponbashi Ota Road Osaka",
-              "type": "shopping"
+              "type": "shopping",
+              "learnInfo": {
+                "title": "Ota Road (Nipponbashi)",
+                "subtitle": "08 de Enero • Osaka 🎮",
+                "summary": "El equivalente a Akihabara en el oeste de Japón: calles llenas de tiendas de anime, videojuegos retro, maquetas y mangas de colección.",
+                "pills": [
+                  {
+                    "label": "Cultura Pop & Gaming",
+                    "text": "El epicentro otaku de Kansai con tiendas de varias plantas repletas de gashapones, cartas Pokémon y figuras de colección.",
+                    "type": "funFact"
+                  },
+                  {
+                    "label": "Nostalgia Gamer",
+                    "text": "Encontraréis consolas Famicom, Game Boy y juegos vintage en estado impecable.",
+                    "type": "historical"
+                  }
+                ]
+              }
             },
             {
               "id": "act-19-3",
               "title": "Nipponbashi Denden Town",
               "locationQuery": "Denden Town Nipponbashi Osaka",
-              "type": "shopping"
+              "type": "shopping",
+              "learnInfo": {
+                "title": "Nipponbashi Denden Town",
+                "subtitle": "08 de Enero • Osaka 🔌",
+                "summary": "El histórico distrito tecnológico y electrónico de Osaka especializado en componentes, herramientas de modelismo y tecnología.",
+                "pills": [
+                  {
+                    "label": "Meca Tecnológica",
+                    "text": "Nació como mercado de radio tras la Segunda Guerra Mundial y evolucionó hacia el centro otaku y tecnológico de Kansai.",
+                    "type": "historical"
+                  }
+                ]
+              }
             },
             {
               "id": "act-19-4",
@@ -2904,7 +3052,24 @@ export const TRIP_DATA: TripItinerary = {
               "id": "act-19-5",
               "title": "America-mura",
               "locationQuery": "Amerikamura Osaka",
-              "type": "sights"
+              "type": "sights",
+              "learnInfo": {
+                "title": "America-mura (Amemura)",
+                "subtitle": "08 de Enero • Osaka 🗽",
+                "summary": "El barrio de la cultura juvenil, moda urbana y tiendas vintage de Osaka.",
+                "pills": [
+                  {
+                    "label": "Dato Divertido",
+                    "text": "En lo alto de un edificio comercial de la plaza central veréis una réplica a pequeña escala de la Estatua de la Libertad.",
+                    "type": "funFact"
+                  },
+                  {
+                    "label": "Moda e Ilustración",
+                    "text": "Nació en los años 70 como centro de moda importada de EE.UU. y hoy es la cuna del arte urbano y tiendas vintage de Osaka.",
+                    "type": "cultural"
+                  }
+                ]
+              }
             },
             {
               "id": "act-19-6",
@@ -2928,13 +3093,47 @@ export const TRIP_DATA: TripItinerary = {
               "id": "act-19-9",
               "title": "Calle comercial Shinsekai Hondori",
               "locationQuery": "Shinsekai Hondori Osaka",
-              "type": "sights"
+              "type": "sights",
+              "learnInfo": {
+                "title": "Barrio Retro de Shinsekai",
+                "subtitle": "08 de Enero • Osaka 🍢",
+                "summary": "Un barrio nostálgico con estética retro de la Era Showa (años 50 y 60) dominado por la torre Tsūtenkaku.",
+                "pills": [
+                  {
+                    "label": "Dato Gastronómico",
+                    "text": "Cuna del Kushikatsu (brochetas empanadas fritas). Recordad la regla de oro: ¡Prohibido mojar la brocheta dos veces en la salsa común!",
+                    "type": "funFact"
+                  },
+                  {
+                    "label": "Atmósfera Nostálgica",
+                    "text": "Diseñado en 1912 inspirándose mitad en París y mitad en Coney Island de Nueva York.",
+                    "type": "historical"
+                  }
+                ]
+              }
             },
             {
               "id": "act-19-10",
               "title": "Tsūtenkaku",
               "locationQuery": "Tsutenkaku Tower Osaka",
-              "type": "sights"
+              "type": "sights",
+              "learnInfo": {
+                "title": "Torre Tsūtenkaku y Estatua de Billiken",
+                "subtitle": "08 de Enero • Osaka 🌟",
+                "summary": "La icónica torre de 103 metros símbolo de Osaka que alberga en su mirador la estatua dorada de Billiken.",
+                "pills": [
+                  {
+                    "label": "El Dios de la Suerte",
+                    "text": "Dentro de la torre vive la estatua de Billiken. La tradición dice que si le rascas la planta de los pies mientras pides un deseo, se cumplirá.",
+                    "type": "cultural"
+                  },
+                  {
+                    "label": "Dato Curioso",
+                    "text": "Tsūtenkaku significa 'Torre que conduce al cielo'. Las luces de su cima pronostican el tiempo de mañana.",
+                    "type": "funFact"
+                  }
+                ]
+              }
             },
             {
               "id": "act-19-11",
@@ -3003,7 +3202,24 @@ export const TRIP_DATA: TripItinerary = {
               "id": "act-20-1",
               "title": "Universal Studios Japan",
               "locationQuery": "Universal Studios Japan",
-              "type": "theme_park"
+              "type": "theme_park",
+              "learnInfo": {
+                "title": "Universal Studios Japan: Super Nintendo World & Harry Potter",
+                "subtitle": "09 de Enero • Osaka 🍄",
+                "summary": "Día completo de diversión en USJ explorando Super Nintendo World y The Wizarding World of Harry Potter.",
+                "pills": [
+                  {
+                    "label": "Misión Super Nintendo World",
+                    "text": "Con las pulseras Power-Up Band, Lily y James podrán golpear bloques '?', conseguir monedas sonoras reales y enfrentarse a Bowser Jr. en atracciones interactiva de realidad aumentada.",
+                    "type": "funFact"
+                  },
+                  {
+                    "label": "The Wizarding World of Harry Potter",
+                    "text": "El castillo de Hogwarts a tamaño real, el pueblo de Hogsmeade y las tiendas de varitas Ollivanders. ¡Obligatorio probar la Butterbeer (cerveza de mantequilla sin alcohol)!",
+                    "type": "cultural"
+                  }
+                ]
+              }
             }
           ],
           "shops": [
@@ -3079,7 +3295,24 @@ export const TRIP_DATA: TripItinerary = {
               "id": "act-21-3",
               "title": "Seiko House Ginza Clock Tower",
               "locationQuery": "Seiko House Ginza Clock Tower",
-              "type": "sights"
+              "type": "sights",
+              "learnInfo": {
+                "title": "Distrito de Ginza y Torre del Reloj Seiko House",
+                "subtitle": "10 de Enero • Ginza 🕰️",
+                "summary": "La zona comercial más elegante de Tokio, presidida por la icónica torre con reloj de estilo occidental construida en 1932.",
+                "pills": [
+                  {
+                    "label": "Dato Histórico",
+                    "text": "Ginza fue uno de los primeros barrios de Tokio en modernizarse tras la Restauración Meiji, caracterizándose por sus edificios de ladrillo de estilo occidental.",
+                    "type": "historical"
+                  },
+                  {
+                    "label": "Paseo Peatonal",
+                    "text": "Los fines de semana la gran avenida principal de Chuo-dori se transforma en un 'Paraíso Peatonal' sin coches.",
+                    "type": "cultural"
+                  }
+                ]
+              }
             },
             {
               "id": "act-21-4",
@@ -3103,7 +3336,24 @@ export const TRIP_DATA: TripItinerary = {
               "id": "act-21-7",
               "title": "Jardines de Hamarikyu",
               "locationQuery": "Hamarikyu Gardens Tokyo",
-              "type": "sights"
+              "type": "sights",
+              "learnInfo": {
+                "title": "Jardines de Hamarikyu",
+                "subtitle": "10 de Enero • Tokio 🍵",
+                "summary": "Antiguo parque señorial y terreno de caza de patos de los shōgunes, cuyos estanques cambian de nivel con las mareas del océano.",
+                "pills": [
+                  {
+                    "label": "Dato Curioso",
+                    "text": "Cuenta con una preciosa casa de té tradicional construida en madera sobre el agua (Nakajima no Ochaya).",
+                    "type": "cultural"
+                  },
+                  {
+                    "label": "Ingeniería Hidráulica",
+                    "text": "El estanque de agua salada Shioiri-no-ike está regulado por compuertas que se abren con la subida y bajada de la marea de la Bahía de Tokio.",
+                    "type": "historical"
+                  }
+                ]
+              }
             },
             {
               "id": "act-21-8",
@@ -3115,7 +3365,24 @@ export const TRIP_DATA: TripItinerary = {
               "id": "act-21-9",
               "title": "Nishinaka dori Street",
               "locationQuery": "Nishinaka dori Street Tsukishima",
-              "type": "sights"
+              "type": "sights",
+              "learnInfo": {
+                "title": "Isla de Tsukishima y la Calle del Monjayaki",
+                "subtitle": "10 de Enero • Tsukishima 🍳",
+                "summary": "Una isla artificial en la Bahía de Tokio famosa por la calle Nishinaka-dori, que alberga más de 70 restaurantes de Monjayaki.",
+                "pills": [
+                  {
+                    "label": "Dato Gastronómico",
+                    "text": "El Monjayaki es una especialidad parecida al okonomiyaki pero mucho más fluida. Se cocina directamente sobre la plancha de la mesa y se come rascando pequeñas porciones tostadas con espátulas diminutas llamadas Hagashi.",
+                    "type": "cultural"
+                  },
+                  {
+                    "label": "Origen Histórico",
+                    "text": "Nació a finales del siglo XIX como tentempié barato para niños preparado en los comercios de golosinas (Dagashiya).",
+                    "type": "historical"
+                  }
+                ]
+              }
             },
             {
               "id": "act-21-10",
@@ -3157,7 +3424,19 @@ export const TRIP_DATA: TripItinerary = {
               "id": "act-21-16",
               "title": "Tsukishima Monja Okoge Main Store",
               "locationQuery": "Tsukishima Monja Okoge Main Store",
-              "type": "food"
+              "type": "food",
+              "learnInfo": {
+                "title": "Gastronomía Interactiva: Monjayaki de Tsukishima",
+                "subtitle": "10 de Enero • Tsukishima 🥢",
+                "summary": "Restaurante emblemático para disfrutar de la experiencia de cocinar Monjayaki sobre la plancha de hierro de la propia mesa.",
+                "pills": [
+                  {
+                    "label": "Misión Culinaria",
+                    "text": "Formar un 'dique' circular con la verdura en la plancha antes de verter el caldo crujiente en el centro.",
+                    "type": "funFact"
+                  }
+                ]
+              }
             }
           ],
           "shops": [
@@ -3230,7 +3509,24 @@ export const TRIP_DATA: TripItinerary = {
               "id": "act-22-5",
               "title": "Nakano Broadway",
               "locationQuery": "Nakano Broadway Tokyo",
-              "type": "shopping"
+              "type": "shopping",
+              "learnInfo": {
+                "title": "Nakano Broadway",
+                "subtitle": "11 de Enero • Nakano 🤖",
+                "summary": "Un centro comercial de estética retro que es la cuna del coleccionismo vintage: juguetes de los años 70, juguetes de hojalata, células de animación original de anime y vinilos.",
+                "pills": [
+                  {
+                    "label": "Laberinto Vintage",
+                    "text": "Alberga más de 25 tiendas temáticas Mandarake especializadas en celuloide de animación, mangas descatalogados y figuras raras.",
+                    "type": "cultural"
+                  },
+                  {
+                    "label": "Píldora Dulce",
+                    "text": "En la planta sótano podéis probar en Daily Chico un helado suave gigante de 8 pisos con 8 sabores distintos colocados uno sobre otro.",
+                    "type": "funFact"
+                  }
+                ]
+              }
             },
             {
               "id": "act-22-6",
@@ -3242,7 +3538,24 @@ export const TRIP_DATA: TripItinerary = {
               "id": "act-22-7",
               "title": "Marché Shimokitazawa",
               "locationQuery": "Marche Shimokitazawa",
-              "type": "shopping"
+              "type": "shopping",
+              "learnInfo": {
+                "title": "Barrio Indie de Shimokitazawa & Totoro Cream Puffs",
+                "subtitle": "11 de Enero • Shimokitazawa 🎸",
+                "summary": "El barrio más bohemio e hípster de Tokio, famoso por sus callejones peatonales repletos de tiendas de ropa vintage de segunda mano, cafeterías de especialidad y tiendas de música.",
+                "pills": [
+                  {
+                    "label": "Ambiente Bohemio",
+                    "text": "Calles peatonales rodeadas de teatros independientes, librerías pequeñas y boutiques vintage únicas.",
+                    "type": "cultural"
+                  },
+                  {
+                    "label": "Profiteroles de Totoro",
+                    "text": "En las inmediaciones se encuentra Shiro-Hige's Cream Puff Factory, la única pastelería autorizada por Studio Ghibli para cocinar profiteroles con la forma exacta de Totoro.",
+                    "type": "funFact"
+                  }
+                ]
+              }
             },
             {
               "id": "act-22-8",
@@ -3321,7 +3634,19 @@ export const TRIP_DATA: TripItinerary = {
               "id": "act-23-5",
               "title": "Komachi Street",
               "locationQuery": "Komachi Street Kamakura",
-              "type": "shopping"
+              "type": "shopping",
+              "learnInfo": {
+                "title": "Calle Komachi-dori (Kamakura)",
+                "subtitle": "12 de Enero • Kamakura 🕊️",
+                "summary": "Concurrida calle peatonal llena de puestos de artesanía local, cerámica, aperitivos y dulces tradicionales.",
+                "pills": [
+                  {
+                    "label": "Píldora Gastronómica",
+                    "text": "En la calle Komachi-dori podéis probar las galletas Hato Sabure con forma de paloma y helados suaves de boniato púrpura.",
+                    "type": "funFact"
+                  }
+                ]
+              }
             },
             {
               "id": "act-23-6",
@@ -3333,7 +3658,24 @@ export const TRIP_DATA: TripItinerary = {
               "id": "act-23-7",
               "title": "Tsurugaoka Hachiman-gū",
               "locationQuery": "Tsurugaoka Hachimangu Kamakura",
-              "type": "sights"
+              "type": "sights",
+              "learnInfo": {
+                "title": "Gran Santuario Tsurugaoka Hachiman-gū",
+                "subtitle": "12 de Enero • Kamakura 🗡️",
+                "summary": "El corazón espiritual de los antiguos samuráis de Kamakura, fundado en 1063 por el clan Minamoto.",
+                "pills": [
+                  {
+                    "label": "Historia Samurái",
+                    "text": "Era el centro religioso y político de los guerreros samuráis durante el primer shogunato de Kamakura.",
+                    "type": "historical"
+                  },
+                  {
+                    "label": "Avenida Sagrada",
+                    "text": "El camino de acceso Dankazu está flanqueado por cientos de cerezos y faroles que conectan con la costa.",
+                    "type": "cultural"
+                  }
+                ]
+              }
             },
             {
               "id": "act-23-8",
@@ -3363,7 +3705,24 @@ export const TRIP_DATA: TripItinerary = {
               "id": "act-23-12",
               "title": "Templo Kotoku-in (Gran Buda)",
               "locationQuery": "Kotoku-in Great Buddha Kamakura",
-              "type": "sights"
+              "type": "sights",
+              "learnInfo": {
+                "title": "Gran Buda de Kamakura (Templo Kotoku-in)",
+                "subtitle": "12 de Enero • Kamakura 🧘‍♂️",
+                "summary": "Una monumental estatua de bronce de Buda sentado de 13 metros de altura y 121 toneladas, fundida en el año 1252.",
+                "pills": [
+                  {
+                    "label": "Dato Sorprendente",
+                    "text": "Originalmente estaba dentro de un gran hall de madera, pero un tsunami gigante destruyó el edificio en 1498. Desde entonces, el Buda permanece sentado al aire libre desafiando al tiempo.",
+                    "type": "historical"
+                  },
+                  {
+                    "label": "Misión para los Niños",
+                    "text": "¡Se puede entrar literalmente dentro del vientre del Buda por una pequeña puerta lateral por solo 50 yenes!",
+                    "type": "funFact"
+                  }
+                ]
+              }
             },
             {
               "id": "act-23-13",
@@ -3381,7 +3740,24 @@ export const TRIP_DATA: TripItinerary = {
               "id": "act-23-15",
               "title": "Hase-dera",
               "locationQuery": "Hase-dera Temple Kamakura",
-              "type": "sights"
+              "type": "sights",
+              "learnInfo": {
+                "title": "Templo Hase-dera",
+                "subtitle": "12 de Enero • Kamakura 🌸",
+                "summary": "Templo construido en la ladera de la montaña con vistas a la costa, famoso por albergar miles de pequeñas estatuas de piedra de Jizō Bosatsu (el protector Shinto/Budista de los niños y viajeros).",
+                "pills": [
+                  {
+                    "label": "Protector de los Niños",
+                    "text": "Miles de estatuas de Jizō lucen gorritos y baberos rojos hechos a mano para proteger los espíritus de los niños y guiar a los viajeros.",
+                    "type": "cultural"
+                  },
+                  {
+                    "label": "Vistas al Pacífico",
+                    "text": "Desde su terraza ajardinada se contempla una panorámica espléndida de la Bahía de Sagami y la playa de Yuigahama.",
+                    "type": "geography"
+                  }
+                ]
+              }
             }
           ],
           "shops": [
@@ -3423,7 +3799,24 @@ export const TRIP_DATA: TripItinerary = {
               "id": "act-24-1",
               "title": "Fish Market Tsukiji Outer Market",
               "locationQuery": "Tsukiji Outer Market Tokyo",
-              "type": "food"
+              "type": "food",
+              "learnInfo": {
+                "title": "Mercado Exterior de Tsukiji (Tsukiji Outer Market)",
+                "subtitle": "13 de Enero • Tsukiji 🐟",
+                "summary": "El histórico mercado callejero repleto de puestos donde desayunar brochetas de tortilla dulce japonesa recién hecha (Tamagoyaki), brochetas de atún marinado y frutas de temporada antes de tomar el transporte hacia el aeropuerto.",
+                "pills": [
+                  {
+                    "label": "Tradición Culinaria",
+                    "text": "A pesar del traslado del mercado mayorista a Toyosu, Tsukiji conserva la mejor atmósfera de puestos de comida marina fresca y tamagoyaki caliente.",
+                    "type": "cultural"
+                  },
+                  {
+                    "label": "Despedida del Viaje",
+                    "text": "Un rincón ideal para tomar un desayuno marinero tradicional y comprar recuerdos gastronómicos en nuestro último día en Japón.",
+                    "type": "funFact"
+                  }
+                ]
+              }
             }
           ],
           "shops": [

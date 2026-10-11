@@ -1,5 +1,5 @@
 import { useState, useEffect, useCallback, useRef } from 'react';
-import { fetchInteractiveItems, upsertInteractiveItem, isSupabaseConfigured } from '../lib/supabase';
+import { fetchInteractiveItems, upsertInteractiveItem, checkIsSupabaseConfigured } from '../lib/supabase';
 
 export const useTodoState = () => {
   const STORAGE_KEY = 'japan_2026_todos_completed';
@@ -19,34 +19,27 @@ export const useTodoState = () => {
   }, [completedTodos]);
 
   const [syncError, setSyncError] = useState<string | null>(null);
+  const isDbConnected = checkIsSupabaseConfigured();
 
   // Hydrate state from Supabase on mount
   useEffect(() => {
     let isMounted = true;
-    if (!isSupabaseConfigured) return;
+    if (!checkIsSupabaseConfigured()) return;
 
     fetchInteractiveItems('todo').then((remoteItems) => {
-      if (!isMounted || !remoteItems) return;
+      if (!isMounted) return;
 
-      setCompletedTodos((localPrev) => {
-        const nextSet = new Set(localPrev);
+      // DB is source of truth!
+      const dbCompleted = remoteItems
+        .filter((item) => Boolean(item.completed))
+        .map((item) => item.id);
 
-        remoteItems.forEach((item) => {
-          if (item.completed) {
-            nextSet.add(item.id);
-          } else {
-            nextSet.delete(item.id);
-          }
-        });
-
-        const reconciled = Array.from(nextSet);
-        try {
-          localStorage.setItem(STORAGE_KEY, JSON.stringify(reconciled));
-        } catch (e) {
-          console.error('Error saving todo progress to localStorage during hydration:', e);
-        }
-        return reconciled;
-      });
+      setCompletedTodos(dbCompleted);
+      try {
+        localStorage.setItem(STORAGE_KEY, JSON.stringify(dbCompleted));
+      } catch (e) {
+        console.error('Error saving todo progress to localStorage during hydration:', e);
+      }
     });
 
     return () => {
@@ -74,28 +67,30 @@ export const useTodoState = () => {
     });
 
     // 2. Async mutation to Supabase
-    const success = await upsertInteractiveItem(todoId, 'todo', nextCompletedStatus);
+    if (checkIsSupabaseConfigured()) {
+      const success = await upsertInteractiveItem(todoId, 'todo', nextCompletedStatus);
 
-    // 3. Rollback if mutation failed
-    if (!success) {
-      console.warn(`[useTodoState] Remote sync failed for todo ${todoId}. Rolling back...`);
-      setCompletedTodos((prev) => {
-        const rolledBack = wasCompleted
-          ? [...prev.filter((id) => id !== todoId), todoId]
-          : prev.filter((id) => id !== todoId);
+      // 3. Rollback if mutation failed
+      if (!success) {
+        console.warn(`[useTodoState] Remote sync failed for todo ${todoId}. Rolling back...`);
+        setCompletedTodos((prev) => {
+          const rolledBack = wasCompleted
+            ? [...prev.filter((id) => id !== todoId), todoId]
+            : prev.filter((id) => id !== todoId);
 
-        try {
-          localStorage.setItem(STORAGE_KEY, JSON.stringify(rolledBack));
-        } catch (e) {
-          console.error('Error rolling back localStorage:', e);
-        }
-        return rolledBack;
-      });
+          try {
+            localStorage.setItem(STORAGE_KEY, JSON.stringify(rolledBack));
+          } catch (e) {
+            console.error('Error rolling back localStorage:', e);
+          }
+          return rolledBack;
+        });
 
-      setSyncError('No se pudo guardar el cambio en la base de datos. Operación revertida.');
-      setTimeout(() => setSyncError(null), 3500);
+        setSyncError('No se pudo guardar el cambio en la base de datos. Operación revertida.');
+        setTimeout(() => setSyncError(null), 3500);
+      }
     }
   }, []);
 
-  return { completedTodos, toggleTodo, syncError, isSupabaseConfigured };
+  return { completedTodos, toggleTodo, syncError, isSupabaseConfigured: isDbConnected };
 };
