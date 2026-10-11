@@ -47,15 +47,25 @@ export const TodoModule: React.FC = () => {
             </div>
 
             {isSupabaseConfigured ? (
-              <div className="bg-emerald-950/80 border border-emerald-500/40 px-3 py-1.5 rounded-2xl flex items-center gap-1.5 text-xs font-black text-emerald-300" title="Sincronizado con Supabase BD">
+              <button
+                type="button"
+                onClick={() => window.dispatchEvent(new CustomEvent('open-db-modal'))}
+                className="bg-emerald-950/80 border border-emerald-500/40 px-3 py-1.5 rounded-2xl flex items-center gap-1.5 text-xs font-black text-emerald-300 hover:bg-emerald-900/80 transition-colors cursor-pointer"
+                title="Sincronizado con Supabase BD. Haz clic para configurar."
+              >
                 <Database className="w-3.5 h-3.5 text-emerald-400" />
                 <span>BD Sincronizada</span>
-              </div>
+              </button>
             ) : (
-              <div className="bg-amber-950/80 border border-amber-500/40 px-3 py-1.5 rounded-2xl flex items-center gap-1.5 text-xs font-black text-amber-300" title="Almacenamiento en LocalStorage (Sin BD configurada)">
+              <button
+                type="button"
+                onClick={() => window.dispatchEvent(new CustomEvent('open-db-modal'))}
+                className="bg-amber-950/80 border border-amber-500/40 px-3 py-1.5 rounded-2xl flex items-center gap-1.5 text-xs font-black text-amber-300 hover:bg-amber-900/80 transition-colors cursor-pointer"
+                title="Almacenamiento en LocalStorage (Sin BD configurada). Haz clic para configurar."
+              >
                 <HardDrive className="w-3.5 h-3.5 text-amber-400" />
                 <span>Modo Local</span>
-              </div>
+              </button>
             )}
           </div>
         </div>

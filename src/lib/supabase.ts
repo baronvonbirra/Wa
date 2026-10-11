@@ -1,39 +1,60 @@
 import { createClient, SupabaseClient } from '@supabase/supabase-js';
 
-function getSupabaseConfig(): { url?: string; key?: string } {
+export function getSupabaseConfig(): { url?: string; key?: string } {
   let url: string | undefined;
   let key: string | undefined;
 
-  if (typeof import.meta !== 'undefined' && import.meta.env) {
-    url = (import.meta.env.VITE_SUPABASE_URL as string) || (import.meta.env.SUPABASE_URL as string);
-    key = (import.meta.env.VITE_SUPABASE_ANON_KEY as string) || (import.meta.env.SUPABASE_ANON_KEY as string);
-  }
-
-  if (!url && typeof window !== 'undefined' && (window as any).__ENV__) {
-    url = (window as any).__ENV__.VITE_SUPABASE_URL || (window as any).__ENV__.SUPABASE_URL;
-  }
-  if (!key && typeof window !== 'undefined' && (window as any).__ENV__) {
-    key = (window as any).__ENV__.VITE_SUPABASE_ANON_KEY || (window as any).__ENV__.SUPABASE_ANON_KEY;
-  }
-
-  const procEnv = typeof globalThis !== 'undefined' ? (globalThis as any).process?.env : undefined;
-  if (!url && procEnv) {
-    url = procEnv.VITE_SUPABASE_URL || procEnv.SUPABASE_URL;
-  }
-  if (!key && procEnv) {
-    key = procEnv.VITE_SUPABASE_ANON_KEY || procEnv.SUPABASE_ANON_KEY;
-  }
-
-  if (!url && typeof window !== 'undefined') {
+  // 1. Check URL parameters if in browser environment
+  if (typeof window !== 'undefined' && window.location && window.location.search) {
     try {
-      url = localStorage.getItem('VITE_SUPABASE_URL') || localStorage.getItem('SUPABASE_URL') || undefined;
+      const params = new URLSearchParams(window.location.search);
+      const urlParam = params.get('supabaseUrl') || params.get('supabase_url') || params.get('url');
+      const keyParam = params.get('supabaseKey') || params.get('supabase_key') || params.get('supabaseAnonKey') || params.get('supabase_anon_key') || params.get('key');
+
+      if (urlParam && keyParam) {
+        url = urlParam;
+        key = keyParam;
+        try {
+          localStorage.setItem('VITE_SUPABASE_URL', urlParam.trim());
+          localStorage.setItem('VITE_SUPABASE_ANON_KEY', keyParam.trim());
+          console.log('[Supabase] Credenciales guardadas automáticamente desde URL parameters.');
+        } catch {
+          // ignore
+        }
+      }
     } catch {
       // ignore
     }
   }
-  if (!key && typeof window !== 'undefined') {
+
+  // 2. Check import.meta.env
+  if (!url || !key) {
+    if (typeof import.meta !== 'undefined' && import.meta.env) {
+      if (!url) url = (import.meta.env.VITE_SUPABASE_URL as string) || (import.meta.env.SUPABASE_URL as string);
+      if (!key) key = (import.meta.env.VITE_SUPABASE_ANON_KEY as string) || (import.meta.env.SUPABASE_ANON_KEY as string);
+    }
+  }
+
+  // 3. Check window.__ENV__
+  if ((!url || !key) && typeof window !== 'undefined' && (window as any).__ENV__) {
+    if (!url) url = (window as any).__ENV__.VITE_SUPABASE_URL || (window as any).__ENV__.SUPABASE_URL;
+    if (!key) key = (window as any).__ENV__.VITE_SUPABASE_ANON_KEY || (window as any).__ENV__.SUPABASE_ANON_KEY;
+  }
+
+  // 4. Check process.env
+  if (!url || !key) {
+    const procEnv = typeof globalThis !== 'undefined' ? (globalThis as any).process?.env : undefined;
+    if (procEnv) {
+      if (!url) url = procEnv.VITE_SUPABASE_URL || procEnv.SUPABASE_URL;
+      if (!key) key = procEnv.VITE_SUPABASE_ANON_KEY || procEnv.SUPABASE_ANON_KEY;
+    }
+  }
+
+  // 5. Check localStorage
+  if ((!url || !key) && typeof window !== 'undefined') {
     try {
-      key = localStorage.getItem('VITE_SUPABASE_ANON_KEY') || localStorage.getItem('SUPABASE_ANON_KEY') || undefined;
+      if (!url) url = localStorage.getItem('VITE_SUPABASE_URL') || localStorage.getItem('SUPABASE_URL') || undefined;
+      if (!key) key = localStorage.getItem('VITE_SUPABASE_ANON_KEY') || localStorage.getItem('SUPABASE_ANON_KEY') || undefined;
     } catch {
       // ignore
     }
@@ -44,12 +65,45 @@ function getSupabaseConfig(): { url?: string; key?: string } {
 
 let cachedClient: SupabaseClient | null = null;
 
+export function resetSupabaseClient(): void {
+  cachedClient = null;
+}
+
+export function setSupabaseCredentials(url: string, key: string): void {
+  if (typeof window !== 'undefined') {
+    localStorage.setItem('VITE_SUPABASE_URL', url.trim());
+    localStorage.setItem('VITE_SUPABASE_ANON_KEY', key.trim());
+  }
+  resetSupabaseClient();
+  if (typeof window !== 'undefined') {
+    window.dispatchEvent(new CustomEvent('supabase-config-changed'));
+  }
+}
+
+export function clearSupabaseCredentials(): void {
+  if (typeof window !== 'undefined') {
+    localStorage.removeItem('VITE_SUPABASE_URL');
+    localStorage.removeItem('SUPABASE_URL');
+    localStorage.removeItem('VITE_SUPABASE_ANON_KEY');
+    localStorage.removeItem('SUPABASE_ANON_KEY');
+  }
+  resetSupabaseClient();
+  if (typeof window !== 'undefined') {
+    window.dispatchEvent(new CustomEvent('supabase-config-changed'));
+  }
+}
+
 export function getSupabaseClient(): SupabaseClient | null {
   if (cachedClient) return cachedClient;
   const { url, key } = getSupabaseConfig();
   if (url && key) {
-    cachedClient = createClient(url, key);
-    return cachedClient;
+    try {
+      cachedClient = createClient(url, key);
+      return cachedClient;
+    } catch (err) {
+      console.error('[Supabase] Error al instanciar cliente de Supabase:', err);
+      return null;
+    }
   }
   return null;
 }
@@ -60,15 +114,72 @@ export function checkIsSupabaseConfigured(): boolean {
 
 export const isSupabaseConfigured = checkIsSupabaseConfigured();
 
-if (!isSupabaseConfigured) {
-  console.warn(
-    '[Supabase] Credenciales no detectadas (VITE_SUPABASE_URL / VITE_SUPABASE_ANON_KEY). La app está operando en modo almacenamiento local.'
-  );
-} else {
-  console.log('[Supabase] Cliente de Supabase inicializado correctamente.');
+export const supabase: SupabaseClient | null = getSupabaseClient();
+
+export interface ConnectionTestResult {
+  success: boolean;
+  message: string;
+  details?: string;
+  count?: number;
 }
 
-export const supabase: SupabaseClient | null = getSupabaseClient();
+export async function testSupabaseConnection(customUrl?: string, customKey?: string): Promise<ConnectionTestResult> {
+  let testClient: SupabaseClient | null = null;
+
+  if (customUrl && customKey) {
+    try {
+      testClient = createClient(customUrl.trim(), customKey.trim());
+    } catch (e: any) {
+      return {
+        success: false,
+        message: 'Error de sintaxis o formato en la URL / API Key ingresada.',
+        details: e?.message || String(e)
+      };
+    }
+  } else {
+    testClient = getSupabaseClient();
+  }
+
+  if (!testClient) {
+    return {
+      success: false,
+      message: 'No hay credenciales de Supabase configuradas (URL y API Key requeridas).'
+    };
+  }
+
+  try {
+    const { data, error } = await testClient.from('interactive_items').select('id').limit(1);
+
+    if (error) {
+      let friendlyError = error.message;
+      if (error.code === '42P01' || error.message?.includes('does not exist')) {
+        friendlyError = 'La tabla "interactive_items" no existe en la base de datos. Ejecuta los scripts SQL de creación de tabla.';
+      } else if (error.message?.includes('JWT') || error.code === 'PGRST301') {
+        friendlyError = 'API Key inválida o expirada (JWT error).';
+      } else if (error.message?.includes('FetchError') || error.message?.includes('Failed to fetch')) {
+        friendlyError = 'Error de conexión / red. Verifica la URL de Supabase y el estado del proyecto.';
+      }
+
+      return {
+        success: false,
+        message: friendlyError,
+        details: `Código: ${error.code || 'N/A'} - ${error.details || error.hint || error.message}`
+      };
+    }
+
+    return {
+      success: true,
+      message: 'Conexión exitosa a Supabase y la tabla "interactive_items" responde correctamente.',
+      count: data ? data.length : 0
+    };
+  } catch (err: any) {
+    return {
+      success: false,
+      message: 'Excepción de red o servidor al intentar conectar con Supabase.',
+      details: err?.message || String(err)
+    };
+  }
+}
 
 export interface InteractiveItem {
   id: string;
@@ -78,7 +189,7 @@ export interface InteractiveItem {
 }
 
 export async function fetchInteractiveItems(source?: string): Promise<InteractiveItem[]> {
-  const client = getSupabaseClient() || supabase;
+  const client = getSupabaseClient();
   if (!client) {
     console.warn('[Supabase] fetchInteractiveItems cancelado: Supabase no está configurado.');
     return [];
@@ -107,7 +218,7 @@ export async function upsertInteractiveItem(
   source: string,
   completed: boolean
 ): Promise<boolean> {
-  const client = getSupabaseClient() || supabase;
+  const client = getSupabaseClient();
   if (!client) {
     console.warn(`[Supabase] Omitiendo llamada UPSERT a BD para ${id}: Supabase no está configurado.`);
     return false;
@@ -140,7 +251,7 @@ export async function bulkUpdateInteractiveItems(
   source: string,
   completed: boolean
 ): Promise<boolean> {
-  const client = getSupabaseClient() || supabase;
+  const client = getSupabaseClient();
   if (!client) {
     console.warn(`[Supabase] Omitiendo actualización masiva para '${source}': Supabase no está configurado.`);
     return false;

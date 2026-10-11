@@ -29,5 +29,6 @@ export default defineConfig({
       }
     })
   ],
+  envPrefix: ['VITE_', 'SUPABASE_'],
   base: '/Wa/', // Must match your sub-folder/repository name exactly for GitHub Pages
 });
