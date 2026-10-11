@@ -244,7 +244,7 @@ export const ItineraryModule: React.FC = () => {
       <CountdownWidget />
 
       {/* Travel Mascot Guides Widget */}
-      <MascotsWidget />
+      <MascotsWidget currentDate={currentDay.date} />
 
       {/* Top Trip Summary & Progress Header */}
       <section className="bg-slate-900 text-white p-5 rounded-3xl mb-6 shadow-xl border border-slate-800 relative overflow-hidden">
