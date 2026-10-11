@@ -86,7 +86,7 @@ export const DatabaseConfigModal: React.FC<DatabaseConfigModalProps> = ({
   return (
     <div className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-slate-950/80 backdrop-blur-sm animate-fade-in">
       <div
-        className="bg-slate-900 border border-slate-800 rounded-3xl max-w-lg w-full p-6 text-slate-100 shadow-2xl space-y-5 overflow-y-auto max-h-[90vh]"
+        className="bg-slate-900 border border-slate-800 rounded-3xl max-w-lg w-full p-6 text-slate-100 shadow-2xl space-y-4 overflow-y-auto max-h-[90vh]"
         onClick={(e) => e.stopPropagation()}
       >
         {/* Modal Header */}
@@ -219,9 +219,14 @@ export const DatabaseConfigModal: React.FC<DatabaseConfigModalProps> = ({
         </div>
 
         {/* Tip / Instruction note */}
-        <p className="text-[11px] text-slate-500 text-left leading-relaxed">
-          💡 <span className="font-semibold">Sugerencia:</span> Las credenciales introducidas aquí se guardan de forma privada en el almacenamiento local del navegador (`localStorage`). También puedes configurarlas en GitHub Repository Secrets como <code className="text-slate-400 font-mono">VITE_SUPABASE_URL</code> y <code className="text-slate-400 font-mono">VITE_SUPABASE_ANON_KEY</code>.
-        </p>
+        <div className="bg-slate-950 border border-slate-800/80 rounded-2xl p-3.5 space-y-2 text-left">
+          <p className="text-[11px] text-slate-400 leading-relaxed">
+            💡 <span className="font-bold text-slate-300">Sugerencia de Configuración:</span> Las credenciales se guardan de forma privada en el almacenamiento local de tu navegador (`localStorage`). También puedes configurarlas en GitHub Repository Secrets como <code className="text-rose-400 font-mono">VITE_SUPABASE_URL</code> y <code className="text-rose-400 font-mono">VITE_SUPABASE_ANON_KEY</code>.
+          </p>
+          <p className="text-[11px] text-amber-300/90 leading-relaxed pt-1.5 border-t border-slate-800">
+            ⚠️ <span className="font-bold">¿Error al guardar cambios ("No se pudo guardar...")?</span> Si la prueba de conexión pasa pero al marcar actividades o tareas ves este error, significa que la tabla existe pero Row-Level Security (RLS) bloquea la escritura anónima. Ejecuta el archivo <code className="text-amber-200 font-mono">supabase_rls_policies.sql</code> en el Editor SQL de tu panel de Supabase.
+          </p>
+        </div>
       </div>
     </div>
   );

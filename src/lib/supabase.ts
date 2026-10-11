@@ -148,28 +148,55 @@ export async function testSupabaseConnection(customUrl?: string, customKey?: str
   }
 
   try {
-    const { data, error } = await testClient.from('interactive_items').select('id').limit(1);
+    // 1. Probar lectura (SELECT)
+    const { data, error: selectError } = await testClient.from('interactive_items').select('id').limit(1);
 
-    if (error) {
-      let friendlyError = error.message;
-      if (error.code === '42P01' || error.message?.includes('does not exist')) {
+    if (selectError) {
+      let friendlyError = selectError.message;
+      if (selectError.code === '42P01' || selectError.message?.includes('does not exist')) {
         friendlyError = 'La tabla "interactive_items" no existe en la base de datos. Ejecuta los scripts SQL de creación de tabla.';
-      } else if (error.message?.includes('JWT') || error.code === 'PGRST301') {
+      } else if (selectError.code === '42501' || selectError.message?.includes('row-level security') || selectError.message?.includes('permission denied')) {
+        friendlyError = 'Acceso de lectura denegado por Row-Level Security (RLS). Ejecuta el script "supabase_rls_policies.sql" en Supabase.';
+      } else if (selectError.message?.includes('JWT') || selectError.code === 'PGRST301') {
         friendlyError = 'API Key inválida o expirada (JWT error).';
-      } else if (error.message?.includes('FetchError') || error.message?.includes('Failed to fetch')) {
+      } else if (selectError.message?.includes('FetchError') || selectError.message?.includes('Failed to fetch')) {
         friendlyError = 'Error de conexión / red. Verifica la URL de Supabase y el estado del proyecto.';
       }
 
       return {
         success: false,
         message: friendlyError,
-        details: `Código: ${error.code || 'N/A'} - ${error.details || error.hint || error.message}`
+        details: `Código: ${selectError.code || 'N/A'} - ${selectError.details || selectError.hint || selectError.message}`
+      };
+    }
+
+    // 2. Probar escritura (UPSERT test record)
+    const { error: writeError } = await testClient
+      .from('interactive_items')
+      .upsert(
+        { id: '__healthcheck__', source: 'system', completed: false, updated_at: new Date().toISOString() },
+        { onConflict: 'id' }
+      )
+      .select();
+
+    if (writeError) {
+      let friendlyError = writeError.message;
+      if (writeError.code === '42501' || writeError.message?.includes('row-level security') || writeError.message?.includes('permission denied')) {
+        friendlyError = 'Lectura exitosa, pero la ESCRITURA fue denegada por políticas RLS en Supabase. Ejecuta el script "supabase_rls_policies.sql" en el Editor SQL de Supabase.';
+      } else {
+        friendlyError = `Lectura OK, pero falló la prueba de escritura/UPSERT: ${writeError.message}`;
+      }
+
+      return {
+        success: false,
+        message: friendlyError,
+        details: `Código: ${writeError.code || 'N/A'} - ${writeError.details || writeError.hint || writeError.message}`
       };
     }
 
     return {
       success: true,
-      message: 'Conexión exitosa a Supabase y la tabla "interactive_items" responde correctamente.',
+      message: 'Conexión y permisos de lectura/escritura verificados correctamente en Supabase.',
       count: data ? data.length : 0
     };
   } catch (err: any) {
