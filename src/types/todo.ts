@@ -1,11 +1,11 @@
 export interface TodoItem {
   id: string;
   text: string;
-  categoryId: 'tramites' | 'reservas' | 'logistica';
+  categoryId: string;
 }
 
 export interface TodoCategory {
-  id: 'tramites' | 'reservas' | 'logistica';
+  id: string;
   name: string;
   description: string;
   items: TodoItem[];

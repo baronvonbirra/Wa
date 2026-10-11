@@ -2,37 +2,79 @@ import { TodoCategory } from '../types/todo';
 
 export const TODO_CATEGORIES: TodoCategory[] = [
   {
-    id: 'tramites',
-    name: 'Trámites y Documentación',
-    description: 'Pasaportes, seguro médico, Visit Japan Web y registros en la nube.',
+    id: 'entradas-parques',
+    name: 'Entradas y Parques',
+    description: 'Fechas clave de apertura de ventas para entradas de parques temáticos y atracciones.',
     items: [
-      { id: 'todo-tram-1', categoryId: 'tramites', text: 'Comprobar validez de los pasaportes (mínimo 6 meses de vigencia)' },
-      { id: 'todo-tram-2', categoryId: 'tramites', text: 'Contratar seguro médico de viaje familiar con cobertura completa' },
-      { id: 'todo-tram-3', categoryId: 'tramites', text: 'Completar registro QR en Visit Japan Web (Inmigración y Aduanas)' },
-      { id: 'todo-tram-4', categoryId: 'tramites', text: 'Notificar a los bancos el uso de tarjetas bancarias en Japón' },
-      { id: 'todo-tram-5', categoryId: 'tramites', text: 'Escanear pasaportes y pólizas, subiéndolas a copia digital segura en la nube' }
+      {
+        id: 'task-oct-21-disney',
+        categoryId: 'entradas-parques',
+        text: '21, 22 y 23 de octubre de 2026 (07:00 h): Compra de entradas para Tokyo Disneyland desde su web oficial (para el 21, 22 y 23 de diciembre).'
+      },
+      {
+        id: 'task-nov-09-usj',
+        categoryId: 'entradas-parques',
+        text: '9 de noviembre de 2026 (16:00 h): Compra de entradas (Studio Pass) y pases rápidos (Express Pass) para Universal Studios Japan (para la visita del 9 de enero).'
+      },
+      {
+        id: 'task-dec-01-pokemon',
+        categoryId: 'entradas-parques',
+        text: '1 de diciembre de 2026 (10:00 h): Reserva de mesa en el Pokémon Café de Osaka (para la visita del 8 de enero).'
+      }
     ]
   },
   {
-    id: 'reservas',
-    name: 'Reservas y Entradas',
-    description: 'Entradas de parques, Shinkansen y conexión de datos.',
+    id: 'transporte-trenes',
+    name: 'Transporte y Reservas',
+    description: 'Reserva anticipada de autobuses de larga distancia, Shinkansen y tarjetas IC.',
     items: [
-      { id: 'todo-res-1', categoryId: 'reservas', text: 'Comprar entradas para Tokyo Disneyland y Tokyo DisneySea' },
-      { id: 'todo-res-2', categoryId: 'reservas', text: 'Comprar entradas Universal Studios Japan + Express Pass' },
-      { id: 'todo-res-3', categoryId: 'reservas', text: 'Reservar billetes de tren Shinkansen (Tokio - Kawaguchiko - Takayama - Kioto)' },
-      { id: 'todo-res-4', categoryId: 'reservas', text: 'Alquilar Pocket WiFi de alta velocidad o comprar eSIMs de datos ilimitados' }
+      {
+        id: 'task-nov-28-bus-fuji',
+        categoryId: 'transporte-trenes',
+        text: '28 de noviembre de 2026 (02:00 h / a lo largo del día): Reserva de billetes de autobús Tokio → Fujikawaguchiko en Highwaybus o Japan Bus Online (para el 28 de diciembre).'
+      },
+      {
+        id: 'task-nov-30-bus-takayama',
+        categoryId: 'transporte-trenes',
+        text: '30 de noviembre de 2026 (02:00 h / a lo largo del día): Reserva de billetes de autobús Fujikawaguchiko → Takayama en Nohi Bus (para el 30 de diciembre).'
+      },
+      {
+        id: 'task-dec-02-train-kyoto',
+        categoryId: 'transporte-trenes',
+        text: '2 de diciembre de 2026: Reserva de tren Takayama → Kioto (Limited Express Hida + Shinkansen) (para el 2 de enero).'
+      },
+      {
+        id: 'task-dec-07-shinkansen-osaka',
+        categoryId: 'transporte-trenes',
+        text: '7 de diciembre de 2026: Reserva de Shinkansen Kioto → Osaka en smartEX (para el 7 de enero) (opcional, opción de coger JR Special Rapid sin reserva previa).'
+      },
+      {
+        id: 'task-dec-10-shinkansen-tokyo',
+        categoryId: 'transporte-trenes',
+        text: '10 de diciembre de 2026: Reserva de Shinkansen Osaka → Tokio en smartEX (para el 10 de enero).'
+      },
+      {
+        id: 'task-dec-21-suica-child',
+        categoryId: 'transporte-trenes',
+        text: '21 de diciembre de 2026 (llegada a Haneda): Tramitación de tarjetas físicas Suica Child para los niños y traslado al Toy Story Hotel en Limousine Bus.'
+      }
     ]
   },
   {
-    id: 'logistica',
-    name: 'Finanzas y Logística',
-    description: 'Cambio de divisas, pases de transporte y mapas offline.',
+    id: 'documentacion-logistica',
+    name: 'Documentación y Conectividad',
+    description: 'Registro oficial de entrada en Japón, e-SIM y copias de seguridad.',
     items: [
-      { id: 'todo-log-1', categoryId: 'logistica', text: 'Cambiar yenes en efectivo para gastos en establecimientos tradicionales' },
-      { id: 'todo-log-2', categoryId: 'logistica', text: 'Configurar tarjeta IC Suica / Pasmo digital en el Wallet del smartphone' },
-      { id: 'todo-log-3', categoryId: 'logistica', text: 'Descargar zonas de mapas offline en Google Maps para Tokio, Kioto y Alpes' },
-      { id: 'todo-log-4', categoryId: 'logistica', text: 'Revisar horarios y frecuencias de trenes JR y líneas locales' }
+      {
+        id: 'task-nov-13-vjw',
+        categoryId: 'documentacion-logistica',
+        text: '13 de noviembre de 2026: Registro de pasaportes, vuelos y alojamiento en Visit Japan Web.'
+      },
+      {
+        id: 'task-dec-esim-vjw',
+        categoryId: 'documentacion-logistica',
+        text: 'Diciembre de 2026 (días previos al vuelo): Activación de eSIM (Ubigi) y guardado de capturas/PDF de los códigos QR de Visit Japan Web.'
+      }
     ]
   }
 ];
