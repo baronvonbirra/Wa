@@ -22,6 +22,9 @@ CREATE POLICY "Allow public insert" ON interactive_items FOR INSERT WITH CHECK (
 DROP POLICY IF EXISTS "Allow public update" ON interactive_items;
 CREATE POLICY "Allow public update" ON interactive_items FOR UPDATE USING (true);
 
+DROP POLICY IF EXISTS "Allow public delete" ON interactive_items;
+CREATE POLICY "Allow public delete" ON interactive_items FOR DELETE USING (true);
+
 -- ==========================================
 -- INITIAL DATA SEEDING (POPULATION)
 -- ==========================================

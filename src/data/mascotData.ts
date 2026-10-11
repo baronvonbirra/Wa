@@ -192,21 +192,35 @@ export const DAILY_MASCOT_MESSAGES: Record<string, MascotMessage> = {
 
 export const DAILY_MASCOT_TIPS: Record<string, MascotMessage> = DAILY_MASCOT_MESSAGES;
 
-export function getMascotMessages(now: Date = new Date()): MascotMessage {
-  const formatter = new Intl.DateTimeFormat('en-CA', {
-    timeZone: 'Europe/Madrid',
-    year: 'numeric',
-    month: '2-digit',
-    day: '2-digit'
-  });
-  const dateStr = formatter.format(now);
+export function getMascotMessages(dateInput?: Date | string): MascotMessage {
+  let dateStr: string;
 
-  if (DAILY_MASCOT_MESSAGES[dateStr]) {
-    return DAILY_MASCOT_MESSAGES[dateStr];
+  if (typeof dateInput === 'string' && dateInput.trim().length > 0) {
+    dateStr = dateInput.trim();
+  } else if (dateInput instanceof Date) {
+    const formatter = new Intl.DateTimeFormat('en-CA', {
+      timeZone: 'Europe/Madrid',
+      year: 'numeric',
+      month: '2-digit',
+      day: '2-digit'
+    });
+    dateStr = formatter.format(dateInput);
+  } else {
+    const formatter = new Intl.DateTimeFormat('en-CA', {
+      timeZone: 'Europe/Madrid',
+      year: 'numeric',
+      month: '2-digit',
+      day: '2-digit'
+    });
+    dateStr = formatter.format(new Date());
   }
 
   if (dateStr < '2026-12-20') {
     return PRE_TRAVEL_MASCOT_MESSAGES;
+  }
+
+  if (DAILY_MASCOT_MESSAGES[dateStr]) {
+    return DAILY_MASCOT_MESSAGES[dateStr];
   }
 
   // Default fallback for dates after trip end
