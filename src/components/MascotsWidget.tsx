@@ -9,15 +9,31 @@ interface MascotsWidgetProps {
 export const MascotsWidget: React.FC<MascotsWidgetProps> = ({ currentDate }) => {
   const [activeMascotId, setActiveMascotId] = useState<'koji' | 'tama' | 'panko'>('koji');
 
+  // Determine effective calendar date in Europe/Madrid timezone if not explicitly provided
+  const getEffectiveDateStr = (dateInput?: string): string => {
+    if (dateInput && dateInput.trim().length > 0) {
+      return dateInput.trim();
+    }
+    const formatter = new Intl.DateTimeFormat('en-CA', {
+      timeZone: 'Europe/Madrid',
+      year: 'numeric',
+      month: '2-digit',
+      day: '2-digit'
+    });
+    return formatter.format(new Date());
+  };
+
+  const effectiveDateStr = getEffectiveDateStr(currentDate);
+
   // Determine messages according to date rules (pre-travel vs daily trip dates)
-  const dayTips = getMascotMessages(currentDate);
+  const dayTips = getMascotMessages(effectiveDateStr);
   const activeMascot: MascotCharacter =
     MASCOT_CHARACTERS.find((m) => m.id === activeMascotId) || MASCOT_CHARACTERS[0];
 
   const currentTipText = dayTips[activeMascotId];
 
   // Format short date for display e.g. "20 Dic" from "2026-12-20" or "Pre-Viaje"
-  const formatDateLabel = (dateStr?: string) => {
+  const formatDateLabel = (dateStr: string) => {
     if (!dateStr || dateStr < '2026-12-20') {
       return 'Pre-Viaje';
     }
@@ -38,7 +54,7 @@ export const MascotsWidget: React.FC<MascotsWidgetProps> = ({ currentDate }) => 
     return dateStr;
   };
 
-  const formattedShortDate = formatDateLabel(currentDate);
+  const formattedShortDate = formatDateLabel(effectiveDateStr);
 
   return (
     <section className="bg-gradient-to-r from-[#FFB7B2]/30 via-[#FFDAC1]/40 to-[#B5EAD7]/30 dark:from-slate-900 dark:via-slate-850 dark:to-slate-900 border-2 border-[#FFB7B2]/70 dark:border-rose-900/60 rounded-3xl p-4 shadow-sm mb-6 space-y-3">
