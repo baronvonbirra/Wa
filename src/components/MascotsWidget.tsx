@@ -1,23 +1,26 @@
 import React, { useState } from 'react';
 import { Sparkles, Heart } from 'lucide-react';
-import { MASCOT_CHARACTERS, DAILY_MASCOT_TIPS, MascotCharacter } from '../data/mascotData';
+import { MASCOT_CHARACTERS, MascotCharacter, getMascotMessages } from '../data/mascotData';
 
 interface MascotsWidgetProps {
   currentDate?: string;
 }
 
-export const MascotsWidget: React.FC<MascotsWidgetProps> = ({ currentDate = '2026-12-20' }) => {
+export const MascotsWidget: React.FC<MascotsWidgetProps> = ({ currentDate }) => {
   const [activeMascotId, setActiveMascotId] = useState<'koji' | 'tama' | 'panko'>('koji');
 
-  // Fallback to default tips if currentDate is not found
-  const dayTips = DAILY_MASCOT_TIPS[currentDate] || DAILY_MASCOT_TIPS['2026-12-20'];
+  // Determine messages according to date rules (pre-travel vs daily trip dates)
+  const dayTips = getMascotMessages(currentDate);
   const activeMascot: MascotCharacter =
     MASCOT_CHARACTERS.find((m) => m.id === activeMascotId) || MASCOT_CHARACTERS[0];
 
   const currentTipText = dayTips[activeMascotId];
 
-  // Format short date for display e.g. "20 Dic" from "2026-12-20"
-  const formatDateLabel = (dateStr: string) => {
+  // Format short date for display e.g. "20 Dic" from "2026-12-20" or "Pre-Viaje"
+  const formatDateLabel = (dateStr?: string) => {
+    if (!dateStr || dateStr < '2026-12-20') {
+      return 'Pre-Viaje';
+    }
     try {
       const parts = dateStr.split('-');
       if (parts.length === 3) {
