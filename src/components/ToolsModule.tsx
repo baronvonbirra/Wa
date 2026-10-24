@@ -210,6 +210,36 @@ export const JAPANESE_PHRASES: Phrase[] = [
     spanish: '¿Tienen cubiertos/platos para niños?'
   },
   {
+    id: 'd-veg-1',
+    category: 'dining',
+    categoryName: '2. Restaurantes y Gastronomía',
+    romaji: 'Bejitarian desu',
+    phonetic: 'Bejitarian des',
+    kanji: 'ベジタリアンです',
+    spanish: 'Soy vegetariano/a.',
+    note: 'Indica tu preferencia vegetariana al personal.'
+  },
+  {
+    id: 'd-veg-2',
+    category: 'dining',
+    categoryName: '2. Restaurantes y Gastronomía',
+    romaji: 'Niku to sakana wa nuki de onegai shimasu',
+    phonetic: 'Niku to sakana wa nuki de onegai shimas',
+    kanji: '肉と魚は抜きでお願いします',
+    spanish: 'Sin carne ni pescado, por favor.',
+    note: 'Aclaración explícita para excluir carne y pescado.'
+  },
+  {
+    id: 'd-veg-3',
+    category: 'dining',
+    categoryName: '2. Restaurantes y Gastronomía',
+    romaji: 'Dashi nuki de dekimasu ka?',
+    phonetic: 'Dashi nuki de dekimas ka?',
+    kanji: '出汁抜きでできますか？',
+    spanish: '¿Se puede preparar sin caldo dashi (pescado)?',
+    note: 'El dashi (caldo de bonito) se usa tradicionalmente en sopas y salsas.'
+  },
+  {
     id: 'd-11',
     category: 'dining',
     categoryName: '2. Restaurantes y Gastronomía',

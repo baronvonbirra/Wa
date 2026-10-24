@@ -42,10 +42,11 @@ export const MainNavigation: React.FC<MainNavigationProps> = ({ activeTab, setAc
   return (
     <>
       <nav className="fixed bottom-0 left-0 right-0 z-40 bg-slate-900 border-t border-slate-800 text-slate-300 shadow-2xl md:top-0 md:bottom-auto md:border-b md:border-t-0">
-        <div className="max-w-4xl mx-auto px-2 sm:px-4 flex items-center justify-between h-16">
-          <div className="flex items-center gap-2">
-            <span className="text-xl hidden sm:inline">🇯🇵</span>
-            <span className="font-black text-white tracking-wider text-xs sm:text-sm uppercase hidden xs:inline">
+        <div className="max-w-4xl mx-auto px-1 sm:px-4 flex items-center justify-between h-16">
+          {/* Top desktop branding & DB connection indicator (hidden on mobile to maximize bottom nav link width) */}
+          <div className="hidden md:flex items-center gap-2">
+            <span className="text-xl">🇯🇵</span>
+            <span className="font-black text-white tracking-wider text-xs sm:text-sm uppercase">
               Japón 2026/2027
             </span>
 
@@ -77,7 +78,8 @@ export const MainNavigation: React.FC<MainNavigationProps> = ({ activeTab, setAc
             </button>
           </div>
 
-          <div className="flex items-center justify-around w-full md:w-auto md:gap-1">
+          {/* Nav links occupying 100% width on mobile */}
+          <div className="flex items-center justify-between w-full md:w-auto md:gap-1">
             {navItems.map((item) => {
               const Icon = item.icon;
               const isActive = activeTab === item.id;
@@ -85,15 +87,15 @@ export const MainNavigation: React.FC<MainNavigationProps> = ({ activeTab, setAc
                 <button
                   key={item.id}
                   onClick={() => setActiveTab(item.id)}
-                  className={`flex flex-col md:flex-row items-center justify-center min-w-[56px] sm:min-w-[64px] min-h-[48px] px-2 sm:px-3 py-1.5 rounded-xl transition-all duration-150 active:scale-95 ${
+                  className={`flex flex-col md:flex-row items-center justify-center flex-1 min-w-0 md:flex-none md:min-w-[64px] min-h-[48px] px-0.5 sm:px-3 py-1.5 rounded-xl transition-all duration-150 active:scale-95 ${
                     isActive
                       ? 'bg-rose-600 text-white font-black shadow-lg shadow-rose-900/40'
                       : 'text-slate-400 hover:text-slate-200 hover:bg-slate-800/60 font-bold'
                   }`}
                   aria-label={item.label}
                 >
-                  <Icon className={`w-5 h-5 ${isActive ? 'scale-110' : ''} transition-transform`} />
-                  <span className="text-[10px] sm:text-[11px] md:text-xs mt-0.5 md:mt-0 md:ml-1.5 font-bold tracking-tight">
+                  <Icon className={`w-5 h-5 ${isActive ? 'scale-110' : ''} transition-transform shrink-0`} />
+                  <span className="text-[9px] xs:text-[10px] sm:text-[11px] md:text-xs mt-0.5 md:mt-0 md:ml-1.5 font-bold tracking-tighter xs:tracking-tight truncate max-w-full">
                     {item.label}
                   </span>
                 </button>

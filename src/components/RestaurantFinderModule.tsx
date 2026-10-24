@@ -171,6 +171,34 @@ export const WAITER_PHRASES: WaiterPhrase[] = [
     description: 'Adaptación de ingredientes para niños o dieta.'
   },
   {
+    id: 'vegetarian-please',
+    japanese: 'ベジタリアン用でお願いします。',
+    romaji: 'Bejitarian-yō de onegai shimasu.',
+    spanish: 'Opción vegetariana, por favor.',
+    description: 'Indicar preferencia por platos vegetarianos.'
+  },
+  {
+    id: 'no-meat-fish',
+    japanese: '肉と魚を使わないでください。',
+    romaji: 'Niku to sakana o tsukawanaide kudasai.',
+    spanish: 'Sin carne ni pescado, por favor.',
+    description: 'Aclaración explícita para evitar carne o pescado.'
+  },
+  {
+    id: 'no-dashi',
+    japanese: '出汁（だし）も使わないでいただけますか？',
+    romaji: 'Dashi mo tsukawanaide itadakemasu ka?',
+    spanish: '¿Se puede hacer sin caldo de pescado (dashi)?',
+    description: 'Vital en Japón: evita el caldo de bonito/pescado en sopas y salsas.'
+  },
+  {
+    id: 'vegetarian-menu',
+    japanese: 'ベジタリアンやヴィーガンのメニューはありますか？',
+    romaji: 'Bejitarian ya vīgan no menyū wa arimasu ka?',
+    spanish: '¿Tienen menú vegetariano o vegano?',
+    description: 'Preguntar si disponen de opciones vegetarianas o veganas.'
+  },
+  {
     id: 'check-please',
     japanese: 'お会計をお願いします。',
     romaji: 'Okaikei o onegaishimasu.',
