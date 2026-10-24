@@ -1,6 +1,7 @@
 import { useState } from 'react';
 import { MainNavigation, MainTab } from './components/MainNavigation';
 import { ItineraryModule } from './components/ItineraryModule';
+import { RestaurantFinderModule } from './components/RestaurantFinderModule';
 import { TodoModule } from './components/TodoModule';
 import { PackingModule } from './components/PackingModule';
 import { ToolsModule } from './components/ToolsModule';
@@ -17,6 +18,7 @@ export function App() {
       {/* View Module Router */}
       <main className="w-full">
         {activeTab === 'itinerary' && <ItineraryModule />}
+        {activeTab === 'restaurants' && <RestaurantFinderModule />}
         {activeTab === 'todo' && <TodoModule />}
         {activeTab === 'packing' && <PackingModule />}
         {activeTab === 'tools' && <ToolsModule />}

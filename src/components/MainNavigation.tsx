@@ -1,9 +1,9 @@
 import React, { useState, useEffect } from 'react';
-import { Calendar, CheckSquare, Luggage, Calculator, Building2, Database, HardDrive } from 'lucide-react';
+import { Calendar, CheckSquare, Luggage, Calculator, Building2, Database, HardDrive, Utensils } from 'lucide-react';
 import { checkIsSupabaseConfigured } from '../lib/supabase';
 import { DatabaseConfigModal } from './DatabaseConfigModal';
 
-export type MainTab = 'itinerary' | 'todo' | 'packing' | 'tools' | 'guide';
+export type MainTab = 'itinerary' | 'restaurants' | 'todo' | 'packing' | 'tools' | 'guide';
 
 interface MainNavigationProps {
   activeTab: MainTab;
@@ -32,6 +32,7 @@ export const MainNavigation: React.FC<MainNavigationProps> = ({ activeTab, setAc
 
   const navItems: { id: MainTab; label: string; icon: React.ComponentType<{ className?: string }> }[] = [
     { id: 'itinerary', label: 'Itinerario', icon: Calendar },
+    { id: 'restaurants', label: 'Restaurantes', icon: Utensils },
     { id: 'todo', label: 'Pre-Viaje', icon: CheckSquare },
     { id: 'packing', label: 'Equipaje', icon: Luggage },
     { id: 'tools', label: 'Herramientas', icon: Calculator },
