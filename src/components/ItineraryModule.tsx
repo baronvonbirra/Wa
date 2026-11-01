@@ -399,7 +399,7 @@ export const ItineraryModule: React.FC = () => {
 
       {/* Contextual Weather Widget */}
       {!isSearching && currentDay.location && currentDay.location !== 'Málaga / Vuelo' && (
-        <WeatherWidget locationKey={currentDay.location} />
+        <WeatherWidget day={currentDay} accommodation={currentAccommodation} />
       )}
 
       {/* Main Content Area: Search Mode vs. Normal Stage & Day View */}
