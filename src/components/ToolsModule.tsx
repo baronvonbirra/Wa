@@ -1,5 +1,5 @@
 import React, { useState, useEffect } from 'react';
-import { Calculator, ShoppingBag, Languages, Shirt, Volume2, VolumeX, Sparkles, Search, Check } from 'lucide-react';
+import { Calculator, ShoppingBag, Languages, Shirt, Volume2, VolumeX, Sparkles, Search, Check, Footprints, Baby, Info } from 'lucide-react';
 
 export interface Phrase {
   id: string;
@@ -529,14 +529,98 @@ export const ToolsModule: React.FC = () => {
     return matchesCategory && matchesSearch;
   });
 
-  const clothingSizes = [
-    { category: 'Calzado Hombre', eu: '42 EU', jp: '27.0 cm', us: '9 US' },
-    { category: 'Calzado Hombre', eu: '43 EU', jp: '27.5 cm', us: '9.5 US' },
-    { category: 'Calzado Hombre', eu: '44 EU', jp: '28.0 cm', us: '10 US' },
-    { category: 'Calzado Mujer', eu: '37 EU', jp: '23.5 cm', us: '6.5 US' },
-    { category: 'Calzado Mujer', eu: '38 EU', jp: '24.0 cm', us: '7 US' },
-    { category: 'Calzado Mujer', eu: '39 EU', jp: '24.5 cm', us: '7.5 US' },
-    { category: 'Ropa General', eu: 'S / M / L europea', jp: 'M / L / XL japonesa (suele tallar 1 talla más pequeña)', us: 'S / M / L' }
+  const shoeSizes = [
+    {
+      group: 'Hombre',
+      eu: '45 EU',
+      jp: '29.0 cm',
+      us: '11.5 US',
+      note: 'Talla grande en calzado japonés (suele etiquetarse como 29.0 cm o XL/LL en zapatillas de casa/geta).'
+    },
+    {
+      group: 'Mujer',
+      eu: '37 EU',
+      jp: '23.5 cm',
+      us: '6.5 - 7 US',
+      note: 'Equivalente estándar nipón a talla M (23.5 cm).'
+    },
+    {
+      group: 'Mujer',
+      eu: '36 EU',
+      jp: '23.0 cm',
+      us: '6 US',
+      note: 'Equivalente nipón a talla S (23.0 cm).'
+    },
+    {
+      group: 'Niño / Infantil',
+      eu: '30 EU',
+      jp: '18.5 - 19.0 cm',
+      us: '12 - 12.5 Kids US',
+      note: 'Calzado infantil para longitud de pie de ~18.5 a 19.0 cm.'
+    }
+  ];
+
+  const adultClothingSizes = [
+    {
+      group: 'Hombre',
+      eu: 'XL Europea / Occidental',
+      jp: 'XXL / 3L Japonesa',
+      note: 'El tallaje japonés es más estrecho de hombros y mangas: la XL europea requiere XXL o 3L en Uniqlo/GU.'
+    },
+    {
+      group: 'Hombre',
+      eu: 'L Europea / Occidental',
+      jp: 'XL / LL Japonesa',
+      note: 'La L europea equivale habitualmente a una XL o LL en Japón.'
+    },
+    {
+      group: 'Mujer',
+      eu: 'M Europea',
+      jp: 'L Japonesa',
+      note: 'Para M española, la talla L japonesa ofrece un ajuste mucho más cómodo de busto y hombros.'
+    },
+    {
+      group: 'Mujer',
+      eu: 'S Europea',
+      jp: 'M Japonesa',
+      note: 'La S europea equivale directamente a la M japonesa estándar.'
+    }
+  ];
+
+  const kidsClothingSizes = [
+    {
+      group: 'Niños (9 años)',
+      eu: '9 años (Talla 134-140)',
+      jp: '130 - 140 cm (Kids)',
+      note: 'En Japón la ropa infantil se cataloga por altura en cm: 130 cm para complexión delgada, 140 cm para más holgura o abrigo de invierno.'
+    },
+    {
+      group: 'Niños (5 años)',
+      eu: '5 años (Talla 110-116)',
+      jp: '110 - 120 cm (Kids)',
+      note: 'La talla 110 cm es exacta para 5 años; 120 cm es recomendable si se viste con capas térmicas debajo.'
+    }
+  ];
+
+  const sockSizes = [
+    {
+      group: 'Adulto Grande (Pie 45)',
+      eu: '44 - 46 EU',
+      jp: '27 - 29 cm',
+      note: 'Etiquetado en tiendas como 27-29cm.'
+    },
+    {
+      group: 'Adulto Mediano (Pie 36-37)',
+      eu: '35 - 38 EU',
+      jp: '23 - 25 cm',
+      note: 'El estándar para mujer más común en Don Quijote, Uniqlo y konbini.'
+    },
+    {
+      group: 'Infantil (Pie 30)',
+      eu: '29 - 31 EU',
+      jp: '18 - 20 cm',
+      note: 'Sección Kids: calcetines térmicos o normales marcados como 18-20cm.'
+    }
   ];
 
   return (
@@ -842,36 +926,175 @@ export const ToolsModule: React.FC = () => {
 
       {/* Clothing Sizes Tab */}
       {activeTab === 'sizes' && (
-        <section className="bg-white dark:bg-slate-800 border-2 border-slate-200 dark:border-slate-700 rounded-3xl p-5 shadow-sm space-y-4">
+        <section className="bg-white dark:bg-slate-800 border-2 border-slate-200 dark:border-slate-700 rounded-3xl p-5 shadow-sm space-y-6">
           <div className="border-b border-slate-100 dark:border-slate-700 pb-3">
-            <h2 className="text-sm font-black uppercase text-slate-400 tracking-wider flex items-center gap-2">
+            <span className="text-[10px] font-black uppercase text-rose-500 bg-rose-50 dark:bg-rose-950/80 px-2.5 py-0.5 rounded-full border border-rose-200 dark:border-rose-900 mb-1 inline-block">
+              Guía de Compras & Equivalencias Japón
+            </span>
+            <h2 className="text-sm font-black uppercase text-slate-900 dark:text-white tracking-wider flex items-center gap-2">
               <Shirt className="w-4 h-4 text-rose-500" />
-              Tabla de Equivalencia de Tallas
+              Tabla de Equivalencia de Tallas Personalizada
             </h2>
             <p className="text-xs text-slate-500 dark:text-slate-400 mt-0.5">
-              Referencia rápida para calzado y vestimenta al comprar en tiendas como Uniqlo o GU.
+              Tallas exactas del grupo familiar para compras rápidas en Uniqlo, GU, ABC-MART y Don Quijote.
             </p>
           </div>
 
+          {/* Section 1: Calzado Familiar */}
           <div className="space-y-3">
-            {clothingSizes.map((size, idx) => (
-              <div
-                key={idx}
-                className="bg-slate-50 dark:bg-slate-900/60 border border-slate-200 dark:border-slate-700 p-3.5 rounded-2xl flex flex-col sm:flex-row sm:items-center justify-between gap-2"
-              >
-                <span className="text-xs font-black text-slate-900 dark:text-white uppercase">
-                  {size.category}
-                </span>
-                <div className="flex items-center gap-3 text-xs font-bold text-slate-600 dark:text-slate-300">
-                  <span className="bg-slate-200 dark:bg-slate-800 px-2.5 py-1 rounded-xl">
-                    EU: {size.eu}
-                  </span>
-                  <span className="bg-rose-100 dark:bg-rose-950 text-rose-700 dark:text-rose-300 px-2.5 py-1 rounded-xl border border-rose-200 dark:border-rose-900">
-                    Japón: {size.jp}
-                  </span>
+            <div className="flex items-center gap-2 text-xs font-black text-slate-700 dark:text-slate-200">
+              <Footprints className="w-4 h-4 text-amber-500" />
+              <span>Calzado Familiar (Zapatillas y Zapatos)</span>
+            </div>
+            <div className="grid grid-cols-1 gap-2.5">
+              {shoeSizes.map((size, idx) => (
+                <div
+                  key={idx}
+                  className="bg-slate-50 dark:bg-slate-900/60 border border-slate-200 dark:border-slate-700 p-3.5 rounded-2xl flex flex-col sm:flex-row sm:items-center justify-between gap-2.5 hover:border-amber-400 dark:hover:border-amber-600 transition-colors"
+                >
+                  <div className="space-y-0.5">
+                    <span className="text-[11px] font-black text-amber-600 dark:text-amber-400 uppercase tracking-wider block">
+                      {size.group}
+                    </span>
+                    <p className="text-[11px] text-slate-500 dark:text-slate-400">
+                      {size.note}
+                    </p>
+                  </div>
+                  <div className="flex flex-wrap items-center gap-2 text-xs font-bold shrink-0">
+                    <span className="bg-slate-200 dark:bg-slate-800 text-slate-700 dark:text-slate-200 px-2.5 py-1 rounded-xl">
+                      EU: {size.eu}
+                    </span>
+                    <span className="bg-amber-100 dark:bg-amber-950/80 text-amber-800 dark:text-amber-300 px-2.5 py-1 rounded-xl border border-amber-200 dark:border-amber-900 font-black">
+                      JP: {size.jp}
+                    </span>
+                    <span className="bg-slate-100 dark:bg-slate-800/60 text-slate-500 dark:text-slate-400 px-2 py-1 rounded-xl text-[11px]">
+                      {size.us}
+                    </span>
+                  </div>
                 </div>
-              </div>
-            ))}
+              ))}
+            </div>
+          </div>
+
+          {/* Section 2: Ropa Adultos */}
+          <div className="space-y-3">
+            <div className="flex items-center gap-2 text-xs font-black text-slate-700 dark:text-slate-200">
+              <Shirt className="w-4 h-4 text-rose-500" />
+              <span>Ropa Adultos (Hombre & Mujer)</span>
+            </div>
+            <div className="grid grid-cols-1 gap-2.5">
+              {adultClothingSizes.map((size, idx) => (
+                <div
+                  key={idx}
+                  className="bg-slate-50 dark:bg-slate-900/60 border border-slate-200 dark:border-slate-700 p-3.5 rounded-2xl flex flex-col sm:flex-row sm:items-center justify-between gap-2.5 hover:border-rose-300 dark:hover:border-rose-900 transition-colors"
+                >
+                  <div className="space-y-0.5">
+                    <span className="text-[11px] font-black text-rose-600 dark:text-rose-400 uppercase tracking-wider block">
+                      {size.group}
+                    </span>
+                    <p className="text-[11px] text-slate-500 dark:text-slate-400">
+                      {size.note}
+                    </p>
+                  </div>
+                  <div className="flex flex-wrap items-center gap-2 text-xs font-bold shrink-0">
+                    <span className="bg-slate-200 dark:bg-slate-800 text-slate-700 dark:text-slate-200 px-2.5 py-1 rounded-xl">
+                      EU: {size.eu}
+                    </span>
+                    <span className="bg-rose-100 dark:bg-rose-950 text-rose-700 dark:text-rose-300 px-2.5 py-1 rounded-xl border border-rose-200 dark:border-rose-900 font-black">
+                      JP: {size.jp}
+                    </span>
+                  </div>
+                </div>
+              ))}
+            </div>
+          </div>
+
+          {/* Section 3: Ropa Niños */}
+          <div className="space-y-3">
+            <div className="flex items-center gap-2 text-xs font-black text-slate-700 dark:text-slate-200">
+              <Baby className="w-4 h-4 text-emerald-500" />
+              <span>Ropa Niños (Estatura en centímetros)</span>
+            </div>
+            <div className="grid grid-cols-1 gap-2.5">
+              {kidsClothingSizes.map((size, idx) => (
+                <div
+                  key={idx}
+                  className="bg-slate-50 dark:bg-slate-900/60 border border-slate-200 dark:border-slate-700 p-3.5 rounded-2xl flex flex-col sm:flex-row sm:items-center justify-between gap-2.5 hover:border-emerald-300 dark:hover:border-emerald-900 transition-colors"
+                >
+                  <div className="space-y-0.5">
+                    <span className="text-[11px] font-black text-emerald-600 dark:text-emerald-400 uppercase tracking-wider block">
+                      {size.group}
+                    </span>
+                    <p className="text-[11px] text-slate-500 dark:text-slate-400">
+                      {size.note}
+                    </p>
+                  </div>
+                  <div className="flex flex-wrap items-center gap-2 text-xs font-bold shrink-0">
+                    <span className="bg-slate-200 dark:bg-slate-800 text-slate-700 dark:text-slate-200 px-2.5 py-1 rounded-xl">
+                      {size.eu}
+                    </span>
+                    <span className="bg-emerald-100 dark:bg-emerald-950 text-emerald-700 dark:text-emerald-300 px-2.5 py-1 rounded-xl border border-emerald-200 dark:border-emerald-900 font-black">
+                      JP: {size.jp}
+                    </span>
+                  </div>
+                </div>
+              ))}
+            </div>
+          </div>
+
+          {/* Section 4: Calcetines */}
+          <div className="space-y-3">
+            <div className="flex items-center gap-2 text-xs font-black text-slate-700 dark:text-slate-200">
+              <Sparkles className="w-4 h-4 text-indigo-500" />
+              <span>Calcetines & Medias (Etiquetado por cm de pie)</span>
+            </div>
+            <div className="grid grid-cols-1 gap-2.5">
+              {sockSizes.map((size, idx) => (
+                <div
+                  key={idx}
+                  className="bg-slate-50 dark:bg-slate-900/60 border border-slate-200 dark:border-slate-700 p-3.5 rounded-2xl flex flex-col sm:flex-row sm:items-center justify-between gap-2.5 hover:border-indigo-300 dark:hover:border-indigo-900 transition-colors"
+                >
+                  <div className="space-y-0.5">
+                    <span className="text-[11px] font-black text-indigo-600 dark:text-indigo-400 uppercase tracking-wider block">
+                      {size.group}
+                    </span>
+                    <p className="text-[11px] text-slate-500 dark:text-slate-400">
+                      {size.note}
+                    </p>
+                  </div>
+                  <div className="flex flex-wrap items-center gap-2 text-xs font-bold shrink-0">
+                    <span className="bg-slate-200 dark:bg-slate-800 text-slate-700 dark:text-slate-200 px-2.5 py-1 rounded-xl">
+                      EU: {size.eu}
+                    </span>
+                    <span className="bg-indigo-100 dark:bg-indigo-950 text-indigo-700 dark:text-indigo-300 px-2.5 py-1 rounded-xl border border-indigo-200 dark:border-indigo-900 font-black">
+                      JP: {size.jp}
+                    </span>
+                  </div>
+                </div>
+              ))}
+            </div>
+          </div>
+
+          {/* Section 5: Consejos Clave para Probarse y Comprar en Japón */}
+          <div className="bg-rose-50/70 dark:bg-rose-950/30 border border-rose-200 dark:border-rose-900 rounded-2xl p-4 space-y-2">
+            <div className="flex items-center gap-2 text-xs font-black text-rose-700 dark:text-rose-300">
+              <Info className="w-4 h-4 text-rose-500 shrink-0" />
+              <span>Consejos Clave de Compras en Tiendas Japonesas (Uniqlo, GU, Muji)</span>
+            </div>
+            <ul className="text-[11px] space-y-1.5 text-slate-600 dark:text-slate-300 list-disc list-inside">
+              <li>
+                <strong>Probadores:</strong> Quítate siempre los zapatos antes de pisar la alfombrilla o tarima del probador.
+              </li>
+              <li>
+                <strong>Corte japonés:</strong> Los patrones de manga y tiro de pantalón son más cortos que en Europa. Ante la duda entre dos tallas, optad por la mayor.
+              </li>
+              <li>
+                <strong>Tax-Free:</strong> Llevad el pasaporte físico a mano. En compras superiores a 5.000 ¥ (sin impuestos) os descontarán el 10% directo en caja.
+              </li>
+              <li>
+                <strong>Heattech:</strong> La ropa térmica en Uniqlo viene empaquetada; si tenéis dudas de talla, preguntad al personal antes de abrir el precinto.
+              </li>
+            </ul>
           </div>
         </section>
       )}
