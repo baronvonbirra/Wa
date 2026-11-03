@@ -2,6 +2,7 @@ import React, { useState } from 'react';
 import { ACCOMMODATIONS } from '../data/tripData';
 import { EMERGENCY_CONTACTS, TRANSPORT_NOTES } from '../data/guideData';
 import { JapaneseAddressModal } from './JapaneseAddressModal';
+import { JapanScheduleRadarWidget } from './JapanScheduleRadarWidget';
 import { Accommodation } from '../types/itinerary';
 import {
   Building,
@@ -14,12 +15,13 @@ import {
   Building2,
   PhoneCall,
   CreditCard,
-  Truck
+  Truck,
+  Clock
 } from 'lucide-react';
 
 export const GuideModule: React.FC = () => {
   const [selectedAccommodation, setSelectedAccommodation] = useState<Accommodation | null>(null);
-  const [activeGuideTab, setActiveGuideTab] = useState<'hotels' | 'emergencies' | 'transport'>('hotels');
+  const [activeGuideTab, setActiveGuideTab] = useState<'hotels' | 'radar' | 'emergencies' | 'transport'>('hotels');
 
   const getContactIcon = (iconName: string) => {
     switch (iconName) {
@@ -57,15 +59,15 @@ export const GuideModule: React.FC = () => {
           Módulo Guía & Recursos
         </span>
         <h1 className="text-xl font-black text-white tracking-tight mt-1">
-          Directorio de Alojamientos y Emergencias
+          Guía de Alojamientos, Emergencias y Horarios
         </h1>
         <p className="text-xs font-bold text-slate-400 mt-1">
-          Consulta rápida 100% offline para taxis, urgencias médicas y transporte en Japón.
+          Consulta rápida para direcciones de taxi en japonés, radar de horarios y festivos, urgencias médicas y transporte.
         </p>
       </section>
 
       {/* Sub-Tabs Selector */}
-      <nav className="grid grid-cols-3 gap-2 mb-6">
+      <nav className="grid grid-cols-2 sm:grid-cols-4 gap-2 mb-6">
         <button
           onClick={() => setActiveGuideTab('hotels')}
           className={`p-3 rounded-2xl flex flex-col items-center justify-center min-h-[52px] font-black text-xs transition-all active:scale-95 ${
@@ -76,6 +78,18 @@ export const GuideModule: React.FC = () => {
         >
           <Building className="w-4 h-4 mb-1" />
           <span>Alojamientos</span>
+        </button>
+
+        <button
+          onClick={() => setActiveGuideTab('radar')}
+          className={`p-3 rounded-2xl flex flex-col items-center justify-center min-h-[52px] font-black text-xs transition-all active:scale-95 ${
+            activeGuideTab === 'radar'
+              ? 'bg-rose-600 text-white shadow-lg shadow-rose-900/30'
+              : 'bg-white dark:bg-slate-800 text-slate-700 dark:text-slate-300 border border-slate-200 dark:border-slate-700 hover:bg-slate-100'
+          }`}
+        >
+          <Clock className="w-4 h-4 mb-1" />
+          <span>Radar Festivos ⏰</span>
         </button>
 
         <button
@@ -102,6 +116,13 @@ export const GuideModule: React.FC = () => {
           <span>Transporte</span>
         </button>
       </nav>
+
+      {/* Tab: Radar Festivos */}
+      {activeGuideTab === 'radar' && (
+        <div className="animate-in fade-in duration-200">
+          <JapanScheduleRadarWidget />
+        </div>
+      )}
 
       {/* Section Content */}
       {activeGuideTab === 'hotels' && (
