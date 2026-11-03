@@ -1,5 +1,7 @@
 import React, { useState, useEffect } from 'react';
-import { Calculator, ShoppingBag, Languages, Shirt, Volume2, VolumeX, Sparkles, Search, Check, Footprints, Baby, Info } from 'lucide-react';
+import { Calculator, ShoppingBag, Languages, Shirt, Volume2, VolumeX, Sparkles, Search, Check, Footprints, Baby, Info, Clock, Sun, Moon } from 'lucide-react';
+import { DualTimeWidget } from './DualTimeWidget';
+import { getDualTimeData, DualTimeState } from '../services/timeService';
 
 export interface Phrase {
   id: string;
@@ -439,7 +441,15 @@ export const JAPANESE_PHRASES: Phrase[] = [
 export const ToolsModule: React.FC = () => {
   const [jpyAmount, setJpyAmount] = useState<string>('1000');
   const [exchangeRate, setExchangeRate] = useState<number>(160); // 1 EUR = 160 JPY
-  const [activeTab, setActiveTab] = useState<'currency' | 'phrases' | 'sizes'>('phrases');
+  const [activeTab, setActiveTab] = useState<'time' | 'phrases' | 'currency' | 'sizes'>('time');
+  const [quickTime, setQuickTime] = useState<DualTimeState>(() => getDualTimeData());
+
+  useEffect(() => {
+    const timer = setInterval(() => {
+      setQuickTime(getDualTimeData());
+    }, 1000);
+    return () => clearInterval(timer);
+  }, []);
 
   const jpyNum = parseFloat(jpyAmount) || 0;
   const eurVal = (jpyNum / exchangeRate).toFixed(2);
@@ -626,20 +636,73 @@ export const ToolsModule: React.FC = () => {
   return (
     <div className="max-w-3xl mx-auto px-4 pt-4 pb-28 font-sans text-slate-800 dark:text-slate-100">
       {/* Header Banner */}
-      <section className="bg-slate-900 text-white p-5 rounded-3xl mb-6 shadow-xl border border-slate-800">
-        <span className="text-[10px] font-black uppercase text-rose-400 bg-rose-950/80 px-2.5 py-0.5 rounded-full border border-rose-900">
-          Módulo Herramientas & Utilidades
-        </span>
+      <section className="bg-slate-900 text-white p-5 rounded-3xl mb-4 shadow-xl border border-slate-800">
+        <div className="flex flex-wrap items-center justify-between gap-2">
+          <span className="text-[10px] font-black uppercase text-rose-400 bg-rose-950/80 px-2.5 py-0.5 rounded-full border border-rose-900">
+            Módulo Herramientas & Utilidades
+          </span>
+          <div className="flex items-center gap-1.5 text-[11px] font-bold text-slate-400">
+            <span className="inline-block w-2 h-2 rounded-full bg-emerald-400 animate-pulse"></span>
+            <span>Reloj sincronizado</span>
+          </div>
+        </div>
         <h1 className="text-xl font-black text-white tracking-tight mt-1">
-          Japonés de Supervivencia + Audio & Conversor
+          Herramientas de Viaje Japón 2026/2027
         </h1>
         <p className="text-xs font-bold text-slate-400 mt-1">
-          Guía de frases con pronunciación en voz nativa, conversor JPY/EUR y tallas.
+          Hora dual España-Japón en vivo, frases con pronunciación en voz nativa, conversor de divisas y equivalencias de tallas.
         </p>
+
+        {/* Persistent Quick Dual Time Bar across all tabs */}
+        <div className="mt-4 pt-3 border-t border-slate-800 grid grid-cols-2 gap-2 text-xs">
+          <button
+            onClick={() => setActiveTab('time')}
+            className="flex items-center justify-between bg-slate-800/80 hover:bg-slate-800 p-2.5 rounded-2xl border border-slate-700 transition-all text-left group"
+          >
+            <div className="flex items-center gap-2">
+              <span className="text-lg">🇪🇸</span>
+              <div>
+                <span className="text-[10px] font-black uppercase text-slate-400 block leading-tight">España</span>
+                <span className="text-sm font-mono font-black text-white">{quickTime.spain.shortTimeStr}</span>
+              </div>
+            </div>
+            <div className="text-slate-400 group-hover:text-amber-400">
+              {quickTime.spain.isDaytime ? <Sun className="w-3.5 h-3.5" /> : <Moon className="w-3.5 h-3.5" />}
+            </div>
+          </button>
+
+          <button
+            onClick={() => setActiveTab('time')}
+            className="flex items-center justify-between bg-slate-800/80 hover:bg-slate-800 p-2.5 rounded-2xl border border-slate-700 transition-all text-left group"
+          >
+            <div className="flex items-center gap-2">
+              <span className="text-lg">🇯🇵</span>
+              <div>
+                <span className="text-[10px] font-black uppercase text-rose-400 block leading-tight">Japón (+{quickTime.diffHours}h)</span>
+                <span className="text-sm font-mono font-black text-white">{quickTime.japan.shortTimeStr}</span>
+              </div>
+            </div>
+            <div className="text-slate-400 group-hover:text-rose-400">
+              {quickTime.japan.isDaytime ? <Sun className="w-3.5 h-3.5" /> : <Moon className="w-3.5 h-3.5" />}
+            </div>
+          </button>
+        </div>
       </section>
 
       {/* Navigation Sub-Tabs */}
-      <nav className="grid grid-cols-3 gap-2 mb-6">
+      <nav className="grid grid-cols-2 sm:grid-cols-4 gap-2 mb-6">
+        <button
+          onClick={() => setActiveTab('time')}
+          className={`p-3 rounded-2xl flex flex-col items-center justify-center min-h-[52px] font-black text-xs transition-all active:scale-95 ${
+            activeTab === 'time'
+              ? 'bg-rose-600 text-white shadow-lg shadow-rose-900/30'
+              : 'bg-white dark:bg-slate-800 text-slate-700 dark:text-slate-300 border border-slate-200 dark:border-slate-700 hover:bg-slate-100'
+          }`}
+        >
+          <Clock className="w-4 h-4 mb-1" />
+          <span>Hora Dual 🇪🇸🇯🇵</span>
+        </button>
+
         <button
           onClick={() => setActiveTab('phrases')}
           className={`p-3 rounded-2xl flex flex-col items-center justify-center min-h-[52px] font-black text-xs transition-all active:scale-95 ${
@@ -676,6 +739,9 @@ export const ToolsModule: React.FC = () => {
           <span>Guía de Tallas</span>
         </button>
       </nav>
+
+      {/* Dual Time Tab */}
+      {activeTab === 'time' && <DualTimeWidget />}
 
       {/* Phrases & Audio Tab */}
       {activeTab === 'phrases' && (
