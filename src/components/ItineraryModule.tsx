@@ -9,6 +9,8 @@ import { AprenderModal } from './AprenderModal';
 import { MascotsWidget } from './MascotsWidget';
 import { SakuraConfetti } from './SakuraConfetti';
 import { GoshuinPassportModal, FEATURED_BADGES } from './GoshuinPassportModal';
+import { JapanScheduleRadarWidget } from './JapanScheduleRadarWidget';
+import { isNewYearSpecialPeriod } from '../data/holidayData';
 import { Accommodation, DayItinerary, Activity, LearnInfo } from '../types/itinerary';
 import {
   Search,
@@ -28,7 +30,10 @@ import {
   Lightbulb,
   Award,
   Database,
-  HardDrive
+  HardDrive,
+  AlertTriangle,
+  X,
+  Clock
 } from 'lucide-react';
 
 function getActivityLearnInfo(act: Activity, dayTitle: string): LearnInfo {
@@ -83,6 +88,8 @@ export const ItineraryModule: React.FC = () => {
   // Goshuin Passport hook & modal state
   const { stamps, addStamp } = useGoshuinPassport();
   const [isGoshuinModalOpen, setIsGoshuinModalOpen] = useState<boolean>(false);
+  const [isRadarModalOpen, setIsRadarModalOpen] = useState<boolean>(false);
+  const [isAlertBannerDismissed, setIsAlertBannerDismissed] = useState<boolean>(false);
 
   // Sakura confetti trigger state & mode
   const [showConfetti, setShowConfetti] = useState<boolean>(false);
@@ -243,8 +250,54 @@ export const ItineraryModule: React.FC = () => {
       {/* Dynamic Countdown / Active Trip Banner Widget */}
       <CountdownWidget />
 
+      {/* Dynamic Contextual Alert Banner for New Year / Shogatsu (PRD Section 4) */}
+      {!isAlertBannerDismissed && (isNewYearSpecialPeriod() || isNewYearSpecialPeriod(currentDay.date)) && (
+        <aside
+          aria-label="Aviso de Año Nuevo"
+          className="bg-gradient-to-r from-amber-500 via-rose-500 to-rose-600 text-white p-4 rounded-3xl shadow-lg border border-amber-300/40 relative overflow-hidden animate-in fade-in slide-in-from-top-2 duration-300 mb-6"
+        >
+          <div className="flex items-start justify-between gap-3">
+            <div className="flex items-start gap-3">
+              <span className="p-2 rounded-2xl bg-white/20 shrink-0 text-xl backdrop-blur-xs">
+                ⚠️
+              </span>
+              <div className="space-y-1">
+                <div className="flex items-center gap-2">
+                  <span className="text-[10px] font-black uppercase tracking-wider bg-black/25 px-2 py-0.5 rounded-full">
+                    Aviso Especial Shōgatsu
+                  </span>
+                </div>
+                <p className="text-xs sm:text-sm font-black leading-snug text-white">
+                  ⚠️ Alerta de Año Nuevo: Comercios con horarios especiales. Verificad aperturas antes de desplazaros.
+                </p>
+                <p className="text-[11px] text-amber-100 font-medium">
+                  Grandes almacenes cerrados el 1 de Enero y bancos sin servicio hasta el 3 de Enero. ¡Cajeros en Konbinis 24/7!
+                </p>
+                <div className="pt-1 flex items-center gap-2">
+                  <button
+                    onClick={() => setIsRadarModalOpen(true)}
+                    className="px-3 py-1.5 rounded-xl bg-white text-rose-700 text-xs font-black hover:bg-rose-50 transition-all flex items-center gap-1.5 shadow-xs"
+                  >
+                    <Clock className="w-3.5 h-3.5" />
+                    <span>Ver Radar de Horarios</span>
+                  </button>
+                </div>
+              </div>
+            </div>
+
+            <button
+              onClick={() => setIsAlertBannerDismissed(true)}
+              className="p-1 rounded-xl bg-white/20 hover:bg-white/30 text-white shrink-0 transition-colors"
+              title="Cerrar aviso"
+            >
+              <X className="w-4 h-4" />
+            </button>
+          </div>
+        </aside>
+      )}
+
       {/* Travel Mascot Guides Widget */}
-      <MascotsWidget />
+      <MascotsWidget currentDate={currentDay.date} />
 
       {/* Top Trip Summary & Progress Header */}
       <section className="bg-slate-900 text-white p-5 rounded-3xl mb-6 shadow-xl border border-slate-800 relative overflow-hidden">
@@ -538,6 +591,8 @@ export const ItineraryModule: React.FC = () => {
           <div className="bg-slate-100 dark:bg-slate-800/80 p-1.5 rounded-2xl flex items-center gap-1.5 overflow-x-auto scrollbar-thin border border-slate-200 dark:border-slate-700">
             {currentStage.days.map((day) => {
               const isSelectedDay = day.date === currentDay.date;
+              const isShogatsuDate = isNewYearSpecialPeriod(day.date);
+              const isSeijinDate = day.date === '2027-01-11';
               return (
                 <button
                   key={day.date}
@@ -552,6 +607,22 @@ export const ItineraryModule: React.FC = () => {
                     {day.dayIndex === 0 ? 'Día 0' : `Día ${day.dayIndex}`}
                   </span>
                   <span>{day.shortDate}</span>
+                  {isShogatsuDate && (
+                    <span
+                      title="Período de Año Nuevo (Shōgatsu) con horarios especiales"
+                      className="text-[9px] px-1 py-0.2 rounded-md bg-rose-100 text-rose-700 dark:bg-rose-950 dark:text-rose-300 font-bold border border-rose-200 dark:border-rose-800"
+                    >
+                      🎌 Shōgatsu
+                    </span>
+                  )}
+                  {isSeijinDate && (
+                    <span
+                      title="Festivo Nacional: Seijin no Hi (Mayoría de Edad)"
+                      className="text-[9px] px-1 py-0.2 rounded-md bg-purple-100 text-purple-700 dark:bg-purple-950 dark:text-purple-300 font-bold border border-purple-200 dark:border-purple-800"
+                    >
+                      🎌 Festivo
+                    </span>
+                  )}
                 </button>
               );
             })}
@@ -892,6 +963,30 @@ export const ItineraryModule: React.FC = () => {
         stamps={stamps}
         completedActivityIds={completed}
       />
+
+      {/* Japan Schedule Radar Modal Dialog */}
+      {isRadarModalOpen && (
+        <div className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-black/60 backdrop-blur-xs animate-in fade-in duration-200">
+          <div className="bg-white dark:bg-slate-900 rounded-3xl max-w-2xl w-full max-h-[90vh] overflow-y-auto p-5 shadow-2xl border border-slate-200 dark:border-slate-800 space-y-4">
+            <div className="flex items-center justify-between border-b border-slate-100 dark:border-slate-800 pb-3">
+              <div className="flex items-center gap-2">
+                <Clock className="w-5 h-5 text-rose-500" />
+                <h3 className="text-base font-black text-slate-900 dark:text-white">
+                  Radar Temporal de Japón: Horarios & Festivos
+                </h3>
+              </div>
+              <button
+                onClick={() => setIsRadarModalOpen(false)}
+                className="p-1.5 rounded-xl bg-slate-100 dark:bg-slate-800 text-slate-500 hover:text-slate-800 dark:hover:text-white transition-colors"
+              >
+                <X className="w-4 h-4" />
+              </button>
+            </div>
+
+            <JapanScheduleRadarWidget />
+          </div>
+        </div>
+      )}
 
       {/* Japanese Address Modal */}
       <JapaneseAddressModal

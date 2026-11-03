@@ -109,34 +109,34 @@ export const DAILY_MASCOT_MESSAGES: Record<string, MascotMessage> = {
     panko: "Hoy cenamos un reconfortante bol de Houtou Udon: fideos anchos de montaña cocinados en caldo espeso con calabaza local."
   },
   '2026-12-29': {
-    koji: "¡A entrenar esas piernas! Nos esperan 398 escalones hasta la Pagoda Chureito, pero la vista de la postal japonesa pagará el esfuerzo.",
-    tama: "El agua cristalina de los estanques de Oshino Hakkai proviene de la nieve del Fuji filtrada bajo tierra durante más de 80 años.",
-    panko: "En la aldea ninja, probad la puntería lanzando estrellas shuriken de metal. ¡El que clave más gana un postre de mochi!"
+    koji: "¡Comienza el cierre administrativo de Fin de Año! Los bancos tradicionales cierran hasta el 3 de enero. Si necesitáis efectivo, recordad que los cajeros de los 7-Eleven son nuestro salvavidas 24/7.",
+    tama: "El agua cristalina de los estanques de Oshino Hakkai proviene de la nieve del Fuji. Disfrutad de la paz antes de las festividades de fin de año.",
+    panko: "En la aldea ninja, probad la puntería lanzando estrellas shuriken. ¡Y haced acopio de snacks en el konbini porque muchas tiendecitas de pueblo cierran pronto estos días!"
   },
   '2026-12-30': {
-    koji: "Pasead por las calles de madera de Sanmachi Suji al atardecer cuando se encienden los farolillos. Parecerá que viajáis al Japón feudal.",
-    tama: "Las grandes bolas de cedro (Sugidama) colgadas en las fachadas cambian de verde a marrón cuando el sake artesanal ha fermentado.",
-    panko: "¡Momento gastronómico estelar! Probad el sushi de ternera de Hida servido sobre una galleta crujiente de arroz tostado."
+    koji: "Pasead por las calles de madera de Sanmachi Suji. Atención con los horarios: en pueblos tradicionales muchas tiendas adelantan su cierre sobre las 17:30.",
+    tama: "Las grandes bolas de cedro (Sugidama) anuncian el sake de la nueva temporada. Es tiempo de purificación en los hogares japoneses antes de Nochevieja.",
+    panko: "¡Momento gastronómico de lujo con el sushi de ternera de Hida! Asegurad el almuerzo antes de las 14:00 por la regla del Last Order."
   },
   '2026-12-31': {
-    koji: "¡Cuidado al caminar por las callejuelas nevadas! Las casas de paja Gassho-zukuri rodeadas de nieve parecen un cuento de invierno.",
-    tama: "¡Akemashite Omedetō! Esta noche los templos tocarán 108 campanadas (Joya no Kane) para purificar los 108 deseos mundanos antes del nuevo año.",
-    panko: "En Nochevieja la tradición japonesa es cenar fideos finos Toshikoshi Soba, que simbolizan una vida larga y próspera para la familia."
+    koji: "¡Nochevieja en Japón! Ojo: los grandes almacenes cierran a las 18:00 y muchos restaurantes no abren por la noche. ¡Asegurad la cena con antelación o visitad el Konbini!",
+    tama: "¡Akemashite Omedetō! Esta noche los templos tocarán 108 campanadas (Joya no Kane) para purificar los deseos mundanos antes de recibir el 2027.",
+    panko: "¡Tradición obligatoria de Nochevieja! Hay que cenar Toshikoshi Soba (fideos largos de trigo sarraceno) para desear una vida larga y próspera a toda la familia."
   },
   '2027-01-01': {
-    koji: "¡Feliz Año Nuevo 2027! Vamos a caminar hasta el santuario Hie para compartir el primer día del año junto a los habitantes locales.",
-    tama: "Hoy realizamos el Hatsumode (primera visita del año al templo). Comprad un amuleto Omamori para proteger la salud de la familia.",
-    panko: "Probad el Ozōni: una sopa caliente tradicional de Año Nuevo que lleva un pastelito de arroz mochi muy elástico en su interior."
+    koji: "¡Feliz Año Nuevo 2027 (Gantan)! Hoy casi todos los centros comerciales y tiendas están cerrados. Los parques temáticos, templos y konbinis sí abren con normalidad.",
+    tama: "¡Día de Hatsumode! La primera visita del año al santuario congrega a millones de fieles. Comprad un amuleto Omamori y una flecha Hamaya para proteger el hogar.",
+    panko: "Para desayunar o comer hoy, probad el Ozōni: la sopa festiva de Año Nuevo con mochi caliente y elástico que trae longevidad y fuerza."
   },
   '2027-01-02': {
-    koji: "¡Adentrémonos en el túnel de miles de arcos Torii rojos! Cuanto más alto subáis por la colina, más tranquilo estará el camino.",
-    tama: "Fijaos en las estatuas de los zorros Kitsune: muchos llevan llaves o pergaminos en la boca porque son los guardianes del templo.",
-    panko: "Cerca de la estación de Kioto hay puestos de brochetas de carne a la parrilla y pastelitos de té matcha para reponer fuerzas."
+    koji: "¡Reapertura comercial a lo grande! Hoy reabren los grandes almacenes (Depāto). Si queréis comprar bolsas sorpresa Fukubukuro, id con paciencia porque habrá colas.",
+    tama: "En Fushimi Inari, continuad las oraciones de Año Nuevo bajo los miles de Torii rojos. Cuanto más alto subáis por la montaña, más tranquilo estará el sendero.",
+    panko: "¡La feria de Año Nuevo en Kioto está llena de puestos callejeros (Yatai)! No os perdáis los dango recién hechos y el amazake dulce sin alcohol."
   },
   '2027-01-03': {
-    koji: "Cruzad el puente Togetsukyo en Arashiyama y subid a saludar a los monos en libertad del parque Iwatayama.",
-    tama: "En el Pabellón Dorado Kinkaku-ji, contemplad cómo las dos plantas cubiertas de pan de oro puro se reflejan en el estanque Espejo.",
-    panko: "En el templo Otagi Nenbutsu-ji buscad las estatuas de piedra más graciosas: ¡hay una bebiendo sake y otra con una raqueta!"
+    koji: "Último día del periodo sagrado de Shōgatsu. El transporte de retorno de vacaciones suele estar concurrido, así que id con tiempo a las estaciones.",
+    tama: "En el Pabellón Dorado Kinkaku-ji, contemplad el reflejo dorado en el estanque sagrado pidiendo paz y armonía para el resto del viaje.",
+    panko: "En las cafeterías tradicionales de Kioto, probad el Parfait de té matcha con castañas confitadas de invierno para merendar tras las caminatas."
   },
   '2027-01-04': {
     koji: "Paseo relajado bordeando el canal. Un día magnífico para caminar sin prisas y disfrutar del silencio de los barrios tradicionales.",
