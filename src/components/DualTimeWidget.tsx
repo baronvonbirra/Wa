@@ -66,16 +66,16 @@ export const DualTimeWidget: React.FC = () => {
             <div className="flex items-center gap-2">
               <span className="text-2xl">🇪🇸</span>
               <div>
-                <h3 className="text-sm font-black tracking-wide uppercase text-slate-900 dark:text-white">
+                <h3 className={`text-sm font-black tracking-wide uppercase ${spain.isDaytime ? 'text-slate-900 dark:text-white' : 'text-white'}`}>
                   España (Madrid)
                 </h3>
-                <span className="text-[10px] font-bold text-slate-500 dark:text-slate-400">
+                <span className={`text-[10px] font-bold ${spain.isDaytime ? 'text-slate-500 dark:text-slate-400' : 'text-slate-300'}`}>
                   {spain.timeZoneAbbr} • UTC+1 / +2
                 </span>
               </div>
             </div>
 
-            <div className="flex items-center gap-1.5 px-2.5 py-1 rounded-full text-[11px] font-black bg-white/80 dark:bg-slate-800/80 shadow-xs border border-slate-200 dark:border-slate-700">
+            <div className="flex items-center gap-1.5 px-2.5 py-1 rounded-full text-[11px] font-black bg-white/90 dark:bg-slate-800/90 shadow-xs border border-slate-200 dark:border-slate-700">
               {spain.isDaytime ? (
                 <>
                   <Sun className="w-3.5 h-3.5 text-amber-500 animate-spin-slow" />
@@ -92,20 +92,24 @@ export const DualTimeWidget: React.FC = () => {
 
           {/* Time Display */}
           <div className="my-4 flex flex-col items-center justify-center text-center">
-            <div className="text-4xl sm:text-5xl font-black tracking-tight font-mono text-slate-900 dark:text-white">
+            <div className={`text-4xl sm:text-5xl font-black tracking-tight font-mono ${spain.isDaytime ? 'text-slate-900 dark:text-white' : 'text-amber-100'}`}>
               {spain.timeStr}
             </div>
-            <div className="text-xs font-bold text-slate-600 dark:text-slate-300 mt-2">
+            <div className={`text-xs font-bold mt-2 ${spain.isDaytime ? 'text-slate-600 dark:text-slate-300' : 'text-slate-300'}`}>
               📅 {spain.dateStr}
             </div>
           </div>
 
           {/* Footer Period & Activity Badge */}
           <div className="pt-3 border-t border-black/10 dark:border-white/10 flex flex-col sm:flex-row sm:items-center justify-between gap-2 text-xs">
-            <span className="font-extrabold text-amber-700 dark:text-amber-300 bg-amber-100 dark:bg-amber-950/80 px-2.5 py-0.5 rounded-lg border border-amber-200 dark:border-amber-900 w-fit">
+            <span className={`font-extrabold px-2.5 py-0.5 rounded-lg border w-fit ${
+              spain.isDaytime
+                ? 'text-amber-700 dark:text-amber-300 bg-amber-100 dark:bg-amber-950/80 border-amber-200 dark:border-amber-900'
+                : 'text-amber-200 bg-amber-950/60 border-amber-700/60'
+            }`}>
               {spain.periodLabel}
             </span>
-            <span className="text-[11px] font-semibold text-slate-600 dark:text-slate-300">
+            <span className={`text-[11px] font-semibold ${spain.isDaytime ? 'text-slate-600 dark:text-slate-300' : 'text-slate-300'}`}>
               {spain.activityStatus}
             </span>
           </div>
