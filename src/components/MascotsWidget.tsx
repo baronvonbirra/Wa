@@ -1,29 +1,36 @@
 import React, { useState } from 'react';
 import { Sparkles, Heart } from 'lucide-react';
-import { MASCOT_CHARACTERS, MascotCharacter, getMascotMessages } from '../data/mascotData';
+import { MASCOT_CHARACTERS, MascotCharacter, getMascotMessages, getCurrentMascotDate } from '../data/mascotData';
 
 interface MascotsWidgetProps {
-  currentDate?: string;
+  /** Optional date override (e.g. for testing/previews). If omitted, tracks real current day */
+  forcedDate?: string;
 }
 
-export const MascotsWidget: React.FC<MascotsWidgetProps> = ({ currentDate }) => {
+export const MascotsWidget: React.FC<MascotsWidgetProps> = ({ forcedDate }) => {
   const [activeMascotId, setActiveMascotId] = useState<'koji' | 'tama' | 'panko'>('koji');
+  const [currentRealDate, setCurrentRealDate] = useState<string>(() =>
+    forcedDate && forcedDate.trim().length > 0 ? forcedDate.trim() : getCurrentMascotDate()
+  );
 
-  // Determine effective calendar date in Europe/Madrid timezone if not explicitly provided
-  const getEffectiveDateStr = (dateInput?: string): string => {
-    if (dateInput && dateInput.trim().length > 0) {
-      return dateInput.trim();
+  // Keep date updated periodically if date rolls over at midnight
+  React.useEffect(() => {
+    if (forcedDate && forcedDate.trim().length > 0) {
+      setCurrentRealDate(forcedDate.trim());
+      return;
     }
-    const formatter = new Intl.DateTimeFormat('en-CA', {
-      timeZone: 'Europe/Madrid',
-      year: 'numeric',
-      month: '2-digit',
-      day: '2-digit'
-    });
-    return formatter.format(new Date());
-  };
 
-  const effectiveDateStr = getEffectiveDateStr(currentDate);
+    const updateDate = () => {
+      const latest = getCurrentMascotDate();
+      setCurrentRealDate((prev) => (prev !== latest ? latest : prev));
+    };
+
+    updateDate();
+    const timer = setInterval(updateDate, 30000); // Check every 30s
+    return () => clearInterval(timer);
+  }, [forcedDate]);
+
+  const effectiveDateStr = forcedDate && forcedDate.trim().length > 0 ? forcedDate.trim() : currentRealDate;
 
   // Determine messages according to date rules (pre-travel vs daily trip dates)
   const dayTips = getMascotMessages(effectiveDateStr);

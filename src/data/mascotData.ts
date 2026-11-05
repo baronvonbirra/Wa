@@ -192,27 +192,53 @@ export const DAILY_MASCOT_MESSAGES: Record<string, MascotMessage> = {
 
 export const DAILY_MASCOT_TIPS: Record<string, MascotMessage> = DAILY_MASCOT_MESSAGES;
 
+/**
+ * Calculates the current real-world mascot calendar date according to the trip schedule:
+ * - Before Dec 20, 2026: Spanish time (Europe/Madrid).
+ * - December 20, 2026: Updates at 00:00 Spanish time (Europe/Madrid).
+ * - From December 21, 2026 onwards: Updates daily at 00:00 Japanese time (Asia/Tokyo).
+ */
+export function getCurrentMascotDate(now: Date = new Date()): string {
+  const esFormatter = new Intl.DateTimeFormat('en-CA', {
+    timeZone: 'Europe/Madrid',
+    year: 'numeric',
+    month: '2-digit',
+    day: '2-digit'
+  });
+  const esDate = esFormatter.format(now);
+
+  // Before Dec 20, 2026 in Spain: pre-travel date
+  if (esDate < '2026-12-20') {
+    return esDate;
+  }
+
+  // From Dec 20 00:00 onwards: check Japanese time
+  const jpFormatter = new Intl.DateTimeFormat('en-CA', {
+    timeZone: 'Asia/Tokyo',
+    year: 'numeric',
+    month: '2-digit',
+    day: '2-digit'
+  });
+  const jpDate = jpFormatter.format(now);
+
+  // If in Japan it has reached Dec 21 or later, use Japan's date
+  if (jpDate >= '2026-12-21') {
+    return jpDate;
+  }
+
+  // On Dec 20 between 00:00 CET and 16:00 CET (which is 08:00 JST to 24:00 JST), return 2026-12-20
+  return '2026-12-20';
+}
+
 export function getMascotMessages(dateInput?: Date | string): MascotMessage {
   let dateStr: string;
 
   if (typeof dateInput === 'string' && dateInput.trim().length > 0) {
     dateStr = dateInput.trim();
   } else if (dateInput instanceof Date) {
-    const formatter = new Intl.DateTimeFormat('en-CA', {
-      timeZone: 'Europe/Madrid',
-      year: 'numeric',
-      month: '2-digit',
-      day: '2-digit'
-    });
-    dateStr = formatter.format(dateInput);
+    dateStr = getCurrentMascotDate(dateInput);
   } else {
-    const formatter = new Intl.DateTimeFormat('en-CA', {
-      timeZone: 'Europe/Madrid',
-      year: 'numeric',
-      month: '2-digit',
-      day: '2-digit'
-    });
-    dateStr = formatter.format(new Date());
+    dateStr = getCurrentMascotDate();
   }
 
   if (dateStr < '2026-12-20') {
