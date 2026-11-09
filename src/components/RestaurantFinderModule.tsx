@@ -266,6 +266,7 @@ export const RestaurantFinderModule: React.FC = () => {
       specialty: string;
       recommendation: string;
       locationQuery: string;
+      url?: string;
       dayTitle: string;
       shortDate: string;
       location: string;
@@ -281,6 +282,7 @@ export const RestaurantFinderModule: React.FC = () => {
               specialty: rest.specialty,
               recommendation: rest.recommendation || '',
               locationQuery: rest.locationQuery,
+              url: rest.url,
               dayTitle: day.title,
               shortDate: day.shortDate,
               location: day.location
@@ -683,7 +685,7 @@ export const RestaurantFinderModule: React.FC = () => {
             {/* Restaurants List */}
             <div className="grid grid-cols-1 md:grid-cols-2 gap-4 pt-2">
               {filteredFavorites.map((rest) => {
-                const mapsUrl = `https://www.google.com/maps/search/?api=1&query=${encodeURIComponent(
+                const mapsUrl = rest.url || `https://www.google.com/maps/search/?api=1&query=${encodeURIComponent(
                   rest.locationQuery || `${rest.name} ${rest.location}`
                 )}`;
 

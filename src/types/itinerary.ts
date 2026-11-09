@@ -48,6 +48,7 @@ export interface RestaurantItem {
   specialty: string;
   recommendation?: string;
   locationQuery: string;
+  url?: string;
 }
 
 export interface DayItinerary {

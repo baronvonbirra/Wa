@@ -12,14 +12,19 @@ export const TODO_CATEGORIES: TodoCategory[] = [
         text: '21, 22 y 23 de octubre de 2026 (07:00 h): Compra de entradas para Tokyo Disneyland desde su web oficial (para el 21, 22 y 23 de diciembre).'
       },
       {
-        id: 'task-nov-09-usj',
+        id: 'task-nov-usj-studio',
         categoryId: 'entradas-parques',
-        text: '9 de noviembre de 2026 (16:00 h): Compra de entradas (Studio Pass) y pases rápidos (Express Pass) para Universal Studios Japan (para la visita del 9 de enero).'
+        text: 'Mediados/finales de noviembre de 2026: Monitorización y compra de entradas base (Studio Pass) de USJ (para la visita del 8 de enero). La web oficial bloquea los pases por cambio de temporada a partir del 1 de enero; revisar periódicamente hasta liberar el bloque de enero.'
+      },
+      {
+        id: 'task-nov-usj-express',
+        categoryId: 'entradas-parques',
+        text: 'Noviembre de 2026: Monitorización y compra de pases rápidos (Express Pass) de USJ para asegurar la adquisición de los 4 pases Universal Express Pass 4 - Minions & Race para el 8 de enero, garantizando el mismo turno de acceso a Super Nintendo World.'
       },
       {
         id: 'task-dec-01-pokemon',
         categoryId: 'entradas-parques',
-        text: '1 de diciembre de 2026 (10:00 h): Reserva de mesa en el Pokémon Café de Osaka (para la visita del 8 de enero).'
+        text: '1 de diciembre de 2026 (10:00 h): Reserva de mesa en el Pokémon Café de Osaka (para la visita del 9 de enero).'
       }
     ]
   },

@@ -159,14 +159,14 @@ export const DAILY_MASCOT_MESSAGES: Record<string, MascotMessage> = {
     panko: "¡Misión gastronómica! Comer Takoyaki recién hechos en los puestos callejeros de Dōtonbori. ¡Soplad bien antes de morder!"
   },
   '2027-01-08': {
-    koji: "Recorred las tiendas de Ota Road en Nipponbashi. Es el epicentro de los videojuegos retro y las figuras en el oeste de Japón.",
-    tama: "En el barrio retro de Shinsekai, buscad la estatua dorada de Billiken y rascadle las plantas de los pies para tener buena suerte.",
-    panko: "En el mercado Kuromon encontraréis brochetas de marisco fresco, carne Wagyu a la plancha y fruta gigante en cada puesto."
-  },
-  '2027-01-09': {
     koji: "¡A poner rumbo directo a Super Nintendo World nada más entrar para exprimir cada atracción del parque al máximo!",
     tama: "Sincronizad la pulsera Power-Up Band con la aplicación para ir registrando cada bloque '?' que golpeéis durante el día.",
     panko: "En la zona de Harry Potter, la Butterbeer (cerveza de mantequilla sin alcohol) espumosa servida helada está riquísima."
+  },
+  '2027-01-09': {
+    koji: "Recorred las tiendas de Ota Road en Nipponbashi. Es el epicentro de los videojuegos retro y las figuras en el oeste de Japón.",
+    tama: "En el barrio retro de Shinsekai, buscad la estatua dorada de Billiken y rascadle las plantas de los pies para tener buena suerte.",
+    panko: "En el mercado Kuromon encontraréis brochetas de marisco fresco, carne Wagyu a la plancha y fruta gigante en cada puesto."
   },
   '2027-01-10': {
     koji: "Paseo por la elegancia de Ginza y caminata cruzando los puentes sobre el río Sumida hacia la isla de Tsukishima al atardecer.",
