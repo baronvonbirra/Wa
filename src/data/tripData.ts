@@ -2201,6 +2201,14 @@ export const TRIP_DATA: TripItinerary = {
               "specialty": "Café de Especialidad con Vistas al Río",
               "recommendation": "Tomar un café espresso helado frente al puente Togetsukyo.",
               "locationQuery": "Arabica Kyoto Arashiyama"
+            },
+            {
+              "id": "rest-14-3",
+              "name": "Arashiyama Yoshimura",
+              "specialty": "Soba Artesanal con Vistas al Río",
+              "recommendation": "Degustar soba fresco artesanal junto al río Oi y vistas al puente Togetsukyo, perfecto para descansar y comer tras pasear por el bosque de bambú.",
+              "locationQuery": "Arashiyama Yoshimura Kyoto",
+              "url": "https://maps.app.goo.gl/s4aEEwu7NM9Ez8NX9"
             }
           ]
         },
@@ -2739,6 +2747,14 @@ export const TRIP_DATA: TripItinerary = {
               "specialty": "Gyozas de Gion",
               "recommendation": "Gyozas crujientes recomendadas por la guía Michelin en pleno Gion.",
               "locationQuery": "Gyoza Hohei Gion"
+            },
+            {
+              "id": "rest-17-4",
+              "name": "Yamaneko Gion Craft Beer and Sake Bar Izakaya",
+              "specialty": "Izakaya Artesanal, Cerveza Craft & Sake",
+              "recommendation": "Parada técnica o cena en Gion para disfrutar de tapas japonesas caseras, cervezas artesanales y sakes locales en un callejón tradicional.",
+              "locationQuery": "Yamaneko Gion Kyoto",
+              "url": "https://maps.app.goo.gl/AUqZUQeo4r94oEt79"
             }
           ]
         }
@@ -2974,238 +2990,18 @@ export const TRIP_DATA: TripItinerary = {
           "date": "2027-01-08",
           "formattedDate": "Viernes, 8 de Enero de 2027",
           "shortDate": "8 Ene",
-          "title": "Osaka (Mercados, Otaku y Shinsekai)",
-          "location": "Osaka",
-          "accommodationId": "hotel-6",
-          "activities": [
-            {
-              "id": "act-19-1",
-              "title": "Kuromon Market",
-              "locationQuery": "Kuromon Market Osaka",
-              "type": "sights",
-              "learnInfo": {
-                "title": "Mercado Kuromon (La Cocina de Osaka)",
-                "subtitle": "08 de Enero • Osaka 🦀",
-                "summary": "Un mercado cubierto con más de 600 metros de puestos de brochetas de marisco, fruta fresca gigante y brochetas de carne Wagyu.",
-                "pills": [
-                  {
-                    "label": "Historia Gastronómica",
-                    "text": "Conocido históricamente como 'Kuromon Ichiba' (Mercado de la Puerta Negra) por la antigua puerta del cercano templo Enmyoji.",
-                    "type": "historical"
-                  },
-                  {
-                    "label": "Misión Kawaii",
-                    "text": "Probar las brochetas de fruta fresca gigante con las famosas fresas blancas y rojas de prefecturas japonesas.",
-                    "type": "funFact"
-                  }
-                ]
-              }
-            },
-            {
-              "id": "act-19-2",
-              "title": "Ota Road",
-              "locationQuery": "Nipponbashi Ota Road Osaka",
-              "type": "shopping",
-              "learnInfo": {
-                "title": "Ota Road (Nipponbashi)",
-                "subtitle": "08 de Enero • Osaka 🎮",
-                "summary": "El equivalente a Akihabara en el oeste de Japón: calles llenas de tiendas de anime, videojuegos retro, maquetas y mangas de colección.",
-                "pills": [
-                  {
-                    "label": "Cultura Pop & Gaming",
-                    "text": "El epicentro otaku de Kansai con tiendas de varias plantas repletas de gashapones, cartas Pokémon y figuras de colección.",
-                    "type": "funFact"
-                  },
-                  {
-                    "label": "Nostalgia Gamer",
-                    "text": "Encontraréis consolas Famicom, Game Boy y juegos vintage en estado impecable.",
-                    "type": "historical"
-                  }
-                ]
-              }
-            },
-            {
-              "id": "act-19-3",
-              "title": "Nipponbashi Denden Town",
-              "locationQuery": "Denden Town Nipponbashi Osaka",
-              "type": "shopping",
-              "learnInfo": {
-                "title": "Nipponbashi Denden Town",
-                "subtitle": "08 de Enero • Osaka 🔌",
-                "summary": "El histórico distrito tecnológico y electrónico de Osaka especializado en componentes, herramientas de modelismo y tecnología.",
-                "pills": [
-                  {
-                    "label": "Meca Tecnológica",
-                    "text": "Nació como mercado de radio tras la Segunda Guerra Mundial y evolucionó hacia el centro otaku y tecnológico de Kansai.",
-                    "type": "historical"
-                  }
-                ]
-              }
-            },
-            {
-              "id": "act-19-4",
-              "title": "Namba Walk Forest Park",
-              "locationQuery": "Namba Walk Osaka",
-              "type": "sights"
-            },
-            {
-              "id": "act-19-5",
-              "title": "America-mura",
-              "locationQuery": "Amerikamura Osaka",
-              "type": "sights",
-              "learnInfo": {
-                "title": "America-mura (Amemura)",
-                "subtitle": "08 de Enero • Osaka 🗽",
-                "summary": "El barrio de la cultura juvenil, moda urbana y tiendas vintage de Osaka.",
-                "pills": [
-                  {
-                    "label": "Dato Divertido",
-                    "text": "En lo alto de un edificio comercial de la plaza central veréis una réplica a pequeña escala de la Estatua de la Libertad.",
-                    "type": "funFact"
-                  },
-                  {
-                    "label": "Moda e Ilustración",
-                    "text": "Nació en los años 70 como centro de moda importada de EE.UU. y hoy es la cuna del arte urbano y tiendas vintage de Osaka.",
-                    "type": "cultural"
-                  }
-                ]
-              }
-            },
-            {
-              "id": "act-19-6",
-              "title": "BB Amemura / AMERICAN VILLAGE FREEMARKET",
-              "locationQuery": "Amerikamura Vintage Market",
-              "type": "shopping"
-            },
-            {
-              "id": "act-19-7",
-              "title": "Shinsaibashisuji",
-              "locationQuery": "Shinsaibashisuji Shopping Street",
-              "type": "shopping"
-            },
-            {
-              "id": "act-19-8",
-              "title": "Mitsugu (Mitsuhachimangu)",
-              "locationQuery": "Mitsuhachimangu Shrine Osaka",
-              "type": "sights"
-            },
-            {
-              "id": "act-19-9",
-              "title": "Calle comercial Shinsekai Hondori",
-              "locationQuery": "Shinsekai Hondori Osaka",
-              "type": "sights",
-              "learnInfo": {
-                "title": "Barrio Retro de Shinsekai",
-                "subtitle": "08 de Enero • Osaka 🍢",
-                "summary": "Un barrio nostálgico con estética retro de la Era Showa (años 50 y 60) dominado por la torre Tsūtenkaku.",
-                "pills": [
-                  {
-                    "label": "Dato Gastronómico",
-                    "text": "Cuna del Kushikatsu (brochetas empanadas fritas). Recordad la regla de oro: ¡Prohibido mojar la brocheta dos veces en la salsa común!",
-                    "type": "funFact"
-                  },
-                  {
-                    "label": "Atmósfera Nostálgica",
-                    "text": "Diseñado en 1912 inspirándose mitad en París y mitad en Coney Island de Nueva York.",
-                    "type": "historical"
-                  }
-                ]
-              }
-            },
-            {
-              "id": "act-19-10",
-              "title": "Tsūtenkaku",
-              "locationQuery": "Tsutenkaku Tower Osaka",
-              "type": "sights",
-              "learnInfo": {
-                "title": "Torre Tsūtenkaku y Estatua de Billiken",
-                "subtitle": "08 de Enero • Osaka 🌟",
-                "summary": "La icónica torre de 103 metros símbolo de Osaka que alberga en su mirador la estatua dorada de Billiken.",
-                "pills": [
-                  {
-                    "label": "El Dios de la Suerte",
-                    "text": "Dentro de la torre vive la estatua de Billiken. La tradición dice que si le rascas la planta de los pies mientras pides un deseo, se cumplirá.",
-                    "type": "cultural"
-                  },
-                  {
-                    "label": "Dato Curioso",
-                    "text": "Tsūtenkaku significa 'Torre que conduce al cielo'. Las luces de su cima pronostican el tiempo de mañana.",
-                    "type": "funFact"
-                  }
-                ]
-              }
-            },
-            {
-              "id": "act-19-11",
-              "title": "Mercado Shin-sekai",
-              "locationQuery": "Shinsekai Market Osaka",
-              "type": "sights"
-            }
-          ],
-          "shops": [
-            {
-              "id": "shop-19-1",
-              "name": "Gee Store / Gamers Nanba",
-              "category": "Manga, Anime & Merch",
-              "note": "El corazón otaku de Osaka en Nipponbashi Denden Town.",
-              "locationQuery": "Gee Store Osaka"
-            },
-            {
-              "id": "shop-19-2",
-              "name": "Yellow Submarine Nanba",
-              "category": "TCG & Juegos de Mesa",
-              "note": "Cartas Pokémon, Yu-Gi-Oh! y juegos de mesa en Ota Road.",
-              "locationQuery": "Yellow Submarine Nanba"
-            },
-            {
-              "id": "shop-19-3",
-              "name": "Pokémon Center Osaka DX & Pokémon Cafe",
-              "category": "Tienda Oficial & Cafetería",
-              "note": "En la planta 9 de Daimaru Shinsaibashi.",
-              "locationQuery": "Pokémon Center Osaka DX"
-            }
-          ],
-          "restaurants": [
-            {
-              "id": "rest-19-1",
-              "name": "Kushikatsu Daruma Shinsekai",
-              "specialty": "Kushikatsu (Brochetas empanadas fritas)",
-              "recommendation": "Icono de Shinsekai. Recordar la regla de oro: ¡No mochar la salsa dos veces!",
-              "locationQuery": "Kushikatsu Daruma Shinsekai"
-            },
-            {
-              "id": "rest-19-2",
-              "name": "Hokkyokusei Shinsaibashi Main Shop",
-              "specialty": "Omurice (Arroz envuelto en tortilla suave)",
-              "recommendation": "El restaurante donde se inventó el Omurice en Japón.",
-              "locationQuery": "Hokkyokusei Shinsaibashi"
-            },
-            {
-              "id": "rest-19-3",
-              "name": "Kōgaryū Amerika-mura",
-              "specialty": "Takoyaki estilo moderno",
-              "recommendation": "Probar el takoyaki cubierto con salsa cebolleta y mayonesa.",
-              "locationQuery": "Kogaryu Amerikamura"
-            }
-          ]
-        },
-        {
-          "dayIndex": 20,
-          "date": "2027-01-09",
-          "formattedDate": "Sábado, 9 de Enero de 2027",
-          "shortDate": "9 Ene",
           "title": "Universal Studios Japan",
           "location": "Osaka",
           "accommodationId": "hotel-6",
           "activities": [
             {
-              "id": "act-20-1",
+              "id": "act-19-1",
               "title": "Universal Studios Japan",
               "locationQuery": "Universal Studios Japan",
               "type": "theme_park",
               "learnInfo": {
                 "title": "Universal Studios Japan: Super Nintendo World & Harry Potter",
-                "subtitle": "09 de Enero • Osaka 🍄",
+                "subtitle": "08 de Enero • Osaka 🍄",
                 "summary": "Día completo de diversión en USJ explorando Super Nintendo World y The Wizarding World of Harry Potter.",
                 "pills": [
                   {
@@ -3224,7 +3020,7 @@ export const TRIP_DATA: TripItinerary = {
           ],
           "shops": [
             {
-              "id": "shop-20-1",
+              "id": "shop-19-1",
               "name": "1-UP Factory (Super Nintendo World)",
               "category": "Merchandising Mario & Luigi",
               "note": "Gorros de Mario, objetos interactivos y peluches.",
@@ -3233,18 +3029,238 @@ export const TRIP_DATA: TripItinerary = {
           ],
           "restaurants": [
             {
-              "id": "rest-20-1",
+              "id": "rest-19-1",
               "name": "Kinopio's Cafe (Toadstool Cafe)",
               "specialty": "Comida Temática Super Mario",
               "recommendation": "Hamburguesa de champiñón y tarta de la Princesa Peach.",
               "locationQuery": "Kinopio's Cafe USJ"
             },
             {
-              "id": "rest-20-2",
+              "id": "rest-19-2",
               "name": "Osaka Takoyaki Park (CityWalk)",
               "specialty": "Colección de los mejores Takoyakis de Osaka",
               "recommendation": "Probar 5 puestos famosos de takoyaki en un solo lugar al salir del parque.",
               "locationQuery": "Osaka Takoyaki Park"
+            }
+          ]
+        },
+        {
+          "dayIndex": 20,
+          "date": "2027-01-09",
+          "formattedDate": "Sábado, 9 de Enero de 2027",
+          "shortDate": "9 Ene",
+          "title": "Osaka (Mercados, Otaku y Shinsekai)",
+          "location": "Osaka",
+          "accommodationId": "hotel-6",
+          "activities": [
+            {
+              "id": "act-20-1",
+              "title": "Kuromon Market",
+              "locationQuery": "Kuromon Market Osaka",
+              "type": "sights",
+              "learnInfo": {
+                "title": "Mercado Kuromon (La Cocina de Osaka)",
+                "subtitle": "09 de Enero • Osaka 🦀",
+                "summary": "Un mercado cubierto con más de 600 metros de puestos de brochetas de marisco, fruta fresca gigante y brochetas de carne Wagyu.",
+                "pills": [
+                  {
+                    "label": "Historia Gastronómica",
+                    "text": "Conocido históricamente como 'Kuromon Ichiba' (Mercado de la Puerta Negra) por la antigua puerta del cercano templo Enmyoji.",
+                    "type": "historical"
+                  },
+                  {
+                    "label": "Misión Kawaii",
+                    "text": "Probar las brochetas de fruta fresca gigante con las famosas fresas blancas y rojas de prefecturas japonesas.",
+                    "type": "funFact"
+                  }
+                ]
+              }
+            },
+            {
+              "id": "act-20-2",
+              "title": "Ota Road",
+              "locationQuery": "Nipponbashi Ota Road Osaka",
+              "type": "shopping",
+              "learnInfo": {
+                "title": "Ota Road (Nipponbashi)",
+                "subtitle": "09 de Enero • Osaka 🎮",
+                "summary": "El equivalente a Akihabara en el oeste de Japón: calles llenas de tiendas de anime, videojuegos retro, maquetas y mangas de colección.",
+                "pills": [
+                  {
+                    "label": "Cultura Pop & Gaming",
+                    "text": "El epicentro otaku de Kansai con tiendas de varias plantas repletas de gashapones, cartas Pokémon y figuras de colección.",
+                    "type": "funFact"
+                  },
+                  {
+                    "label": "Nostalgia Gamer",
+                    "text": "Encontraréis consolas Famicom, Game Boy y juegos vintage en estado impecable.",
+                    "type": "historical"
+                  }
+                ]
+              }
+            },
+            {
+              "id": "act-20-3",
+              "title": "Nipponbashi Denden Town",
+              "locationQuery": "Denden Town Nipponbashi Osaka",
+              "type": "shopping",
+              "learnInfo": {
+                "title": "Nipponbashi Denden Town",
+                "subtitle": "09 de Enero • Osaka 🔌",
+                "summary": "El histórico distrito tecnológico y electrónico de Osaka especializado en componentes, herramientas de modelismo y tecnología.",
+                "pills": [
+                  {
+                    "label": "Meca Tecnológica",
+                    "text": "Nació como mercado de radio tras la Segunda Guerra Mundial y evolucionó hacia el centro otaku y tecnológico de Kansai.",
+                    "type": "historical"
+                  }
+                ]
+              }
+            },
+            {
+              "id": "act-20-4",
+              "title": "Namba Walk Forest Park",
+              "locationQuery": "Namba Walk Osaka",
+              "type": "sights"
+            },
+            {
+              "id": "act-20-5",
+              "title": "America-mura",
+              "locationQuery": "Amerikamura Osaka",
+              "type": "sights",
+              "learnInfo": {
+                "title": "America-mura (Amemura)",
+                "subtitle": "09 de Enero • Osaka 🗽",
+                "summary": "El barrio de la cultura juvenil, moda urbana y tiendas vintage de Osaka.",
+                "pills": [
+                  {
+                    "label": "Dato Divertido",
+                    "text": "En lo alto de un edificio comercial de la plaza central veréis una réplica a pequeña escala de la Estatua de la Libertad.",
+                    "type": "funFact"
+                  },
+                  {
+                    "label": "Moda e Ilustración",
+                    "text": "Nació en los años 70 como centro de moda importada de EE.UU. y hoy es la cuna del arte urbano y tiendas vintage de Osaka.",
+                    "type": "cultural"
+                  }
+                ]
+              }
+            },
+            {
+              "id": "act-20-6",
+              "title": "BB Amemura / AMERICAN VILLAGE FREEMARKET",
+              "locationQuery": "Amerikamura Vintage Market",
+              "type": "shopping"
+            },
+            {
+              "id": "act-20-7",
+              "title": "Shinsaibashisuji",
+              "locationQuery": "Shinsaibashisuji Shopping Street",
+              "type": "shopping"
+            },
+            {
+              "id": "act-20-8",
+              "title": "Mitsugu (Mitsuhachimangu)",
+              "locationQuery": "Mitsuhachimangu Shrine Osaka",
+              "type": "sights"
+            },
+            {
+              "id": "act-20-9",
+              "title": "Calle comercial Shinsekai Hondori",
+              "locationQuery": "Shinsekai Hondori Osaka",
+              "type": "sights",
+              "learnInfo": {
+                "title": "Barrio Retro de Shinsekai",
+                "subtitle": "09 de Enero • Osaka 🍢",
+                "summary": "Un barrio nostálgico con estética retro de la Era Showa (años 50 y 60) dominado por la torre Tsūtenkaku.",
+                "pills": [
+                  {
+                    "label": "Dato Gastronómico",
+                    "text": "Cuna del Kushikatsu (brochetas empanadas fritas). Recordad la regla de oro: ¡Prohibido mojar la brocheta dos veces en la salsa común!",
+                    "type": "funFact"
+                  },
+                  {
+                    "label": "Atmósfera Nostálgica",
+                    "text": "Diseñado en 1912 inspirándose mitad en París y mitad en Coney Island de Nueva York.",
+                    "type": "historical"
+                  }
+                ]
+              }
+            },
+            {
+              "id": "act-20-10",
+              "title": "Tsūtenkaku",
+              "locationQuery": "Tsutenkaku Tower Osaka",
+              "type": "sights",
+              "learnInfo": {
+                "title": "Torre Tsūtenkaku y Estatua de Billiken",
+                "subtitle": "09 de Enero • Osaka 🌟",
+                "summary": "La icónica torre de 103 metros símbolo de Osaka que alberga en su mirador la estatua dorada de Billiken.",
+                "pills": [
+                  {
+                    "label": "El Dios de la Suerte",
+                    "text": "Dentro de la torre vive la estatua de Billiken. La tradición dice que si le rascas la planta de los pies mientras pides un deseo, se cumplirá.",
+                    "type": "cultural"
+                  },
+                  {
+                    "label": "Dato Curioso",
+                    "text": "Tsūtenkaku significa 'Torre que conduce al cielo'. Las luces de su cima pronostican el tiempo de mañana.",
+                    "type": "funFact"
+                  }
+                ]
+              }
+            },
+            {
+              "id": "act-20-11",
+              "title": "Mercado Shin-sekai",
+              "locationQuery": "Shinsekai Market Osaka",
+              "type": "sights"
+            }
+          ],
+          "shops": [
+            {
+              "id": "shop-20-1",
+              "name": "Gee Store / Gamers Nanba",
+              "category": "Manga, Anime & Merch",
+              "note": "El corazón otaku de Osaka en Nipponbashi Denden Town.",
+              "locationQuery": "Gee Store Osaka"
+            },
+            {
+              "id": "shop-20-2",
+              "name": "Yellow Submarine Nanba",
+              "category": "TCG & Juegos de Mesa",
+              "note": "Cartas Pokémon, Yu-Gi-Oh! y juegos de mesa en Ota Road.",
+              "locationQuery": "Yellow Submarine Nanba"
+            },
+            {
+              "id": "shop-20-3",
+              "name": "Pokémon Center Osaka DX & Pokémon Cafe",
+              "category": "Tienda Oficial & Cafetería",
+              "note": "En la planta 9 de Daimaru Shinsaibashi.",
+              "locationQuery": "Pokémon Center Osaka DX"
+            }
+          ],
+          "restaurants": [
+            {
+              "id": "rest-20-1",
+              "name": "Kushikatsu Daruma Shinsekai",
+              "specialty": "Kushikatsu (Brochetas empanadas fritas)",
+              "recommendation": "Icono de Shinsekai. Recordar la regla de oro: ¡No mochar la salsa dos veces!",
+              "locationQuery": "Kushikatsu Daruma Shinsekai"
+            },
+            {
+              "id": "rest-20-2",
+              "name": "Hokkyokusei Shinsaibashi Main Shop",
+              "specialty": "Omurice (Arroz envuelto en tortilla suave)",
+              "recommendation": "El restaurante donde se inventó el Omurice en Japón.",
+              "locationQuery": "Hokkyokusei Shinsaibashi"
+            },
+            {
+              "id": "rest-20-3",
+              "name": "Kōgaryū Amerika-mura",
+              "specialty": "Takoyaki estilo moderno",
+              "recommendation": "Probar el takoyaki cubierto con salsa cebolleta y mayonesa.",
+              "locationQuery": "Kogaryu Amerikamura"
             }
           ]
         }

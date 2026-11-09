@@ -872,7 +872,7 @@ export const ItineraryModule: React.FC = () => {
               {showRestaurants && (
                 <div className="divide-y divide-slate-100 dark:divide-slate-700/60 pt-2 space-y-2">
                   {currentDay.restaurants.map((rest) => {
-                    const restMapsUrl = `https://www.google.com/maps/search/?api=1&query=${encodeURIComponent(
+                    const restMapsUrl = rest.url || `https://www.google.com/maps/search/?api=1&query=${encodeURIComponent(
                       rest.locationQuery
                     )}`;
 

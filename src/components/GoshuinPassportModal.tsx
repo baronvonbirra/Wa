@@ -277,7 +277,7 @@ export const FEATURED_BADGES: FeaturedBadge[] = [
     stage: 'Etapa 4 • Shinsekai',
     stageGroup: 'Etapa 4',
     description: 'Tsūtenkaku / Shinsekai (Billiken).',
-    isUnlocked: (ids) => ids.includes('act-19-10')
+    isUnlocked: (ids) => ids.includes('act-20-10')
   },
   {
     id: 'nintendo-block-badge',
@@ -287,7 +287,7 @@ export const FEATURED_BADGES: FeaturedBadge[] = [
     stage: 'Etapa 4 • Universal Studios',
     stageGroup: 'Etapa 4',
     description: 'Universal Studios Japan (Super Nintendo World).',
-    isUnlocked: (ids) => ids.includes('act-20-1')
+    isUnlocked: (ids) => ids.includes('act-19-1')
   },
   // Etapa 5: Tokio (2ª Parte) y Kamakura
   {
